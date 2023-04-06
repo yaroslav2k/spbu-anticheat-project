@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "mutator"
+version = "0.1.0"
+description = "AST-based general-purpose Python ~>3.11 mutator"
+authors = ["viralpraxis"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+libcst = "^0.4.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
