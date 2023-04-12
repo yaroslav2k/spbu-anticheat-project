@@ -1,13 +1,9 @@
-import random
-
+from mutations.base import Base
 import visitors.function_definition_visitor as fdv
 import transformers.function_definition_transformer as fdt
 
 
-class mSDL:
-    def __init__(self, source_tree):
-        self.source_tree = source_tree
-
+class mSDL(Base):
     def call(self):
         visitor = fdv.FunctionDefinitionCollector()
         self.source_tree.visit(visitor)
@@ -21,9 +17,9 @@ class mSDL:
         return modified_tree
 
     def __apply_transformation(self, result) -> None:
-        function_spec, arguments = random.choice(list(result.data.items()))
+        function_spec, arguments = self.randomizer.choice(list(result.data.items()))
         params = list(arguments.params)
-        params.pop(random.randrange(len(params)))
+        params.pop(self.randomizer.randrange(len(params)))
         if len(params) > 0:
             params[-1] = params[-1].with_changes(comma=None)
         result.data[function_spec] = arguments.with_changes(params=tuple(params))
