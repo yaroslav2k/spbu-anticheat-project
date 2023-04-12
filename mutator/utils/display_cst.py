@@ -1,6 +1,7 @@
 import argparse
 import libcst as cst
 
+
 def main():
     parser = argparse.ArgumentParser(
         prog="display_cst.py", description="Python source code CST displayer"
@@ -13,7 +14,6 @@ def main():
         data = source.read()
         source_tree = cst.parse_module(data)
         print(source_tree)
-
 
 
 if __name__ == "__main__":

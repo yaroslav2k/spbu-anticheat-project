@@ -1,5 +1,5 @@
 import libcst as cst
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 
 class FunctionInvocationCollector(cst.CSTVisitor):

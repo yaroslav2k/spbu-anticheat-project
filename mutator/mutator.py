@@ -1,9 +1,7 @@
-from typing import Dict, List, Optional, Tuple
 import argparse
 import libcst as cst
 
 import visitors.function_definition_visitor as fdv
-import visitors.function_body_visitor as fbv
 from mutations.mSDL import mSDL
 
 
@@ -16,6 +14,7 @@ def main():
     parser.add_argument("input")
     parser.add_argument("-o", "--output", action="store_const")
     parser.add_argument("-m", "--mutation", choices=mutations, required=True)
+    parser.add_argument("-s", "--seed", action="store_const")
 
     args = parser.parse_args()
 

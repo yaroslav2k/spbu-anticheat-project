@@ -1,5 +1,5 @@
 import libcst as cst
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 
 class FunctionBodyCollector(cst.CSTVisitor):
@@ -19,16 +19,16 @@ class FunctionBodyCollector(cst.CSTVisitor):
                 print(class_name, function_name)
                 print(value)
 
+    def __init__(self) -> None:
+        self.stack = []
+        self.result = self.Result()
+        self.module = cst.parse_module("")
+
     def visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
         self.stack.append(node.name.value)
 
     def leave_ClassDef(self, node: cst.ClassDef) -> None:
         self.stack.pop()
-
-    def __init__(self) -> None:
-        self.stack = []
-        self.result = self.Result()
-        self.module = cst.parse_module("")
 
     def visit_FunctionDef(self, node: cst.FunctionDef) -> Optional[bool]:
         code = self._get_code_no_empty_leading_lines(node)
@@ -48,5 +48,5 @@ class FunctionBodyCollector(cst.CSTVisitor):
                 empty_lines += 1
             else:
                 break
-                
+
         return code[empty_lines:]
