@@ -60,7 +60,7 @@ class TypehintGenerator:
 
     @classmethod
     def generate_typehint_and_default_value(cls, randomizer) -> Tuple[cst.Annotation, cst.CSTNode]:
-        typehint = randomizer.choice(cls._compound_types)
+        typehint = randomizer.choice(cls._basic_types + cls._compound_types)
         if typehint in cls._basic_types:
             return cls._generate_basic_typehint_and_value(typehint, randomizer)
         return cls._generate_compound_typehint_and_value(typehint, randomizer)
@@ -98,7 +98,7 @@ class TypehintGenerator:
                 return typehint, cst.List(elements)
             case "Tuple":
                 slice = []
-                length = randomizer.randint(1, 6)
+                length = randomizer.randint(1, 3)
                 for _ in range(length):
                     basic_type = randomizer.choice(cls._basic_types)
                     _, value = cls._generate_basic_typehint_and_value(basic_type, randomizer)
