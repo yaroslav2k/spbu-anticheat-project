@@ -4,7 +4,6 @@ import random
 import libcst as cst
 from contextlib import nullcontext
 from dataclasses import dataclass
-from typing import List
 
 from mutations.mSDL import mSDL
 from mutations.mDL import mDL
@@ -27,6 +26,7 @@ def main():
 
     _output_result(result, args.output)
 
+
 def _apply_mutation(name: str, source_tree, randomizer):
     result = None
     match name:
@@ -44,6 +44,7 @@ def _apply_mutation(name: str, source_tree, randomizer):
 
     return result
 
+
 def _parse_arguments():
     parser = argparse.ArgumentParser(
         prog="mutator.py", description="Python CST-based Type-3 mutator"
@@ -60,12 +61,14 @@ def _parse_arguments():
 
     return args
 
+
 # FIXME: ATM we only support range of length 1.
 @dataclass
 class MutationSpec:
     name: str
     lowerbound: int = 1
     upperbound: int = 1
+
 
 # ... mSDL
 # ... mSDL:1
@@ -83,7 +86,6 @@ def _parse_mutations_argument(raw_input: str):
             mutations.append(MutationSpec(chunk))
 
     return mutations
-
 
 
 def _output_result(result, output):
