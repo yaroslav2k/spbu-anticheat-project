@@ -5,6 +5,7 @@ import libcst as cst
 from contextlib import nullcontext
 
 from mutations.mSDL import mSDL
+from mutations.mDL import mDL
 
 
 def main():
@@ -19,6 +20,9 @@ def main():
             case "mSDL":
                 mutator = mSDL(source_tree, random.Random(args.seed))
                 result = mutator.call()
+            case "mDL":
+                mutator = mDL(source_tree, random.Random(args.seed))
+                result = mutator.call()
             case _:
                 raise NotImplementedError
 
@@ -26,7 +30,7 @@ def main():
 
 
 def _parse_arguments():
-    mutations = ["mSDL"]
+    mutations = ["mSDL", "mDL"]
 
     parser = argparse.ArgumentParser(
         prog="mutator.py", description="Python CST-based Type-3 mutator"
@@ -38,7 +42,7 @@ def _parse_arguments():
 
     args = parser.parse_args()
     if args.seed is None:
-        args.seed = random.randint()
+        args.seed = random.randint(0, 1000)
 
     return args
 

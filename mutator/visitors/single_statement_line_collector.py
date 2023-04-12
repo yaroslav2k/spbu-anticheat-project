@@ -2,7 +2,7 @@ import libcst as cst
 from typing import Optional
 
 
-class FunctionInvocationCollector(cst.CSTVisitor):
+class SingleStatementLineCollector(cst.CSTVisitor):
     class Result:
         def __init__(self) -> None:
             self.data = {}
@@ -13,5 +13,7 @@ class FunctionInvocationCollector(cst.CSTVisitor):
     def __init__(self) -> None:
         self.result = self.Result()
 
-    def visit_Call(self, node: cst.Call) -> Optional[bool]:
+    def visit_SimpleStatementLine(
+        self, node: cst.SimpleStatementLine
+    ) -> Optional[bool]:
         self.result.add(node)
