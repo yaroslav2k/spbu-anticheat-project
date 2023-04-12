@@ -35,6 +35,7 @@ def _apply_mutation(name: str, source_tree, randomizer):
             result = mutator.call()
         case "mDL":
             mutator = mDL(source_tree, randomizer)
+            result = mutator.call()
         case "mSIL":
             mutator = mSIL(source_tree, randomizer)
             result = mutator.call()
