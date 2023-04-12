@@ -1,4 +1,4 @@
-def fun_1(a, b=3):
+def fun_1(a: Tuple[str, int] = ("asda", 11), b=3):
     a, b = a * b, a + b * a
     return a + b
 

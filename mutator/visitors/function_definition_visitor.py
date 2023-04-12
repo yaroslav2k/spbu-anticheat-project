@@ -1,11 +1,11 @@
 import libcst as cst
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class FunctionDefinitionCollector(cst.CSTVisitor):
     class Result:
         def __init__(self) -> None:
-            self.data = {}
+            self.data: dict[Tuple[str, str], cst.Parameters] = {}
 
         def add(self, class_name: str, function_name: str, parameters: any):
             self.data[(class_name, function_name)] = parameters

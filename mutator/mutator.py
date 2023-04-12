@@ -8,6 +8,7 @@ from typing import List
 
 from mutations.mSDL import mSDL
 from mutations.mDL import mDL
+from mutations.mSIL import mSIL
 
 
 def main():
@@ -34,6 +35,8 @@ def _apply_mutation(name: str, source_tree, randomizer):
             result = mutator.call()
         case "mDL":
             mutator = mDL(source_tree, randomizer)
+        case "mSIL":
+            mutator = mSIL(source_tree, randomizer)
             result = mutator.call()
         case _:
             raise NotImplementedError
