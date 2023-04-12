@@ -3,11 +3,12 @@ import argparse
 import libcst as cst
 
 import visitors.function_definition_visitor as fdv
-from mutations.mSIL import mSIL
+import visitors.function_body_visitor as fbv
+from mutations.mSDL import mSDL
 
 
 def main():
-    mutations = ["mSIL"]
+    mutations = ["mSDL"]
 
     parser = argparse.ArgumentParser(
         prog="mutator.py", description="Python CST-based Type-3 mutator"
@@ -25,7 +26,7 @@ def main():
         visitor = fdv.FunctionDefinitionCollector()
         source_tree.visit(visitor)
 
-        mutator = mSIL(source_tree)
+        mutator = mSDL(source_tree)
         result = mutator.call()
         if args.output:
             with open(args.output, "w") as dest:

@@ -4,7 +4,7 @@ import visitors.function_definition_visitor as fdv
 import transformers.function_definition_transformer as fdt
 
 
-class mSIL:
+class mSDL:
     def __init__(self, source_tree):
         self.source_tree = source_tree
 
