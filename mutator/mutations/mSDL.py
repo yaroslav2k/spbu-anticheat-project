@@ -19,6 +19,9 @@ class mSDL(Base):
     def __apply_transformation(self, result) -> None:
         function_spec, arguments = self.randomizer.choice(list(result.data.items()))
         params = list(arguments.params)
+        if len(params) == 0:
+            return
+
         params.pop(self.randomizer.randrange(len(params)))
         if len(params) > 0:
             params[-1] = params[-1].with_changes(comma=None)

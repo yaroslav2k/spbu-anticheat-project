@@ -12,8 +12,11 @@ class mDL(Base):
         result = visitor.result
 
         deletionDict = {}
-        nodeHash, node = random.choice(list(result.data.items()))
-        deletionDict[nodeHash] = node
+        if len(result.data.items()) > 0:
+            nodeHash, node = random.choice(list(result.data.items()))
+            deletionDict[nodeHash] = node
+        else:
+            return self.source_tree
 
         transformer = sslr.SingleStatementLineRemover(deletionDict)
         modified_tree = self.source_tree.visit(transformer)
