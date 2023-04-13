@@ -16,7 +16,11 @@ class FunctionBodyCollector(cst.CSTVisitor):
 
         def call(self):
             for (class_name, function_name), value in self.result.data.items():
-                print(class_name, function_name)
+                print("---")
+                if class_name and len(class_name) > 0:
+                    print(class_name + "#" + function_name)
+                else:
+                    print(function_name)
                 print(value)
 
     def __init__(self) -> None:
