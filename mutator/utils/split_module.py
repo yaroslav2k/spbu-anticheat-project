@@ -1,11 +1,21 @@
 import argparse
 import os
 import sys
+import json
 
 import libcst as cst
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import visitors.function_body_visitor as fbv  # noqa: E402
+
+def output(result):
+    payload = []
+
+    for (class_name, function_name), value in result.data.items():
+        payload.append({ "identifier": [class_name, function_name], "item": value })
+
+    data = json.dumps(payload)
+    print(data)
 
 
 def main():
@@ -22,7 +32,7 @@ def main():
         visitor = fbv.FunctionBodyCollector()
         source_tree.visit(visitor)
 
-        visitor.ResultPrinter.call(visitor)
+        output(visitor.result)
 
 
 if __name__ == "__main__":
