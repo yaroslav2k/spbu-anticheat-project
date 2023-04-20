@@ -13,16 +13,19 @@ def func_a(a: int, b: int):
 
     return (c + a, stat)
 
-
-def func_b(a: int, b: int):
-    while a < 100:
-        a = math.pow(a, 2)
-
-    c = b - (a % 2)
-    val = "foobar"
+def func_b(a, b):
+    c = -1 * (a % 2) + b
+    stat = "foo"
 
     if c > 2:
-        val = "foo" + str(c)
         c -= 1
+        stat = "foo" + str(c)
+    else:
+        stat += "bar"
 
-    return (a + c, val)
+    while a > 100:
+        a = math.pow(2)
+
+    result = (c + a, stat)
+
+    return result

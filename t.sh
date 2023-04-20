@@ -1,6 +1,10 @@
 #!/bin/bash
 
-set -ex
+set -e
 
-python mutator/utils/split_module.py ./data/python/0.py > tmp/data.json
-python tokenizer/tokenizer.py tmp/data.json
+for f in ./data/python/*.py
+do
+  basename=$(basename $f)
+  python mutator/utils/split_module.py ./data/python/${basename} > tmp/fn-defs-${basename}.json
+  python tokenizer/tokenizer.py tmp/fn-defs-${basename}.json > tmp/tokens-${basename}.ndjson
+done
