@@ -1,5 +1,8 @@
 package ru.spbu.detector.detection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -9,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Detector {
+    private Logger log = LoggerFactory.getLogger(Detector.class);
     private Map<String, Set<CodeFragment>> indexMap;
     private double threshold;
 
@@ -55,6 +59,8 @@ public class Detector {
         var lcsLength = (double) findLCSLength(b, candidate);
         double x = lcsLength / b.getNgrams().size();
         double y = lcsLength / candidate.getNgrams().size();
+        log.info("{\"fragment_ids\": [{}, {}], \"lcs_length\": {}, \"similarity\": {}}",
+                b.getId(), candidate.getId(), (int)lcsLength, Math.min(x, y));
         return x >= threshold && y >= threshold;
     }
 

@@ -32,7 +32,11 @@ public class DetectorApplicationCli {
 
         var detector = new Detector(threshold);
         var groups = detector.findClusters(fragments);
-        var output = mapper.writeValueAsString(groups);
-        System.out.println(output);
+        var groupId = 1;
+        for (var group: groups) {
+            var output = mapper.writeValueAsString(group);
+            System.out.printf("group %d: %s\n", groupId, output);
+            groupId++;
+        }
     }
 }
