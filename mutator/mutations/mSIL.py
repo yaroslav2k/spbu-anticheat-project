@@ -48,7 +48,7 @@ class mSIL(Base):
 
     def _generate_name(self, min_len: int = 1, max_len: int = 10) -> str:
         name_len = self.randomizer.randint(min_len, max_len)
-        first_letter = self.randomizer.choice(string.ascii_letters)
+        first_letter = self.randomizer.choice(string.ascii_lowercase)
         name_tail = ''.join(self.randomizer.choice(string.ascii_letters + string.digits + '_')
                             for i in range(name_len-1))
         return first_letter + name_tail
