@@ -8,11 +8,11 @@ import libcst as cst
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import visitors.function_body_visitor as fbv  # noqa: E402
 
-def output(result):
+def output(args, result):
     payload = []
 
     for (class_name, function_name), value in result.data.items():
-        payload.append({ "identifier": [class_name, function_name], "item": value })
+        payload.append({ "identifier": [args.input, class_name, function_name], "item": value })
 
     data = json.dumps(payload)
     print(data)
@@ -32,7 +32,7 @@ def main():
         visitor = fbv.FunctionBodyCollector()
         source_tree.visit(visitor)
 
-        output(visitor.result)
+        output(args, visitor.result)
 
 
 if __name__ == "__main__":

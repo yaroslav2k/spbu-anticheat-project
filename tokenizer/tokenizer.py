@@ -21,14 +21,16 @@ def main():
 
     args = parser.parse_args()
 
+    result = []
     with open(args.input, "r") as source:
       data = source.read()
       data = json.loads(data)
 
       for datum in data:
-         value = datum["item"]
-         tokens_spec = extract_tokens(value)
-         print(json.dumps(tokens_spec))
+         tokens_spec = extract_tokens(datum["item"])
+         result.append(json.dumps({ "tokens": tokens_spec, "identifier": datum["identifier"] }))
+
+      print(result)
 
 
 if __name__ == "__main__":
