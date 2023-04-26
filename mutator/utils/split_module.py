@@ -11,8 +11,9 @@ import visitors.function_body_visitor as fbv  # noqa: E402
 def output(args, result):
     payload = []
 
-    for (class_name, function_name), value in result.data.items():
-        payload.append({ "identifier": [args.input, class_name, function_name], "item": value })
+    for (class_name, function_name), item in result.data.items():
+        identifier = { "filepath": args.input, "class_name": class_name, "function_name": function_name }
+        payload.append({ "identifier": identifier, "item": item })
 
     data = json.dumps(payload)
     print(data)

@@ -13,7 +13,6 @@ def substitue_function_invokations(tokens):
          is_function = True
          function_index = i - 1
       elif token == ")" and is_function:
-         print("DETECTED FN", prev_token)
          is_function = False
          tokens[function_index] = "FNINVOK"
 
