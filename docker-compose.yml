@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  frontier-web:
+    build: frontier
+    ports:
+      - "3000:3000"
+    env_file: frontier/docker.env
+    depends_on:
+      - redis
+
+  frontier-worker:
+    build: frontier
+    command: ["bundle", "exec", "sidekiq"]
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6.2-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - cache:/data
+volumes:
+  cache:
+    driver: local
+

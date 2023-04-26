@@ -4,7 +4,9 @@ class API::TasksController < API::ApplicationController
   before_action :ensure_url_presence, only: %i[create]
 
   def create
-    render json: { url: params[:url] }
+    enqueue_task_creation_job
+
+    head :accepted
   end
 
   private
@@ -13,5 +15,9 @@ class API::TasksController < API::ApplicationController
       return if params[:url].present?
 
       head :unprocessable_entity
+    end
+
+    def enqueue_task_creation_job
+      Tasks::CreateJob.perform_later(params[:url])
     end
 end
