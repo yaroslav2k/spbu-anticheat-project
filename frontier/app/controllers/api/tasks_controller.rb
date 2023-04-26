@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class API::TasksController < API::ApplicationController
-  before_action :ensure_url_presence, only: %i[create]
+  before_action :ensure_url_validity, only: %i[create]
 
   def create
     enqueue_task_creation_job
@@ -11,10 +11,14 @@ class API::TasksController < API::ApplicationController
 
   private
 
-    def ensure_url_presence
-      return if params[:url].present?
+    def ensure_url_validity
+      return if (service_result = Tasks::VerifyURLService.call(params[:url])).success?
 
-      head :unprocessable_entity
+      render status: :unprocessable_entity, json: {
+        error: {
+          url: service_result.reason || :unknown
+        }
+      }
     end
 
     def enqueue_task_creation_job

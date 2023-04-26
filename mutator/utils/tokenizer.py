@@ -2,6 +2,7 @@ import argparse
 import json
 import io
 import tokenize
+from pathlib import Path
 
 def substitue_function_invokations(tokens):
    prev_token = None
@@ -37,26 +38,14 @@ def extract_tokens(source: str):
 
    return tokens
 
+def tokenize_data(data, output):
+  result = []
 
-def main():
-    parser = argparse.ArgumentParser(
-        prog="tokenizer.py", description="Tokenizer"
-    )
-    parser.add_argument("input")
+  for datum in data:
+    tokens_spec = extract_tokens(datum["item"])
+    result.append({ "tokens": tokens_spec, "identifier": datum["identifier"] })
 
-    args = parser.parse_args()
+  print(json.dumps(result))
 
-    result = []
-    with open(args.input, "r") as source:
-      data = source.read()
-      data = json.loads(data)
-
-      for datum in data:
-         tokens_spec = extract_tokens(datum["item"])
-         result.append({ "tokens": tokens_spec, "identifier": datum["identifier"] })
-
-      print(json.dumps(result))
-
-
-if __name__ == "__main__":
-    main()
+  with open(output, "w") as output:
+    output.write(json.dumps(result))

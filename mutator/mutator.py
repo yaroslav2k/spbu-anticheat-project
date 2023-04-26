@@ -20,7 +20,9 @@ def main():
 
         result = source_tree
         for mutation_spec in args.mutations:
-            order = randomizer.randint(mutation_spec.lowerbound, mutation_spec.upperbound)
+            order = randomizer.randint(
+                mutation_spec.lowerbound, mutation_spec.upperbound
+            )
             for _ in range(order):
                 result = _apply_mutation(mutation_spec.name, result, randomizer)
 
