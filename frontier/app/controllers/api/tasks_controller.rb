@@ -15,13 +15,11 @@ class API::TasksController < API::ApplicationController
       return if (service_result = Tasks::VerifyURLService.call(params[:url])).success?
 
       render status: :unprocessable_entity, json: {
-        error: {
-          url: service_result.reason || :unknown
-        }
+        error: { url: service_result.reason || :unknown }
       }
     end
 
     def enqueue_task_creation_job
-      Tasks::CreateJob.perform_later(params[:url])
+      Tasks::CreateJob.perform_later(params[:url], params[:reference].presence)
     end
 end

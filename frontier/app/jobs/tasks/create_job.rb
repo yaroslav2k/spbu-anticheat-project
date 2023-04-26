@@ -12,19 +12,27 @@ class Tasks::CreateJob < ApplicationJob
 
   sidekiq_options retry: false
 
-  def perform(url)
-    clone_git_repository(url)
-
-    print(container)
+  def perform(url, branch)
+    clone_git_repository(url, branch)
 
     container.start({"Binds": ["spbu-anticheat-project_git-repositories:/app/input"]})
-    container.attach { |stream, chunk| puts "#{stream}: #{chunk}" }
+
+    # FIXME
+    data = File.open("/app/git-repositories/#{identifier}/result.json")
+
+    Tasks::DetectService.call(data)
   end
 
   private
 
-    def clone_git_repository(repository_url)
-      Git.clone(repository_url, TARGET_PATH + "/" + identifier)
+    def clone_git_repository(repository_url, branch)
+      options = if branch
+        { branch: branch }
+      else
+        {}
+      end
+
+      Git.clone(repository_url, TARGET_PATH + "/" + identifier, **options)
     end
 
     def container
