@@ -2,6 +2,9 @@ package ru.spbu.detector.detection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.spbu.detector.detection.util.NgramGenerator;
+import ru.spbu.detector.dto.CodeFragment;
+import ru.spbu.detector.dto.FragmentIdentifierDto;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,20 +14,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class Detector {
-    private Logger log = LoggerFactory.getLogger(Detector.class);
-    private Map<String, Set<CodeFragment>> indexMap;
-    private double threshold;
+class LCSDetector extends DetectionAlgorithm {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Map<String, Set<CodeFragment>> indexMap = new HashMap<>();
+    private final NgramGenerator ngramGenerator;
 
-    public Detector(double threshold) {
-        this.threshold = threshold;
-        this.indexMap = new HashMap<>();
+    LCSDetector(LCSDetectorParams params) {
+        super(params);
+        ngramGenerator = new NgramGenerator(params.getN());
     }
 
-    public List<Set<Integer>> findClusters(List<CodeFragment> fragments) {
+    public List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments) {
         // Построение индекс биграмм
         for (var fragment: fragments) {
-            for (var ngram: fragment.getNgrams()) {
+            for (var ngram: ngramGenerator.getNgrams(fragment)) {
                 if (indexMap.containsKey(ngram)) {
                     indexMap.get(ngram).add(fragment);
                 } else {
@@ -33,19 +36,19 @@ public class Detector {
             }
         }
 
-        List<Set<Integer>> groups = new LinkedList<>();
+        List<Set<FragmentIdentifierDto>> groups = new LinkedList<>();
         for (var fragment: fragments) {
             // Предварительный отбор слабых кандидатов для b на основе общих биграмм
             Set<CodeFragment> weakClones = new HashSet<>();
-            for (var ngram: fragment.getNgrams()) {
+            for (var ngram: ngramGenerator.getNgrams(fragment)) {
                 if (indexMap.containsKey(ngram)) {
                     weakClones.addAll(indexMap.get(ngram));
                 }
             }
-            Set<Integer> g =  new HashSet<>(List.of(fragment.getId()));
+            Set<FragmentIdentifierDto> g =  new HashSet<>(List.of(fragment.getIdentifier()));
             for (var candidate: weakClones) {
                 if (isSimilar(fragment, candidate)) {
-                    g.add(candidate.getId());
+                    g.add(candidate.getIdentifier());
                 }
             }
             if (!groups.contains(g)) {
@@ -57,16 +60,18 @@ public class Detector {
 
     private boolean isSimilar(CodeFragment b, CodeFragment candidate) {
         var lcsLength = (double) findLCSLength(b, candidate);
-        double x = lcsLength / b.getNgrams().size();
-        double y = lcsLength / candidate.getNgrams().size();
-        log.info("{\"fragment_ids\": [{}, {}], \"lcs_length\": {}, \"similarity\": {}}",
-                b.getId(), candidate.getId(), (int)lcsLength, Math.min(x, y));
+        var threshold = ((LCSDetectorParams) getParameters()).getThreshold();
+
+        double x = lcsLength / ngramGenerator.getNgrams(b).size();
+        double y = lcsLength / ngramGenerator.getNgrams(candidate).size();
+        log.info("{\"fragment_identifiers\": [{}, {}], \"lcs_length\": {}, \"similarity\": {}}",
+                b.getIdentifier(), candidate.getIdentifier(), (int)lcsLength, Math.min(x, y));
         return x >= threshold && y >= threshold;
     }
 
     private int findLCSLength(CodeFragment fragmentOne, CodeFragment fragmentTwo) {
-        var ngramsOne = fragmentOne.getNgrams();
-        var ngramsTwo = fragmentTwo.getNgrams();
+        var ngramsOne = ngramGenerator.getNgrams(fragmentOne);
+        var ngramsTwo = ngramGenerator.getNgrams(fragmentTwo);
 
         if (ngramsOne.size() == 0 || ngramsTwo.size() == 0) {
             return 0;
