@@ -14,11 +14,10 @@ class Tasks::CreateJob < ApplicationJob
 
   def perform(url, branch)
     clone_git_repository(url, branch)
-
-    container.start({"Binds": ["spbu-anticheat-project_git-repositories:/app/input"]})
+    start_container
 
     # FIXME
-    data = File.open("/app/git-repositories/#{identifier}/result.json")
+    data = File.read("/app/git-repositories/#{identifier}/result.json")
 
     Tasks::DetectService.call(data)
   end
@@ -33,6 +32,10 @@ class Tasks::CreateJob < ApplicationJob
       end
 
       Git.clone(repository_url, TARGET_PATH + "/" + identifier, **options)
+    end
+
+    def start_container
+      container.start({"Binds": ["spbu-anticheat-project_git-repositories:/app/input"]})
     end
 
     def container
