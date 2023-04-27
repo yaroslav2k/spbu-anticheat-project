@@ -15,9 +15,9 @@ def output(path, result):
 
     for (class_name, function_name), item in result.data.items():
         identifier = {
-            "filepath": str(path),
-            "class_name": class_name,
-            "function_name": function_name,
+            "fileName": str(path),
+            "className": class_name,
+            "functionName": function_name,
         }
         payload.append({"identifier": identifier, "item": item})
 

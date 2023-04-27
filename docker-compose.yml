@@ -19,7 +19,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - redis
-      
+      - detector
+
   redis:
     image: redis:6.2-alpine
     container_name: frontier-redis
@@ -28,7 +29,7 @@ services:
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - redis-data:/data
-      
+
   detector:
     build: detector
     container_name: clone-detector

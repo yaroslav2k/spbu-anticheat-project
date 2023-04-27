@@ -7,19 +7,27 @@ class Tasks::CreateJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
   private_constant :TARGET_PATH
 
-  IMAGE_TAG = "cst-mutator:latest"
+  IMAGE_TAG = "python-mutator:latest"
   private_constant :IMAGE_TAG
 
   sidekiq_options retry: false
 
   def perform(url, branch)
     clone_git_repository(url, branch)
-    start_container
+    start_container.attach do |stream, chunk|
+      puts chunk[0..100] if chunk.present?
+    end
 
     # FIXME
-    data = File.read("/app/git-repositories/#{identifier}/result.json")
+    data = JSON.parse(
+      File.read("/app/git-repositories/#{identifier}/result.json")
+    )
 
-    Tasks::DetectService.call(data)
+    if (service_result = Tasks::DetectService.call(data)).success?
+      print("OK: #{service_result.response.code}")
+    else
+      print("FAIL: #{service_result.exception.inspect}")
+    end
   end
 
   private
@@ -35,7 +43,9 @@ class Tasks::CreateJob < ApplicationJob
     end
 
     def start_container
-      container.start({"Binds": ["spbu-anticheat-project_git-repositories:/app/input"]})
+      container.tap do |c|
+        c.start({"Binds": ["spbu-anticheat-project_git-repositories:/app/input"]})
+      end
     end
 
     def container
