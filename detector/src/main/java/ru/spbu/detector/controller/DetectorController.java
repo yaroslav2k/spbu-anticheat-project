@@ -1,5 +1,6 @@
 package ru.spbu.detector.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +12,6 @@ import ru.spbu.detector.dto.FragmentIdentifierDto;
 
 import java.util.List;
 import java.util.Set;
-
 
 @RestController
 @RequestMapping(value = "/detection",
@@ -25,6 +25,7 @@ public class DetectorController {
     }
 
     @PostMapping(value = "/detect-fragments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Кластеризация фрагментов кода на основе переданных токенов")
     public List<Set<FragmentIdentifierDto>> detectClones(@RequestBody CodeFragmentsDto codeFragmentsDto) {
         return detectorService.detect(codeFragmentsDto);
     }

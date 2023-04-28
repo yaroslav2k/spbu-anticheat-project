@@ -36,4 +36,13 @@ public class FragmentIdentifierDto {
         result = 31 * result + functionName.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "FragmentIdentifierDto{" +
+                "fileName='" + fileName + '\'' +
+                ", className='" + className + '\'' +
+                ", functionName='" + functionName + '\'' +
+                '}';
+    }
 }
