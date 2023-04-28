@@ -8,7 +8,7 @@ class Tasks::VerifyURLService < ApplicationService
   result_on_failure :reason
 
   def call
-    return failure! reason: :blank unless url.present?
+    return failure! reason: :blank if url.blank?
 
     (parsed_url = URI.parse(url)) && parsed_url.host.present?
 

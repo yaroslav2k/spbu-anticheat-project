@@ -15,7 +15,7 @@ class DetectorClient
   def detect(task_spec)
     request_body = request_body(task_spec).to_json
 
-    puts "request body: #{request_body}"
+    Rails.logger.debug "request body: #{request_body}"
     self.class.post(
       "/detection/detect-fragments",
       body: request_body,

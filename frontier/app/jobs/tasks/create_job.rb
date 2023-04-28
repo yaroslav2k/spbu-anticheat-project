@@ -14,8 +14,8 @@ class Tasks::CreateJob < ApplicationJob
 
   def perform(url, branch)
     clone_git_repository(url, branch)
-    start_container.attach do |stream, chunk|
-      puts chunk[0..100] if chunk.present?
+    start_container.attach do |_stream, chunk|
+      Rails.logger.debug chunk[0..100] if chunk.present?
     end
 
     # FIXME
@@ -24,9 +24,9 @@ class Tasks::CreateJob < ApplicationJob
     )
 
     if (service_result = Tasks::DetectService.call(data)).success?
-      print("OK: #{service_result.response.code}")
+      Rails.logger.debug("OK: #{service_result.response.code}")
     else
-      print("FAIL: #{service_result.exception.inspect}")
+      Rails.logger.debug("FAIL: #{service_result.exception.inspect}")
     end
   end
 
@@ -35,16 +35,16 @@ class Tasks::CreateJob < ApplicationJob
     def clone_git_repository(repository_url, branch)
       options = if branch
         { branch: branch }
-      else
+                else
         {}
-      end
+                end
 
-      Git.clone(repository_url, TARGET_PATH + "/" + identifier, **options)
+      Git.clone(repository_url, "#{TARGET_PATH}/#{identifier}", **options)
     end
 
     def start_container
       container.tap do |c|
-        c.start({"Binds": ["spbu-anticheat-project_git-repositories:/app/input"]})
+        c.start({ "Binds": ["spbu-anticheat-project_git-repositories:/app/input"] })
       end
     end
 
