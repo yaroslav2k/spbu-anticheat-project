@@ -24,6 +24,8 @@ def filter_token(token: str) -> str:
 
 def transform_token(token_info: tokenize.TokenInfo) -> str:
    if token_info[0] == tokenize.NAME:
+     if token_info[1] == "return":
+        return token_info[1]
      return tokenize.tok_name[token_info[0]]
 
    return token_info[1]
