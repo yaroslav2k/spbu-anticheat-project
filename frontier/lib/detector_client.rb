@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class DetectorClient
+  REQUEST_IDENTIFIER_HEADER = "Request-ID"
+  private_constant :REQUEST_IDENTIFIER_HEADER
+
   include HTTParty
 
   headers "Content-Type" => "application/json"
@@ -15,14 +18,16 @@ class DetectorClient
   def detect(task_spec)
     request_body = request_body(task_spec).to_json
 
-    Rails.logger.debug "request body: #{request_body}"
-    self.class.post(
-      "/detection/detect-fragments",
-      body: request_body,
-      headers: {
-        "Authorization" => "Bearer #{access_token}"
-      }
-    )
+    with_request_identifier do |request_identifier|
+      self.class.post(
+        "/detection/detect-fragments",
+        body: request_body,
+        headers: {
+          "Authorization" => authorization_value(access_token),
+          REQUEST_IDENTIFIER_HEADER => request_identifier
+        }
+      )
+    end
   end
 
   private
@@ -36,6 +41,14 @@ class DetectorClient
         },
         "fragments" => task_spec
       }
+    end
+
+    def authorization_value(access_token)
+      "Bearer #{access_token}"
+    end
+
+    def with_request_identifier
+      yield SecureRandom.uuid
     end
 
     attr_reader :config, :access_token
