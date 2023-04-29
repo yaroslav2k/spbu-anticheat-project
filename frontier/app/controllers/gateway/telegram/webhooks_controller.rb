@@ -11,12 +11,12 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     elsif message.starts_with?("/send")
       items = message.split
 
-      if repository_url_valid?(items[1])
+    if repository_url_valid?(items[1])
         Tasks::CreateJob.perform_later(items[1], items[2].presence)
         reply_with("Задание успешно добавлено")
-      else
+    else
         reply_with("Некорректная ссылка на репозиторий")
-      end
+    end
     else
       reply_with("Неизвестная команда")
     end
