@@ -10,9 +10,12 @@ class Tasks::CreateJob < ApplicationJob
   IMAGE_TAG = "python-mutator:latest"
   private_constant :IMAGE_TAG
 
+  DEFAULT_GIT_BRANCH_NAME = "main"
+  private_constant :DEFAULT_GIT_BRANCH_NAME
+
   sidekiq_options retry: false
 
-  def perform(url, branch)
+  def perform(url, branch = DEFAULT_GIT_BRANCH_NAME)
     clone_git_repository(url, branch)
     start_container.attach do |_stream, chunk|
       Rails.logger.debug chunk[0..100] if chunk.present?
