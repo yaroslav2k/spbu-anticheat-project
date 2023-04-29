@@ -1,2 +1,6 @@
+spring:
+  config:
+    import: optional:secrets.yaml
+
 logging:
   config: classpath:logback.xml

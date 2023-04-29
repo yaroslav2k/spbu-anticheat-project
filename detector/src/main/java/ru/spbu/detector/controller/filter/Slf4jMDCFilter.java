@@ -18,12 +18,9 @@ import java.util.UUID;
 public class Slf4jMDCFilter extends OncePerRequestFilter {
     private static final String RID = "rid";
     private static final String OP = "op";
-
     private static final String STATUS = "status";
 
-    protected void doFilterInternal(final HttpServletRequest request,
-                                    final HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             String rid = UUID.randomUUID().toString();
             MDC.put(RID, rid);
