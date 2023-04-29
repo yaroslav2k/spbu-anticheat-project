@@ -6,9 +6,11 @@ services:
     container_name: frontier-web
     ports:
       - "3000:3000"
-    env_file: frontier/docker.env
     depends_on:
       - redis
+    networks:
+      - backend
+
 
   frontier-worker:
     build: frontier
@@ -20,21 +22,26 @@ services:
     depends_on:
       - redis
       - detector
+    networks:
+      - backend
 
   redis:
     image: redis:6.2-alpine
     container_name: frontier-redis
-    ports:
-      - "6379:6379"
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - redis-data:/data
+    networks:
+      - backend
 
   detector:
     build: detector
     container_name: clone-detector
-    ports:
-      - "8080:8080"
+    networks:
+      - backend
+
+networks:
+  backend:
 
 volumes:
   redis-data:
