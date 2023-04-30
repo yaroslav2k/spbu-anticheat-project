@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-redis_config = Rails.application.credentials.redis
+redis_config = Rails.application.credentials.services.redis
 
 Sidekiq.configure_server do |config|
   config.redis = redis_config

@@ -5,12 +5,11 @@ require "securerandom"
 
 class Tasks::CreateJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
-  private_constant :TARGET_PATH
-
   IMAGE_TAG = "python-mutator:latest"
-  private_constant :IMAGE_TAG
-
   DEFAULT_GIT_BRANCH_NAME = "main"
+
+  private_constant :TARGET_PATH
+  private_constant :IMAGE_TAG
   private_constant :DEFAULT_GIT_BRANCH_NAME
 
   sidekiq_options retry: false
@@ -22,11 +21,22 @@ class Tasks::CreateJob < ApplicationJob
     end
 
     # FIXME
-    data = JSON.parse(
-      File.read("/app/git-repositories/#{identifier}/result.json")
-    )
+    data = File.read("/app/git-repositories/#{identifier}/result.json")
 
-    if (service_result = Tasks::DetectService.call(data)).success?
+    begin
+      s3_client.put_object(
+        body: data,
+        bucket: "development",
+        key: "/tasks/#{identifier}.json",
+        content_type: "application/json"
+      )
+    rescue Aws::S3::Errors::ServiceError => e
+      Rails.logger.error e.inspect
+
+      return
+    end
+
+    if (service_result = Tasks::DetectService.call(JSON.parse(data))).success?
       Rails.logger.debug("OK: #{service_result.response.code}")
     else
       Rails.logger.debug("FAIL: #{service_result.exception.inspect}")
@@ -36,11 +46,9 @@ class Tasks::CreateJob < ApplicationJob
   private
 
     def clone_git_repository(repository_url, branch)
-      options = if branch
-        { branch: branch }
-                else
-        {}
-                end
+      options = {}.tap do |hash|
+        hash[:branch] = branch if branch.present?
+      end
 
       Git.clone(repository_url, "#{TARGET_PATH}/#{identifier}", **options)
     end
@@ -59,6 +67,10 @@ class Tasks::CreateJob < ApplicationJob
           "spbu-anticheat-project_git-repositories" => { "/app/input" => "rw" }
         }
       )
+    end
+
+    def s3_client
+      @s3_client ||= Aws::S3::Client.new
     end
 
     def identifier
