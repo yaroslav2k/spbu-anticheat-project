@@ -3,22 +3,29 @@
 class Gateway::Telegram::WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
+  WELCOME_MESSAGE = <<~TXT
+    Welcome to SPbU-detector bot \u{1F440}
+
+    Send submission in the following format:
+    /send <github-url> [<branch>]
+  TXT
+
   def notify
     message = params.dig(:message, :text).presence
 
     if message == "/start"
-      reply_with("Hello there")
+      reply_with(WELCOME_MESSAGE)
     elsif message.starts_with?("/send")
       items = message.split
 
     if repository_url_valid?(items[1])
         Tasks::CreateJob.perform_later(items[1], items[2].presence)
-        reply_with("Задание успешно добавлено")
+        reply_with("Submission was enqueued")
     else
-        reply_with("Некорректная ссылка на репозиторий")
+        reply_with("Invalid GIT url")
     end
     else
-      reply_with("Неизвестная команда")
+      reply_with("Undefined behaviour, please check available commands")
     end
 
     head :ok
