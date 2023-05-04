@@ -25,6 +25,8 @@ class LCSDetector extends DetectionAlgorithm {
     }
 
     public List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments) {
+        log.info("Started clusterization");
+
         // Построение индекс биграмм
         for (var fragment: fragments) {
             for (var ngram: ngramGenerator.getNgrams(fragment)) {
@@ -55,6 +57,8 @@ class LCSDetector extends DetectionAlgorithm {
                 groups.add(g);
             }
         }
+
+        log.info("Finished clusterization");
         return groups;
     }
 
@@ -64,7 +68,7 @@ class LCSDetector extends DetectionAlgorithm {
 
         double x = lcsLength / ngramGenerator.getNgrams(b).size();
         double y = lcsLength / ngramGenerator.getNgrams(candidate).size();
-        log.info("{\"fragment_identifiers\": [{}, {}], \"lcs_length\": {}, \"similarity\": {}}",
+        log.debug("{\"fragment_identifiers\": [{}, {}], \"lcs_length\": {}, \"similarity\": {}}",
                 b.getIdentifier(), candidate.getIdentifier(), (int)lcsLength, Math.min(x, y));
         return x >= threshold && y >= threshold;
     }

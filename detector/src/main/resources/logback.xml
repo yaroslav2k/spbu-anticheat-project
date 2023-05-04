@@ -24,7 +24,7 @@
     <logger name="org.zalando.logbook" level="trace" additivity="false">-->
         <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="ru.spbu.detector.detection.DetectionAlgorithm" level="debug" additivity="false">
+    <logger name="ru.spbu.detector.detection.DetectionAlgorithm" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
