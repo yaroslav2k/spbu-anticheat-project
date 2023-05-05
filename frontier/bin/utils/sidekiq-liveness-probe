@@ -1,0 +1,11 @@
+#!/bin/bash
+
+test() {
+  if [ $(REDIS_URL=redis://redis:6379/1 bundle exec sidekiqmon processes | grep -Po '\d' | awk '{s+=$1} END {print s}') -gt 0 ]; then
+    exit 0
+  else
+    exit 1
+  fi
+}
+
+test

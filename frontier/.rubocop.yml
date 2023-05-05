@@ -12,6 +12,7 @@ Style/StringLiterals:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
+  Max: 40
 
 Style/ClassAndModuleChildren:
   Enabled: false
@@ -32,4 +33,7 @@ Metrics/CyclomaticComplexity:
   Max: 12
 
 Metrics/AbcSize:
-  Enabled: false # TODO: enable
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
