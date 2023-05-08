@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class API::TasksController < API::ApplicationController
+class API::AssignmentsController < API::ApplicationController
   before_action :ensure_url_validity, only: %i[create]
 
   def create

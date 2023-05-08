@@ -12,6 +12,7 @@ Style/StringLiterals:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
+    - db/**/*.rb
   Max: 40
 
 Style/ClassAndModuleChildren:
@@ -36,4 +37,12 @@ Metrics/AbcSize:
   Enabled: false
 
 Style/NumericLiterals:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 140
+  Exclude:
+    - config/initializers/devise.rb
+
+Naming/VariableNumber:
   Enabled: false

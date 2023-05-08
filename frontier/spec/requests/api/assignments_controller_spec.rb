@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe API::TasksController do
+RSpec.describe API::AssignmentsController do
   describe "#create" do
     def perform(params = {})
       post "/api/tasks", params: params, headers: { "Authorization" => "Bearer #{access_token}" }

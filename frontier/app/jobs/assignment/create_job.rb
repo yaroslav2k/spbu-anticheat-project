@@ -3,7 +3,7 @@
 require "docker"
 require "securerandom"
 
-class Tasks::CreateJob < ApplicationJob
+class Assignment::CreateJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
   IMAGE_TAG = "python-mutator:latest"
   DEFAULT_GIT_BRANCH_NAME = "main"

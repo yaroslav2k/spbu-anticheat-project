@@ -1,9 +1,9 @@
 development: &development
   adapter: postgresql
   database: frontier_db
-  hostname: postgresql
-  username: postgres
-  password:
+  host: postgresql
+  username: frontier
+  password: frontier
   pool: 5
 
 production:

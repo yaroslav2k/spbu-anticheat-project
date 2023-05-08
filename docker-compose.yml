@@ -1,18 +1,34 @@
 version: "3.8"
 
+x-frontier-ror: &frontier-ror
+  build: frontier
+  environment:
+    DOCKER: "true"
+    RAILS_ENV: "production"
+
 services:
-  reverse-proxy:
+  nginx:
     image: nginx:1.24.0
     ports:
       - "80:80"
-    container_name: reverse-proxy
+    container_name: nginx
     environment:
       NGINX_CONF: |
+        upstream frontier {
+          server frontier:3000;
+        }
+
         server {
           listen 80 default;
 
           location / {
-            proxy_pass http://frontier:3000;
+            proxy_redirect     off;
+            proxy_set_header   Host $$host;
+            proxy_set_header   X-Real-IP $$remote_addr;
+            proxy_set_header   X-Forwarded-For $$proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Host $$server_name;
+
+            proxy_pass         http://frontier;
           }
         }
     depends_on:
@@ -26,22 +42,36 @@ services:
         nginx -g "daemon off;";
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   frontier-web:
-    build: frontier
+    <<: *frontier-ror
     container_name: frontier-web
     depends_on:
       - redis
       - frontier-worker
+      - postgresql
     networks:
       backend:
         aliases:
           - "frontier"
+    command: ["bundle exec rake db:create db:migrate db:seed && rails server -b 0.0.0.0"]
+    healthcheck:
+      test: ["CMD", "curl", "localhost:3000/api/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   frontier-worker:
-    build: frontier
+    <<: *frontier-ror
     container_name: frontier-worker
-    command: ["bundle", "exec", "sidekiq"]
+    command: ["bundle exec sidekiq"]
     volumes:
       - git-repositories:/app/git-repositories
       - /var/run/docker.sock:/var/run/docker.sock
@@ -50,6 +80,12 @@ services:
       - detector
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "bash", "/app/bin/utils/sidekiq-liveness-probe"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
 
   redis:
     image: redis:6.2-alpine
@@ -59,6 +95,8 @@ services:
       - redis-data:/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
 
   detector:
     build: detector
@@ -66,19 +104,43 @@ services:
     networks:
       - backend
 
-  minio:
-    image: minio/minio:RELEASE.2023-04-28T18-11-17Z
-    container_name: s3-storage
+  s3:
+    image: minio/minio:RELEASE.2023-05-04T21-44-30Z
+    container_name: s3
     ports:
       - "9001:9001"
     volumes:
-      - s3-storage:/data
+      - s3-data:/data
     environment:
       MINIO_ROOT_USER: username
       MINIO_ROOT_PASSWORD: password
     networks:
       - backend
     command: server --console-address ":9001" /data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -I http://localhost:9000/minio/health/live || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  postgresql:
+    image: postgres:15.2-alpine3.17
+    container_name: frontier-postgresql
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    environment:
+      POSTGRES_DB: "frontier_db"
+      POSTGRES_USER: "frontier"
+      POSTGRES_PASSWORD: "frontier"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U frontier -d frontier_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
 
 networks:
   backend:
@@ -86,4 +148,5 @@ networks:
 volumes:
   redis-data:
   git-repositories:
-  s3-storage:
+  s3-data:
+  postgresql-data:

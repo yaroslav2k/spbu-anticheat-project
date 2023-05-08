@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Tasks::DetectService < ApplicationService
+class Assignment::DetectService < ApplicationService
   subject :task_spec
 
   result_on_success :response

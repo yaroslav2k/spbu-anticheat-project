@@ -2,7 +2,7 @@
 
 require "uri"
 
-class Tasks::VerifyURLService < ApplicationService
+class Assignment::VerifyURLService < ApplicationService
   HOSTS_WHITETLIST = %w[
     github.com
   ].freeze

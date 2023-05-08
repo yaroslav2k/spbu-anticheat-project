@@ -19,7 +19,7 @@ class Gateway::Telegram::WebhooksController < ApplicationController
       items = message.split
 
     if repository_url_valid?(items[1])
-        Tasks::CreateJob.perform_later(items[1], items[2].presence)
+        Assignment::CreateJob.perform_later(items[1], items[2].presence)
         reply_with("Submission was enqueued")
     else
         reply_with("Invalid GIT url")
@@ -34,7 +34,7 @@ class Gateway::Telegram::WebhooksController < ApplicationController
   private
 
     def repository_url_valid?(repository_url)
-      Tasks::VerifyURLService.call(repository_url).success?
+      Assignment::VerifyURLService.call(repository_url).success?
     end
 
     def reply_with(message)
