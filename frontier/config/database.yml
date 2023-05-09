@@ -1,7 +1,7 @@
 development: &development
   adapter: postgresql
-  database: frontier_db
   host: postgresql
+  database: frontier_db
   username: frontier
   password: frontier
   pool: 5
@@ -9,3 +9,6 @@ development: &development
 production:
  <<: *development
 
+test:
+  <<: *development
+  host: localhost

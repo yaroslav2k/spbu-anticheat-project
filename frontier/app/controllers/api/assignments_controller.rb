@@ -12,7 +12,7 @@ class API::AssignmentsController < API::ApplicationController
   private
 
     def ensure_url_validity
-      return if (service_result = Tasks::VerifyURLService.call(params[:url])).success?
+      return if (service_result = Assignment::VerifyURLService.call(params[:url])).success?
 
       render status: :unprocessable_entity, json: {
         error: { url: service_result.reason || :unknown }
@@ -20,6 +20,6 @@ class API::AssignmentsController < API::ApplicationController
     end
 
     def enqueue_task_creation_job
-      Tasks::CreateJob.perform_later(params[:url], params[:reference].presence)
+      Assignment::CreateJob.perform_later(params[:url], params[:reference].presence)
     end
 end

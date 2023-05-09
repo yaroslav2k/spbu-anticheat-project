@@ -3,7 +3,7 @@
 RSpec.describe API::AssignmentsController do
   describe "#create" do
     def perform(params = {})
-      post "/api/tasks", params: params, headers: { "Authorization" => "Bearer #{access_token}" }
+      post "/api/assignments", params: params, headers: { "Authorization" => "Bearer #{access_token}" }
     end
 
     let(:credentials_access_token) { "secret" }

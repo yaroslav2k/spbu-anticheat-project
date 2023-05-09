@@ -18,12 +18,26 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     elsif message.starts_with?("/send")
       items = message.split
 
-    if repository_url_valid?(items[1])
-        Assignment::CreateJob.perform_later(items[1], items[2].presence)
-        reply_with("Submission was enqueued")
-    else
-        reply_with("Invalid GIT url")
-    end
+      unless (assignment = load_assignment(items[1]))
+        reply_with("Invalid assignment ID")
+
+        return head :ok
+      end
+
+      unless repository_url_valid?(items[2])
+        reply_with("Invalid repository URL")
+
+        return head :ok
+      end
+
+      unless Submission.create(assignment: assignment, author: author_name, url: items[2], branch: items[3])
+        reply_with("Unknown error, please retry later")
+
+        return head :ok
+      end
+
+      Assignment::CreateJob.perform_later(items[2], items[3].presence)
+      reply_with("Submission was sent")
     else
       reply_with("Undefined behaviour, please check available commands")
     end
@@ -37,6 +51,12 @@ class Gateway::Telegram::WebhooksController < ApplicationController
       Assignment::VerifyURLService.call(repository_url).success?
     end
 
+    def load_assignment(identifier)
+      return nil if identifier.blank?
+
+      Assignment.find_by(identifier: identifier)
+    end
+
     def reply_with(message)
       api_client.send_message(
         chat_id: chat_id_param,
@@ -44,8 +64,16 @@ class Gateway::Telegram::WebhooksController < ApplicationController
       )
     end
 
+    def chat_object
+      @chat_object ||= params.dig(:message, :chat)
+    end
+
     def chat_id_param
-      params.dig(:message, :chat, :id).to_s
+      @chat_id_param ||= chat_object[:id].to_s
+    end
+
+    def author_name
+      @author_name ||= "#{chat_object[:first_name]} #{chat_object[:last_name]} (#{chat_object[:username]})"
     end
 
     def api_client

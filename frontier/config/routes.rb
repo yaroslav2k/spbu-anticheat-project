@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resource :status, only: %i[show]
-    resources :tasks, only: %i[create]
+    resources :assignments, only: %i[create]
   end
 
   namespace :gateway do

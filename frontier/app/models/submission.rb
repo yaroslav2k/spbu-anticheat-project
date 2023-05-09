@@ -19,6 +19,8 @@ class Submission < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :for, ->(user) { where(assignment: { user: user }) }
 
+  alias_attribute :sent_at, :created_at
+
   def to_s
     "#{url} (#{branch}) — #{author}"
   end
