@@ -18,8 +18,21 @@ services:
           server frontier:3000;
         }
 
+        upstream storage {
+          server s3:9000;
+        }
+
         server {
           listen 80 default;
+
+          location /storage {
+            rewrite /storage/(.*) /$$1  break;
+
+            proxy_redirect     off;
+            proxy_set_header   Host $$host;
+
+            proxy_pass         http://storage;
+          }
 
           location / {
             proxy_redirect     off;

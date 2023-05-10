@@ -14,29 +14,32 @@ class Assignment::CreateJob < ApplicationJob
 
   sidekiq_options retry: false
 
-  def perform(url, branch = DEFAULT_GIT_BRANCH_NAME)
-    clone_git_repository(url, branch)
+  def perform(submission)
+    clone_git_repository(submission.url, submission.branch)
+
     start_container.attach do |_stream, chunk|
       Rails.logger.debug chunk[0..100] if chunk.present?
     end
 
-    # FIXME
+    # FIXME: (?)
     data = File.read("/app/git-repositories/#{identifier}/result.json")
 
     begin
       s3_client.put_object(
         body: data,
         bucket: "development",
-        key: "/tasks/#{identifier}.json",
+        key: "/#{submission.storage_key}",
         content_type: "application/json"
       )
     rescue Aws::S3::Errors::ServiceError => e
       Rails.logger.error e.inspect
 
+      submission.update!(status: :failed)
+
       return
     end
 
-    if (service_result = Tasks::DetectService.call(JSON.parse(data))).success?
+    if (service_result = Assignment::DetectService.call(JSON.parse(data))).success?
       Rails.logger.debug("OK: #{service_result.response.code}")
     else
       Rails.logger.debug("FAIL: #{service_result.exception.inspect}")

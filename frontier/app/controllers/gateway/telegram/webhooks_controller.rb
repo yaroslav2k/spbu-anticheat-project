@@ -30,13 +30,14 @@ class Gateway::Telegram::WebhooksController < ApplicationController
         return head :ok
       end
 
-      unless Submission.create(assignment: assignment, author: author_name, url: items[2], branch: items[3])
+      submission = Submission.create(assignment: assignment, author: author_name, url: items[2], branch: items[3])
+      unless submission
         reply_with("Unknown error, please retry later")
 
         return head :ok
       end
 
-      Assignment::CreateJob.perform_later(items[2], items[3].presence)
+      Assignment::CreateJob.perform_later(submission)
       reply_with("Submission was sent")
     else
       reply_with("Undefined behaviour, please check available commands")

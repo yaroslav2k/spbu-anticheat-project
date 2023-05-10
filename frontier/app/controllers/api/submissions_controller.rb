@@ -3,6 +3,14 @@
 class API::SubmissionsController < API::ApplicationController
   before_action :authenticate, :ensure_submission_presence, :ensure_status_presence, only: %i[update]
 
+  def create
+    if Submission.create(submission_params)
+      render status: :created
+    else
+      render status: :unprocessable_entity
+    end
+  end
+
   def update
     if submission.update(status: status)
       head :no_content
@@ -40,4 +48,8 @@ class API::SubmissionsController < API::ApplicationController
     def id = params[:id]
 
     def status = params.dig(:submission, :status)
+
+    def submission_params
+      params.fetch(:submission).permit(:author, :assignment_id, :url, :branch)
+    end
 end

@@ -28,4 +28,14 @@ class Submission < ApplicationRecord
   def to_s
     "#{url} (#{branch}) — #{author}"
   end
+
+  def storage_key
+    "submissions/#{storage_identifier}.json"
+  end
+
+  private
+
+    def storage_identifier
+      id
+    end
 end
