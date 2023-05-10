@@ -39,7 +39,7 @@ class Assignment::CreateJob < ApplicationJob
       return
     end
 
-    if (service_result = Assignment::DetectService.call(JSON.parse(data))).success?
+    if (service_result = Assignment::DetectService.call(submission)).success?
       Rails.logger.debug("OK: #{service_result.response.code}")
     else
       Rails.logger.debug("FAIL: #{service_result.exception.inspect}")

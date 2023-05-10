@@ -32,6 +32,14 @@ class Assignment < ApplicationRecord
     self.identifier = generate_identifier
   end
 
+  def storage_key
+    "submissions/#{storage_identifier}"
+  end
+
+  def storage_identifier
+    id
+  end
+
   private
 
     def generate_identifier

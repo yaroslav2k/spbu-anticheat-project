@@ -15,12 +15,12 @@ class DetectorClient
     self.class.base_uri config.fetch(:base_uri)
   end
 
-  def detect(task_spec)
-    request_body = request_body(task_spec).to_json
+  def detect(submission)
+    request_body = request_body(submission).to_json
 
     with_request_identifier do |request_identifier|
       self.class.post(
-        "/detection/detect-fragments",
+        "/detection/compare-repositories",
         body: request_body,
         headers: {
           "Authorization" => authorization_value(access_token),
@@ -32,14 +32,17 @@ class DetectorClient
 
   private
 
-    def request_body(task_spec)
+    def request_body(submission)
       {
-        "algorithm" => "LCS",
-        "params" => {
-          "n" => 2,
-          "threshold" => 0.45
+        "algorithm" => {
+          "name" => "LCS",
+          "params" => {
+            "n" => 2,
+            "threshold" => 0.45
+          }
         },
-        "fragments" => task_spec
+        "assignment" => submission.storage_key,
+        "repository" => submission.assignment.storage_key
       }
     end
 
