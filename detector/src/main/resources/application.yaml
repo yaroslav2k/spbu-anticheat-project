@@ -2,5 +2,10 @@ spring:
   config:
     import: optional:secrets.yaml
 
+detector:
+  s3:
+    endpoint: "http://localhost:9000"
+    bucket-name: "development"
+
 logging:
   config: classpath:logback.xml

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.spbu.detector.detection.DetectorService;
 import ru.spbu.detector.dto.CodeFragmentsDto;
 import ru.spbu.detector.dto.FragmentIdentifierDto;
+import ru.spbu.detector.dto.SubmitRepositoryDto;
 
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,13 @@ public class DetectorController {
 
     @PostMapping(value = "/detect-fragments", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Кластеризация фрагментов кода на основе переданных токенов")
-    public List<Set<FragmentIdentifierDto>> detectClones(@RequestBody CodeFragmentsDto codeFragmentsDto) {
-        return detectorService.detect(codeFragmentsDto);
+    public List<Set<FragmentIdentifierDto>> detectClones(@RequestBody CodeFragmentsDto dto) {
+        return detectorService.detect(dto);
+    }
+
+    @PostMapping(value = "/compare-repositories", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Добавить репозиторий для сравнения с другими репозиториями")
+    public void submitRepository(@RequestBody SubmitRepositoryDto dto)  {
+        detectorService.submitCompareRepositoriesTask(dto);
     }
 }

@@ -6,7 +6,6 @@ import java.util.List;
 
 public class CodeFragment {
     private List<String> tokens;
-
     private FragmentIdentifierDto identifier;
 
     public List<String> getTokens() {
@@ -19,17 +18,22 @@ public class CodeFragment {
 
     @JsonIgnore
     public String getFileName() {
-        return identifier.getFileName();
+        return identifier.fileName();
     }
 
     @JsonIgnore
     public String getClassName() {
-        return identifier.getClassName();
+        return identifier.className();
     }
 
     @JsonIgnore
     public String getFuncName() {
-        return identifier.getFunctionName();
+        return identifier.functionName();
+    }
+
+    @JsonIgnore
+    public String getRepository() {
+        return identifier.repository();
     }
 
     @Override
