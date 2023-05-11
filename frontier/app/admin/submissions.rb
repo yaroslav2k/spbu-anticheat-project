@@ -15,9 +15,5 @@ ActiveAdmin.register Submission do
     column :tokens do |submission|
       link_to "link", Storage::PRIMARY.public_url(submission.storage_key)
     end
-
-    column :report do |submission|
-      link_to "link", Storage::PRIMARY.public_url(submission.report_storage_key)
-    end
   end
 end

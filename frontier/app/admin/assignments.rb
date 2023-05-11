@@ -36,6 +36,10 @@ ActiveAdmin.register Assignment do
     column :title
     column :identifier
     column :user
+
+    column :report do |assignment|
+      link_to "link", Storage::PRIMARY.public_url(assignment.report_storage_key)
+    end
   end
 
   form do |f|

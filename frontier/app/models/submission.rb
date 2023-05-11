@@ -33,10 +33,6 @@ class Submission < ApplicationRecord
     "assignments/#{assignment.storage_identifier}/#{storage_identifier}.json"
   end
 
-  def report_storage_key
-    "submissions/#{storage_identifier}/clusterisation_report.json"
-  end
-
   def storage_identifier
     id
   end
