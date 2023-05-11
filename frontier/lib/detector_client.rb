@@ -41,8 +41,8 @@ class DetectorClient
             "threshold" => 0.45
           }
         },
-        "assignment" => submission.storage_key,
-        "repository" => submission.assignment.storage_key
+        "assignment" => "submissions/#{submission.assignment.id}",
+        "repository" => "#{submission.id}.json"
       }
     end
 
