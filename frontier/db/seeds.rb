@@ -16,57 +16,79 @@ user_2 = User.create_with(
   password_confirmation: 'password2'
 ).find_or_create_by!(username: "Nikolay B")
 
+# Courses
+
+course_1 = Course.create_with(
+  year: 2023,
+  semester: "fall",
+  user: user_1
+).find_or_create_by!(title: "DB internals")
+
+course_2 = Course.create_with(
+  year: 2023,
+  semester: "fall",
+  user: user_1
+).find_or_create_by!(title: "Diffirential topology")
+
+course_3 = Course.create_with(
+  year: 2022,
+  semester: "spring",
+  user: user_2
+).find_or_create_by!(title: "Ruby internals")
+
+course_4 = Course.create_with(
+  year: 2023,
+  semester: "spring",
+  user: user_2
+).find_or_create_by!(title: "Erlang VM")
+
 # Assignments
 
 Assignment.find_or_create_by!(
   title: "RDBMS page caching",
-  user: user_1
+  course: course_1
 )
 
 Assignment.find_or_create_by!(
   title: "RDBMS SQL parsing",
-  user: user_1
+  course: course_1
 )
 
 Assignment.find_or_create_by!(
-  title: "RDBMS write-ahead-log",
-  user: user_1
+  title: "Manifolds",
+  course: course_2
 )
 
 Assignment.find_or_create_by!(
-  title: "RDBMS transaction management",
-  user: user_1
+  title: "Characteristic classes",
+  course: course_2
 )
 
 Assignment.find_or_create_by!(
-  title: "Consistent hashing",
-  user: user_1
+  title: "YARV: Yet Another Ruby VM",
+  course: course_3
 )
 
 Assignment.find_or_create_by!(
-  title: "Java enums",
-  user: user_2
+  title: "Ruby method lookup",
+  course: course_3
 )
 
 Assignment.find_or_create_by!(
-  title: "Java generics",
-  user: user_2
+  title: "Erlang processes",
+  course: course_4
+)
+
+Assignment.find_or_create_by!(
+  title: "Erlang memory model",
+  course: course_4
 )
 
 # Submissions
 
-5.times do |i|
-  Submission.find_or_create_by!(
-    assignment: Assignment.find_by(title: "Consistent hashing"),
-    url: "https://github.com/hashing-repo-#{i}",
-    author: "Kidr Livanskiy"
-  )
-end
-
-2.times do |i|
-  Submission.find_or_create_by!(
-    assignment: Assignment.find_by(title: "RDBMS transaction management"),
-    url: "https://github.com/rdbms-repo-#{i}",
-    author: "Ian Curtis"
-  )
-end
+Submission.find_or_create_by!(
+  assignment: Assignment.first,
+  url: "https://github.com/namespace/repo",
+  branch: "master",
+  author: "Yaroslav K"
+)

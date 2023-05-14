@@ -19,11 +19,11 @@ class Submission < ApplicationRecord
   belongs_to :assignment
 
   scope :recent, -> { order(created_at: :desc) }
-  scope :for, ->(user) { where(assignment: { user: user }) }
+  scope :for, ->(user) { includes(:assignment).where(assignment: Assignment.for(user)) }
 
   alias_attribute :sent_at, :created_at
 
-  enumerize :status, in: %i[created completed failed], predicates: true
+  enumerize :status, in: %i[created completed failed], scope: :shallow, predicates: true
 
   def to_s
     "#{url} (#{branch}) — #{author}"

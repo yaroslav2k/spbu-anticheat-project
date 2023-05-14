@@ -5,10 +5,9 @@
 # Table name: assignments
 #
 #  id         :uuid             not null, primary key
-#  user_id    :uuid
+#  course_id  :uuid
 #  title      :string           not null
 #  identifier :string           not null
-#  year       :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
@@ -18,18 +17,22 @@ class Assignment < ApplicationRecord
 
   IDENTIFIER_LENGTH = 6
 
-  belongs_to :user
+  belongs_to :course
+
+  has_many :submissions, dependent: :destroy
 
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
-  validates :year, numericality: { only_integer: true }
   validates :identifier, uniqueness: true
 
-  scope :active, -> { where(year: Date.current.year) }
-  scope :for, ->(user) { where(user: user) }
+  scope :active, -> { joins(:course).where(course: { year: Date.current.year }) }
+  scope :for, ->(user) { joins(:course).where(course: { user: user }) }
 
   before_validation do
-    self.year ||= Date.current.year
     self.identifier = generate_identifier
+  end
+
+  def has_report?
+    submissions.completed.any?
   end
 
   def storage_key

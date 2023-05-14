@@ -15,10 +15,12 @@ class Assignment::CreateJob < ApplicationJob
   sidekiq_options retry: false
 
   def perform(submission)
+    @submission = submission
+
     clone_git_repository(submission.url, submission.branch)
 
     start_container.attach do |_stream, chunk|
-      Rails.logger.debug chunk[0..100] if chunk.present?
+      Rails.logger.error(chunk) if chunk.present?
     end
 
     # FIXME: (?)
@@ -48,6 +50,8 @@ class Assignment::CreateJob < ApplicationJob
 
   private
 
+    attr_reader :submission
+
     def clone_git_repository(repository_url, branch)
       options = {}.tap do |hash|
         hash[:branch] = branch if branch.present?
@@ -65,7 +69,7 @@ class Assignment::CreateJob < ApplicationJob
     def container
       @container ||= Docker::Container.create(
         "Image" => IMAGE_TAG,
-        "Cmd" => ["/app/input/#{identifier}"],
+        "Cmd" => ["/app/input/#{identifier}", "--repository", submission.url],
         "Volumes" => {
           "spbu-anticheat-project_git-repositories" => { "/app/input" => "rw" }
         }

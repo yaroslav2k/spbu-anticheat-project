@@ -4,6 +4,13 @@ class DetectorClient
   REQUEST_IDENTIFIER_HEADER = "Request-ID"
   private_constant :REQUEST_IDENTIFIER_HEADER
 
+  Algorithm = Struct.new(:name, :n, :threshold, keyword_init: true) do
+    def to_h
+      { "name" => name, "params" => { "n" => n, "threshold" => threshold } }
+    end
+    alias_method :to_hash, :to_h
+  end
+
   include HTTParty
 
   headers "Content-Type" => "application/json"
@@ -34,16 +41,18 @@ class DetectorClient
 
     def request_body(submission)
       {
-        "algorithm" => {
-          "name" => "LCS",
-          "params" => {
-            "n" => 2,
-            "threshold" => 0.45
-          }
-        },
+        "algorithm" => algorithm.to_h,
         "assignment" => "submissions/#{submission.assignment.id}",
         "repository" => "#{submission.id}.json"
       }
+    end
+
+    def algorithm
+      @algorithm ||= Algorithm.new(
+        name: "LCS",
+        n: 2,
+        threshold: 0.45
+      )
     end
 
     def authorization_value(access_token)
