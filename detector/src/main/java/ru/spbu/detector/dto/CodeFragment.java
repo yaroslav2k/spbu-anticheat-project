@@ -33,7 +33,7 @@ public class CodeFragment {
 
     @JsonIgnore
     public String getRepository() {
-        return identifier.repository();
+        return identifier.repositoryURL();
     }
 
     @Override

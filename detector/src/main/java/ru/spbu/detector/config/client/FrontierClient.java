@@ -14,6 +14,6 @@ import ru.spbu.detector.dto.SubmissionStatusDto;
         configuration = FrontierClientConfiguration.class
 )
 public interface FrontierClient {
-    @PutMapping(value = "/api/submissions/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    void setSubmissionStatus(@PathVariable("id") String id, @RequestBody SubmissionStatusDto status);
+    @PutMapping(value = "{resultPath}", produces = MediaType.APPLICATION_JSON_VALUE)
+    void setSubmissionStatus(@PathVariable("resultPath") String resultPAth, @RequestBody SubmissionStatusDto status);
 }

@@ -4,5 +4,5 @@ public record FragmentIdentifierDto(
         String fileName,
         String className,
         String functionName,
-        String repository
+        String repositoryURL
 ) { }

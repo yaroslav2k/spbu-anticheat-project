@@ -60,7 +60,7 @@ public class DetectorService {
                 log.error(e.getMessage());
             }
         });
-        log.info("Submitted task: {}/{}", dto.assignment(), dto.repository());
+        log.info("Submitted task: {}", dto.assignment());
     }
 
     private void compareRepositories(SubmitRepositoryDto dto) throws JsonProcessingException {
@@ -98,6 +98,6 @@ public class DetectorService {
                 .build();
 
         s3Client.putObject(objectRequest, RequestBody.fromString(report, StandardCharsets.UTF_8));
-        frontierClient.setSubmissionStatus(dto.repository(), SubmissionStatusDto.COMPLETED);
+        frontierClient.setSubmissionStatus(dto.resultPath(), SubmissionStatusDto.COMPLETED);
     }
 }
