@@ -4,6 +4,8 @@ class DetectorClient
   REQUEST_IDENTIFIER_HEADER = "Request-ID"
   private_constant :REQUEST_IDENTIFIER_HEADER
 
+  include Rails.application.routes.url_helpers
+
   Algorithm = Struct.new(:name, :n, :threshold, keyword_init: true) do
     def to_h
       { "name" => name, "params" => { "n" => n, "threshold" => threshold } }
@@ -43,7 +45,8 @@ class DetectorClient
       {
         "algorithm" => algorithm.to_h,
         "assignment" => submission.assignment.storage_key + "/submissions",
-        "result_key" => submission.assignment.report_storage_key
+        "result_key" => submission.assignment.report_storage_key,
+        "result_url" => api_submission_url(submission.id, host: "frontier:3000") # FIXME
       }
     end
 
