@@ -30,7 +30,7 @@ class Submission < ApplicationRecord
   end
 
   def storage_key
-    "assignments/#{assignment.storage_identifier}/#{storage_identifier}.json"
+    "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
   end
 
   def storage_identifier

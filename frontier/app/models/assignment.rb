@@ -36,11 +36,11 @@ class Assignment < ApplicationRecord
   end
 
   def storage_key
-    "submissions/#{storage_identifier}"
+    "courses/#{course.id}/assignments/#{storage_identifier}"
   end
 
   def report_storage_key
-    "submissions/#{storage_identifier}/clusterisation_report.json"
+    "courses/#{course.id}/assignments/#{storage_identifier}/clusterisation_report.json"
   end
 
   def storage_identifier
