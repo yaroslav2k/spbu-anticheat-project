@@ -1,4 +1,4 @@
-package ru.spbu.detector.controller.config;
+package ru.spbu.detector.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package ru.spbu.detector.controller.config;
+package ru.spbu.detector.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

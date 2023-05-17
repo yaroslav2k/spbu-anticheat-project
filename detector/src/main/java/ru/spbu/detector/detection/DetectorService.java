@@ -5,11 +5,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.spbu.detector.config.client.FrontierClient;
 import ru.spbu.detector.dto.CodeFragment;
 import ru.spbu.detector.dto.CodeFragmentsDto;
 import ru.spbu.detector.dto.FragmentIdentifierDto;
+import ru.spbu.detector.dto.SubmissionStatusDto;
 import ru.spbu.detector.dto.SubmitRepositoryDto;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -22,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,11 +36,13 @@ public class DetectorService {
     @Value("${detector.s3.bucket-name}")
     private String bucketName;
     private final S3Client s3Client;
+    private final FrontierClient frontierClient;
 
     private final ExecutorService detectorThreadPool = Executors.newFixedThreadPool(10);
 
-    public DetectorService(S3Client s3Client) {
+    public DetectorService(S3Client s3Client, FrontierClient frontierClient) {
         this.s3Client = s3Client;
+        this.frontierClient = frontierClient;
     }
 
     public List<Set<FragmentIdentifierDto>> detect(CodeFragmentsDto codeFragmentsDto) {
@@ -46,6 +52,8 @@ public class DetectorService {
 
     public void submitCompareRepositoriesTask(SubmitRepositoryDto dto) {
         detectorThreadPool.submit(() -> {
+            var trackingId = UUID.randomUUID().toString();
+            MDC.put("trackingId", trackingId);
             try {
                 compareRepositories(dto);
             } catch (Exception e) {
@@ -63,14 +71,9 @@ public class DetectorService {
 
         var listRes = s3Client.listObjectsV2Paginator(listReq);
         var objectMapper = new ObjectMapper();
-        var reportKey = dto.assignment() + "/clusterisation_report.json";
         List<CodeFragment> fragments = new LinkedList<>();
         listRes.contents().stream()
                 .forEach(content -> {
-                    if (content.key().equals(reportKey)) {
-                        return;
-                    }
-
                     var getObjectRequest = GetObjectRequest.builder()
                             .bucket(bucketName)
                             .key(content.key())
@@ -91,9 +94,10 @@ public class DetectorService {
 
         var objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(reportKey)
+                .key(dto.resultKey())
                 .build();
 
         s3Client.putObject(objectRequest, RequestBody.fromString(report, StandardCharsets.UTF_8));
+        frontierClient.setSubmissionStatus(dto.repository(), SubmissionStatusDto.COMPLETED);
     }
 }

@@ -7,5 +7,9 @@ detector:
     endpoint: "http://s3:9000"
     bucket-name: "development"
 
+client:
+  frontier:
+    url: "http://frontier:3000"
+
 logging:
   config: classpath:logback.xml

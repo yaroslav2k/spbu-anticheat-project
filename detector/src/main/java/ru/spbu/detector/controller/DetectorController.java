@@ -32,7 +32,7 @@ public class DetectorController {
     }
 
     @PostMapping(value = "/compare-repositories", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Добавить репозиторий для сравнения с другими репозиториями")
+    @Operation(summary = "Добавить репозиторий в задание для сравнения с другими репозиториями")
     public void submitRepository(@RequestBody SubmitRepositoryDto dto)  {
         detectorService.submitCompareRepositoriesTask(dto);
     }

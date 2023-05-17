@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="WS-SERVER" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp/>
@@ -12,8 +12,28 @@
                         "message": "%msg",
                         "op": "%mdc{op}",
                         "rid": "%mdc{rid}",
-                        "status": "%mdc{status}",
-                        "stacktrace": "%xException{full}"
+                        "status": "%mdc{status}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+    <logger name="org.zalando.logbook" level="trace" additivity="false">-->
+        <appender-ref ref="WS-SERVER"/>
+    </logger>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <pattern>
+                    <pattern>
+                        {
+                        "level": "%level",
+                        "logger": "%logger",
+                        "message": "%msg",
+                        "trackingId": "%mdc{trackingId}"
                         }
                     </pattern>
                 </pattern>
@@ -21,9 +41,7 @@
         </encoder>
     </appender>
 
-    <logger name="org.zalando.logbook" level="trace" additivity="false">-->
-        <appender-ref ref="STDOUT"/>
-    </logger>
+
     <logger name="ru.spbu.detector.detection.DetectionAlgorithm" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
