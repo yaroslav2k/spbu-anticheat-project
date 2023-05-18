@@ -16,13 +16,17 @@ import java.util.UUID;
 @Component
 @Order(0)
 public class Slf4jMDCFilter extends OncePerRequestFilter {
-    private static final String RID = "rid";
+    private static final String RID = "request-id";
     private static final String OP = "op";
     private static final String STATUS = "status";
 
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
-            String rid = UUID.randomUUID().toString();
+            var rid = request.getHeader(RID);
+            if (rid == null) {
+                rid = UUID.randomUUID().toString();
+            }
+
             MDC.put(RID, rid);
             MDC.put(OP, MessageFormat.format("{0} {1}", request.getMethod(), request.getRequestURI()));
 

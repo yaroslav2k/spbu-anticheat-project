@@ -11,7 +11,7 @@
                         "logger": "%logger",
                         "message": "%msg",
                         "op": "%mdc{op}",
-                        "rid": "%mdc{rid}",
+                        "request-id": "%mdc{request-id}",
                         "status": "%mdc{status}"
                         }
                     </pattern>
@@ -33,7 +33,7 @@
                         "level": "%level",
                         "logger": "%logger",
                         "message": "%msg",
-                        "trackingId": "%mdc{trackingId}"
+                        "tracking-id": "%mdc{trackingId}"
                         }
                     </pattern>
                 </pattern>
