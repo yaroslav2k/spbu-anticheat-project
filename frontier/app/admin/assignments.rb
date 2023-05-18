@@ -18,7 +18,7 @@ ActiveAdmin.register Assignment do
 
     column :report do |assignment|
       if assignment.has_report?
-        link_to "link", Storage::PRIMARY.public_url(assignment.report_storage_key)
+        link_to "link", Storage::PRIMARY.public_url(assignment.report_storage_key), target: "_blank"
       else
         "N/A"
       end

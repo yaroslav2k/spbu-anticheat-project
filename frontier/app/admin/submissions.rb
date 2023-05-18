@@ -13,7 +13,7 @@ ActiveAdmin.register Submission do
     column :sent_at
 
     column :tokens do |submission|
-      link_to "link", Storage::PRIMARY.public_url(submission.storage_key)
+      link_to "link", Storage::PRIMARY.public_url(submission.storage_key), target: "_blank"
     end
   end
 end
