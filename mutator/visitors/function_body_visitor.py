@@ -1,17 +1,26 @@
+from dataclasses import dataclass
 import libcst as cst
 from typing import Optional, Tuple
 
 
 class FunctionBodyCollector(cst.CSTVisitor):
-    class Result:
-        def __init__(self) -> None:
-            self.data: dict[Tuple[str, str], str] = {}
+    METADATA_DEPENDENCIES = (cst.metadata.PositionProvider,)
 
-        def add(self, class_name: str, function_name: str, body: str):
-            self.data[(class_name, function_name)] = body
+    class Result:
+        @dataclass
+        class FunctionInfo:
+            body: str
+            start: int
+            end: int
+
+        def __init__(self) -> None:
+            self.data: dict[Tuple[str, str], 'FunctionBodyCollector.Result.FunctionInfo'] = {}
+
+        def add(self, class_name: str, function_name: str, body: str, start: int, end: int):
+            self.data[(class_name, function_name)] = FunctionBodyCollector.Result.FunctionInfo(body, start, end)
 
     class ResultPrinter:
-        def __init__(self, result) -> None:
+        def __init__(self, result: 'FunctionBodyCollector.Result') -> None:
             self.result = result
 
         def call(self):
@@ -21,7 +30,7 @@ class FunctionBodyCollector(cst.CSTVisitor):
                     print(class_name + "#" + function_name)
                 else:
                     print(function_name)
-                print(value)
+                print(value.body)
 
     def __init__(self) -> None:
         self.stack = []
@@ -35,11 +44,15 @@ class FunctionBodyCollector(cst.CSTVisitor):
         self.stack.pop()
 
     def visit_FunctionDef(self, node: cst.FunctionDef) -> Optional[bool]:
+        start_pos = self.get_metadata(cst.metadata.PositionProvider, node).start
+        end_pos = self.get_metadata(cst.metadata.PositionProvider, node).end
         code = self._get_code_no_empty_leading_lines(node)
+
+        class_name = ""
         if len(self.stack) > 0:
-            self.result.add(self.stack[-1], node.name.value, code)
-        else:
-            self.result.add("", node.name.value, code)
+            class_name = self.stack[-1]
+
+        self.result.add(class_name, node.name.value, code, start_pos.line, end_pos.line)
 
     def leave_FunctionDef(self, node: cst.FunctionDef) -> None:
         pass
