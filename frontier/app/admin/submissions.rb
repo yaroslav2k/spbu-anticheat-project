@@ -3,6 +3,10 @@
 ActiveAdmin.register Submission do
   actions :index, :show
 
+  config.sort_order = "created_at_desc"
+
+  scope("Recent") { |scope| scope.where(created_at: DateTime.now.beginning_of_day..DateTime.now.end_of_day) }
+
   index do
     column :assignment
     column :url
@@ -11,9 +15,5 @@ ActiveAdmin.register Submission do
     column :status
 
     column :sent_at
-
-    column :tokens do |submission|
-      link_to "link", Storage::PRIMARY.public_url(submission.storage_key), target: "_blank"
-    end
   end
 end

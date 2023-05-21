@@ -317,3 +317,16 @@ ActiveAdmin.setup do |config|
   #
   # config.use_webpacker = true
 end
+
+# gem_ext
+module NamespaceWithoutComments
+  def register(resource_class, options = {}, &block)
+    super unless resource_class == ActiveAdmin::Comment
+  end
+end
+
+module ActiveAdmin
+  class Namespace
+    prepend NamespaceWithoutComments
+  end
+end

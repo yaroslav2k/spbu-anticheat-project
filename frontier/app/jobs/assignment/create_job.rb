@@ -69,7 +69,7 @@ class Assignment::CreateJob < ApplicationJob
     def container
       @container ||= Docker::Container.create(
         "Image" => IMAGE_TAG,
-        "Cmd" => ["/app/input/#{identifier}", "--repository", submission.url],
+        "Cmd" => ["/app/input/#{identifier}", "--repository", submission.url, "--revision", submission.branch],
         "Volumes" => {
           "spbu-anticheat-project_git-repositories" => { "/app/input" => "rw" }
         }

@@ -7,6 +7,14 @@ ActiveAdmin.register Assignment do
     end
   end
 
+  member_action :report, method: :get do
+    s3_client = Aws::S3::Client.new
+
+    object = s3_client.get_object(bucket: :development, key: resource.report_storage_key)
+
+    render json: object.body
+  end
+
   permit_params :title, :course_id
 
   index do
@@ -18,7 +26,8 @@ ActiveAdmin.register Assignment do
 
     column :report do |assignment|
       if assignment.has_report?
-        link_to "link", Storage::PRIMARY.public_url(assignment.report_storage_key), target: "_blank"
+        link_to "view", report_admin_assignment_url(assignment), target: "_blank", rel: "noopener"
+        # link_to "link", Storage::PRIMARY.public_url(assignment.report_storage_key), target: "_blank"
       else
         "N/A"
       end

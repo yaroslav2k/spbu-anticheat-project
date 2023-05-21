@@ -44,7 +44,7 @@ class DetectorClient
     def request_body(submission)
       {
         "algorithm" => algorithm.to_h,
-        "assignment" => submission.assignment.storage_key + "/submissions",
+        "assignment" => "#{submission.assignment.storage_key}/submissions",
         "result_key" => submission.assignment.report_storage_key,
         "result_path" => api_submission_path(submission.id)
       }
