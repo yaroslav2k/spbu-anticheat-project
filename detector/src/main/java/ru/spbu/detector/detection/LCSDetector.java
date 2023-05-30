@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static ru.spbu.detector.dto.FragmentIdentifierDto.fromSameSubmission;
+
 class LCSDetector extends DetectionAlgorithm {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Map<String, Set<CodeFragment>> indexMap = new HashMap<>();
@@ -24,7 +26,7 @@ class LCSDetector extends DetectionAlgorithm {
         ngramGenerator = new NgramGenerator(params.getN());
     }
 
-    public List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments, boolean skipFragmentsSameRepository) {
+    public List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments, boolean skipFragmentsSameSubmission) {
         log.info("Started clusterization");
 
         // Построение индекса биграмм
@@ -49,7 +51,7 @@ class LCSDetector extends DetectionAlgorithm {
             }
             Set<FragmentIdentifierDto> g =  new HashSet<>(List.of(fragment.getIdentifier()));
             for (var candidate: weakClones) {
-                boolean shouldCompare = !skipFragmentsSameRepository || !Objects.equals(fragment.getRepository(), candidate.getRepository());
+                boolean shouldCompare = !skipFragmentsSameSubmission || !fromSameSubmission(fragment.getIdentifier(), candidate.getIdentifier());
                 if (shouldCompare && isSimilar(fragment, candidate)) {
                     g.add(candidate.getIdentifier());
                 }

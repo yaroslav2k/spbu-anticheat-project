@@ -1,4 +1,4 @@
-package ru.spbu.detector.config.client.configuration;
+package ru.spbu.detector.client.config;
 
 import feign.RequestInterceptor;
 import org.apache.http.HttpHeaders;

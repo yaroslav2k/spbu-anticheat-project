@@ -36,10 +36,10 @@ abstract class DetectionAlgorithm {
     }
 
     /**
-     * @param fragments Фрагменты кода, среди которых необходимо вычленить кластеры
-     * @param skipFragmentsSameRepository Не проводить сравнение фрагментов, принадлежащих одному репозиторию
+     * @param fragments                   Фрагменты кода, среди которых необходимо вычленить кластеры
+     * @param skipFragmentsSameSubmission true - не проводить сравнение фрагментов, принадлежащих одной посылке
      */
-    abstract List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments, boolean skipFragmentsSameRepository);
+    abstract List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments, boolean skipFragmentsSameSubmission);
 
     public DetectionAlgorithmParameters getParameters() {
         return parameters;

@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * ДТО инкапсулирующая описание алгоритма детектции
- * @param name Название алгоритма
+ * @param name   Название алгоритма
  * @param params Параметры алгоритма
  */
 public record AlgorithmDto(

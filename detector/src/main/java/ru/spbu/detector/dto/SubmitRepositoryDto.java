@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @param algorithm  Алгоритм кластеризации
  * @param assignment Идентификатор задачи
- * @param resultPath  Путь по которому нужно отправить хук frontier
+ * @param resultPath Путь по которому нужно отправить хук frontier
  * @param resultKey  Путь по которому нужно положить отчет
  */
 public record SubmitRepositoryDto(

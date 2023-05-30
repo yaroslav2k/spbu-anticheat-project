@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.spbu.detector.config.client.FrontierClient;
+import ru.spbu.detector.client.FrontierClient;
+import ru.spbu.detector.dto.ClusterizationReport;
 import ru.spbu.detector.dto.CodeFragment;
 import ru.spbu.detector.dto.CodeFragmentsDto;
 import ru.spbu.detector.dto.FragmentIdentifierDto;
@@ -90,7 +91,7 @@ public class DetectorService {
         var algorithm = DetectionAlgorithm.of(dto.algorithm());
         var clusters = algorithm.findClusters(fragments, true);
 
-        String report = objectMapper.writeValueAsString(clusters);
+        String report = objectMapper.writeValueAsString(new ClusterizationReport(dto.algorithm(), clusters));
 
         var objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
