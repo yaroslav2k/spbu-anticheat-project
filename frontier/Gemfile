@@ -9,9 +9,12 @@ ruby "3.0.0"
 gem "activeadmin", "= 2.13.1"
 gem 'active_admin_theme'
 gem "devise", "= 4.9.2"
+gem "draper", "= 4.0.2"
+gem "memery", "= 1.4.1"
 gem "puma", "~> 5.0"
 gem "rails", "~> 7.0.4", ">= 7.0.4.3"
 gem "sassc"
+gem "slim", "= 5.1.1"
 gem "sprockets-rails"
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 

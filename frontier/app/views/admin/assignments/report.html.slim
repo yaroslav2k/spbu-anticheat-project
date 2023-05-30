@@ -1,0 +1,19 @@
+table.index_table
+  tr
+    th.col repository
+    th.col filename
+    th.col class_name
+    th.col function_name
+
+  - assignment.report.clusters.each do |cluster|
+    - cluster.items.each do |item|
+      tr.odd
+        td.col = item.repository
+        td.col = item.file_name
+        td.col = item.class_name
+        td.col = item.function_name
+    tr.even
+      td
+      td
+      td
+      td

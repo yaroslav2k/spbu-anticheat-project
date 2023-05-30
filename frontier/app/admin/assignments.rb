@@ -12,7 +12,7 @@ ActiveAdmin.register Assignment do
 
     object = s3_client.get_object(bucket: :development, key: resource.report_storage_key)
 
-    render json: object.body
+    render locals: { assignment: resource.decorate(context: { raw_report: object.body.read }) }
   end
 
   permit_params :title, :course_id

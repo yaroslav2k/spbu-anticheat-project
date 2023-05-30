@@ -16,7 +16,7 @@
 class Submission < ApplicationRecord
   extend Enumerize
 
-  belongs_to :assignment
+  belongs_to :assignment, counter_cache: true
 
   scope :recent, -> { order(created_at: :desc) }
   scope :for, ->(user) { includes(:assignment).where(assignment: Assignment.for(user)) }
