@@ -2,6 +2,7 @@ table.index_table
   p = "This report was evalutated with options #{assignment.options.inspect}"
 
   tr
+    th.col source
     th.col repository
     th.col revision
     th.col filename
@@ -11,6 +12,7 @@ table.index_table
   - assignment.report.clusters.each do |cluster|
     - cluster.items.each do |item|
       tr.odd
+        td.col = link_to "view", item.external_url, target: "_blank", rel: "noopener"
         td.col = item.repository_url
         td.col = item.revision
         td.col = item.file_name

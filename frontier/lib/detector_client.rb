@@ -56,7 +56,7 @@ class DetectorClient
       @algorithm ||= Algorithm.new(
         name: "LCS",
         n: 2,
-        threshold: 0.7
+        threshold: 0.9
       )
     end
 
