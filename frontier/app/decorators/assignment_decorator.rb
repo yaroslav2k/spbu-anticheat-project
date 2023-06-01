@@ -1,9 +1,21 @@
 # frozen_string_literal: true
 
 class AssignmentDecorator < ApplicationDecorator
+  include Memery
+
+  ITEM_ATTRIBUTES = %i[
+    repository_url
+    revision
+    file_name
+    class_name
+    function_name
+    function_start
+    function_end
+  ].freeze
+
   Report = Struct.new(:clusters, keyword_init: true)
   Cluster = Struct.new(:items, keyword_init: true)
-  Item = Struct.new(:repository, :file_name, :class_name, :function_name, keyword_init: true) do
+  Item = Struct.new(*ITEM_ATTRIBUTES, keyword_init: true) do
     def initialize(...)
       super(...)
 
@@ -22,9 +34,12 @@ class AssignmentDecorator < ApplicationDecorator
   delegate_all
 
   memoize def report
-    parsed_report = JSON.parse(context[:raw_report])
+    parsed_report = JSON.parse(context[:raw_report], symbolize_names: true)
 
-    clusters = parsed_report.map do |raw_cluster|
+    metadata = parsed_report[:metadata]
+    clusters = parsed_report[:clusters]
+
+    clusters = clusters.map do |raw_cluster|
       items = raw_cluster.map do |raw_item|
         Item.new(raw_item.transform_keys(&:to_s).transform_keys(&:underscore))
       end

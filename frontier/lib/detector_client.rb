@@ -4,6 +4,8 @@ class DetectorClient
   REQUEST_IDENTIFIER_HEADER = "Request-ID"
   private_constant :REQUEST_IDENTIFIER_HEADER
 
+  delegate :assignment, to: :submission, private: true
+
   include Rails.application.routes.url_helpers
 
   Algorithm = Struct.new(:name, :n, :threshold, keyword_init: true) do
@@ -54,7 +56,7 @@ class DetectorClient
       @algorithm ||= Algorithm.new(
         name: "LCS",
         n: 2,
-        threshold: 0.45
+        threshold: 0.7
       )
     end
 
