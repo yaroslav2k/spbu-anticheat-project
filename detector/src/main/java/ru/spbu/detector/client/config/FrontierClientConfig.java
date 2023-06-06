@@ -5,7 +5,7 @@ import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
-public class FrontierClientConfiguration {
+public class FrontierClientConfig {
 
     @Value("${client.frontier.auth-token}")
     private String frontierToken;

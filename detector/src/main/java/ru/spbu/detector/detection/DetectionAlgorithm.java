@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Абстрактный класс инкапсулирующий алгоритм кластеризации
+ */
 abstract class DetectionAlgorithm {
     private final DetectionAlgorithmParameters parameters;
     private final static String ALGORITHM_NOT_SUPPORTED = "Алгоритм {0} не поддерживается";
@@ -29,6 +32,10 @@ abstract class DetectionAlgorithm {
         }
     }
 
+    /**
+     * Получить baseline алгорит кластеризации
+     * @return baseline алгоритм
+     */
     public static DetectionAlgorithm baseline() {
         Map<String, Object> paramsMap = Map.of("threshold", 0.45, "n", 2);
         var params = new LCSDetectorParams(paramsMap);
@@ -36,11 +43,15 @@ abstract class DetectionAlgorithm {
     }
 
     /**
+     * Провести кластеризацию фрагментов кода
      * @param fragments                   Фрагменты кода, среди которых необходимо вычленить кластеры
      * @param skipFragmentsSameSubmission true - не проводить сравнение фрагментов, принадлежащих одной посылке
      */
     abstract List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments, boolean skipFragmentsSameSubmission);
 
+    /**
+     * Получить параметры алгоритма кластеризации
+     */
     public DetectionAlgorithmParameters getParameters() {
         return parameters;
     }
