@@ -2,27 +2,34 @@ package ru.spbu.detector.detection.util;
 
 import ru.spbu.detector.dto.CodeFragment;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Генератор n-грамм
+ */
 public class NgramGenerator {
     private final int n;
-    private final Map<String, List<String>> cache = new HashMap<>();
+    private final Map<CodeFragment, List<String>> cache = new HashMap<>();
 
+    /**
+     * @param n Размер n-граммы
+     */
     public NgramGenerator(int n) {
         this.n = n;
     }
+
+    /**
+     * Разбивает фрагмент кода на n-граммы. <br>
+     * Внутри происходит кеширование для фрагментов, поэтому повторный вызов вернется сразу.
+     * @param fragment Фрагмент кода
+     * @return Список n-грамм
+     */
     public List<String> getNgrams(CodeFragment fragment) {
-        var key = MessageFormat.format(
-                "{0}{1}{2}{3}{4}{5}",
-                fragment.getFileName().length(), fragment.getFileName(),
-                fragment.getClassName().length(), fragment.getClassName(),
-                fragment.getFuncName().length(), fragment.getFuncName());
-        if (cache.containsKey(key)) {
-            return cache.get(key);
+        if (cache.containsKey(fragment)) {
+            return cache.get(fragment);
         }
 
         List<String> ngrams = new ArrayList<>();
@@ -31,7 +38,7 @@ public class NgramGenerator {
             ngrams.add(String.join(" ", tokens.subList(i, i  + n)));
         }
 
-        cache.put(key, ngrams);
+        cache.put(fragment, ngrams);
         return ngrams;
     }
 }
