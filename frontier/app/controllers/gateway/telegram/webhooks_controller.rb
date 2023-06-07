@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Gateway::Telegram::WebhooksController < ApplicationController
-  skip_before_action :verify_authenticity_token
-
   WELCOME_MESSAGE = <<~TXT
     Welcome to SPbU-detector bot \u{1F440}
 
