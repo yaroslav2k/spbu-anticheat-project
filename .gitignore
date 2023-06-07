@@ -3,5 +3,5 @@
 !tmp/.gitkeep
 tmp
 
-nginx/ssl/ca.crt
+nginx/ssl/ca.pem
 nginx/ssl/ca.key
