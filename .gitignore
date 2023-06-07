@@ -2,3 +2,7 @@
 .idea
 !tmp/.gitkeep
 tmp
+
+nginx/ssl/ca.crt
+nginx/ssl/ca.key
+nginx/ssl/dh.pem

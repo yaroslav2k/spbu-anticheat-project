@@ -11,6 +11,7 @@ services:
     image: nginx:1.24.0
     ports:
       - "80:80"
+      - "443:443"
     container_name: nginx
     environment:
       NGINX_CONF: |
@@ -23,7 +24,35 @@ services:
         }
 
         server {
-          listen 80 default;
+          listen 80 default_server;
+
+          server_name _;
+
+          return 301 https://$$host$$request_uri;
+        }
+
+        server {
+          listen 443 ssl default_server;
+          listen [::]:443 ssl default_server;
+
+          ssl_certificate               /etc/ssl/certs/ca.crt;
+          ssl_certificate_key           /etc/ssl/certs/ca.key;
+          ssl_protocols                 TLSv1 TLSv1.1 TLSv1.2;
+          ssl_prefer_server_ciphers     on;
+          ssl_ciphers                   "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+          ssl_ecdh_curve                secp384r1;
+          ssl_session_cache             shared:SSL:10m;
+          ssl_session_tickets           off;
+          ssl_stapling                  on;
+          ssl_stapling_verify           on;
+          resolver                      8.8.8.8 8.8.4.4 valid=300s;
+          resolver_timeout              5s;
+
+          add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+          add_header X-Frame-Options DENY;
+          add_header X-Content-Type-Options nosniff;
+
+          ssl_dhparam /etc/ssl/certs/dh.pem;
 
           location /storage {
             rewrite /storage/(.*) /$$1  break;
@@ -55,6 +84,10 @@ services:
         nginx -g "daemon off;";
     networks:
       - backend
+    volumes:
+      - ./nginx/ssl/ca.crt:/etc/ssl/certs/ca.crt:ro
+      - ./nginx/ssl/ca.key:/etc/ssl/certs/ca.key:ro
+      - ./nginx/ssl/dh.pem:/etc/ssl/certs/dh.pem:ro
     healthcheck:
       test: ["CMD", "service", "nginx", "status"]
       interval: 5s
