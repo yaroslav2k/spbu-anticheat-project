@@ -5,7 +5,7 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     Welcome to SPbU-detector bot \u{1F440}
 
     Send submission in the following format:
-    /send <github-url> [<branch>]
+    /send <assignment-id> <github-url> [<branch>]
   TXT
 
   def notify
