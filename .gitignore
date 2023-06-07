@@ -5,3 +5,4 @@ tmp
 
 nginx/ssl/ca.pem
 nginx/ssl/ca.key
+nginx/ssl/ca.crt
