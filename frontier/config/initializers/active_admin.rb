@@ -20,6 +20,8 @@ ActiveAdmin.setup do |config|
   #
   # config.site_title_image = "logo.png"
 
+  config.site_title_image = "logo.svg"
+
   # == Default Namespace
   #
   # Set the default namespace each administration resource
