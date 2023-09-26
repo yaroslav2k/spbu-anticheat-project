@@ -35,7 +35,7 @@ services:
           listen 443 ssl default_server;
           listen [::]:443 ssl default_server;
 
-          ssl_certificate               /etc/ssl/certs/ca.pem;
+          ssl_certificate               /etc/ssl/certs/ca.crt;
           ssl_certificate_key           /etc/ssl/certs/ca.key;
           ssl_protocols                 TLSv1 TLSv1.1 TLSv1.2;
           ssl_prefer_server_ciphers     on;
@@ -85,7 +85,7 @@ services:
     networks:
       - backend
     volumes:
-      - ./nginx/ssl/ca.pem:/etc/ssl/certs/ca.pem:ro
+      - ./nginx/ssl/ca.crt:/etc/ssl/certs/ca.crt:ro
       - ./nginx/ssl/ca.key:/etc/ssl/certs/ca.key:ro
     healthcheck:
       test: ["CMD", "service", "nginx", "status"]
@@ -105,7 +105,7 @@ services:
       backend:
         aliases:
           - "frontier"
-    command: ["bundle exec rake db:create db:migrate db:seed && rails server -b 0.0.0.0"]
+    command: ["bundle exec rake db:create db:migrate && rails server -b 0.0.0.0"]
     healthcheck:
       test: ["CMD", "curl", "localhost:3000/api/status"]
       interval: 30s
