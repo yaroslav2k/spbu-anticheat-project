@@ -1,50 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <appender name="WS-SERVER" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp/>
-                <pattern>
-                    <pattern>
-                        {
-                        "level": "%level",
-                        "logger": "%logger",
-                        "message": "%msg",
-                        "op": "%mdc{op}",
-                        "request-id": "%mdc{request-id}",
-                        "status": "%mdc{status}"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
-        </encoder>
-    </appender>
-    <logger name="org.zalando.logbook" level="trace" additivity="false">
-        <appender-ref ref="WS-SERVER"/>
-    </logger>
-
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp/>
-                <pattern>
-                    <pattern>
-                        {
-                        "level": "%level",
-                        "logger": "%logger",
-                        "message": "%msg",
-                        "tracking-id": "%mdc{trackingId}"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS, UTC} [%-5level] [%thread] %logger - %msg%n</pattern>
+            <charset>utf8</charset>
         </encoder>
     </appender>
 
-
-    <logger name="ru.spbu.detector.detection.DetectionAlgorithm" level="info" additivity="false">
+    <logger name="org.zalando.logbook" level="trace" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
+
+
+<!--    <logger name="ru.spbu.detector.detection" level="debug" additivity="false">-->
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--    </logger>-->
 
     <root level="info">
         <appender-ref ref="STDOUT"/>

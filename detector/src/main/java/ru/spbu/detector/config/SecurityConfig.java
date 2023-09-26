@@ -8,8 +8,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.spbu.detector.controller.filter.ApiKeyAuthFilter;
 
@@ -24,16 +22,11 @@ public class SecurityConfig {
     private String principalRequestValue;
 
     @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         var filter = new ApiKeyAuthFilter(principalRequestHeader);
         filter.setAuthenticationManager(authentication -> {
             var principal = (String) authentication.getPrincipal();
-            if (!encoder().matches(principal, principalRequestValue)) {
+            if (principalRequestValue.equals(principal)) {
                 throw new BadCredentialsException("");
             }
             authentication.setAuthenticated(true);
