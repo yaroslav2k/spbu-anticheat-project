@@ -114,7 +114,7 @@ services:
   frontier-worker:
     <<: *frontier-ror
     container_name: frontier-worker
-    command: ["bundle exec sidekiq"]
+    command: ["bundle exec sidekiq --environment production"]
     volumes:
       - ./.volumes/git-repositories:/app/git-repositories
       - /var/run/docker.sock:/var/run/docker.sock
