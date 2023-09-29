@@ -12,7 +12,7 @@
 #  updated_at :datetime         not null
 #
 class Assignment < ApplicationRecord
-  TITLE_MIN_LENGTH = 8
+  TITLE_MIN_LENGTH = 4
   TITLE_MAX_LENGTH = 80
 
   IDENTIFIER_ALPHABET = [*"0".."9", *"a".."z", *"A".."Z"].freeze
