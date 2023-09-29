@@ -41,5 +41,7 @@ module Frontier
     config.eager_load_paths << Rails.root.join("lib")
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.x.ip_address = "127.0.0.1"
   end
 end

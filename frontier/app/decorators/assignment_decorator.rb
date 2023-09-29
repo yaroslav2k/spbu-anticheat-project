@@ -43,7 +43,7 @@ class AssignmentDecorator < ApplicationDecorator
   memoize def report
     parsed_report = JSON.parse(context[:raw_report], symbolize_names: true)
 
-    metadata = parsed_report[:metadata]
+    # metadata = parsed_report[:metadata]
     clusters = parsed_report[:clusters]
 
     clusters = clusters.map do |raw_cluster|

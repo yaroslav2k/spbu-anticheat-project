@@ -2,53 +2,63 @@
 
 class Gateway::Telegram::WebhooksController < ApplicationController
   WELCOME_MESSAGE = <<~TXT
-    Welcome to SPbU-detector bot \u{1F440}
+    Отправьте решение задачи сообщением в одном из следующих форматов:
 
-    Send submission in the following format:
-    /send <assignment-id> <github-url> [<branch>]
+    1) Ссылка на git-репозиторий (GitHub)
+
+    `/send <assignment-id> git-url=<github-url> identity="" [<branch>=master]`
+
+    Пример:
+
+    `/send 133713 git-url=https://github.com/torvalds/linux branch=homework-2 identity="Имя Фамиилия" `
+
+    2) Файл с решением
+
+    `/send <assignment-id> <identity>`
+
+    где `identity` -- Ваше ФИО. В это же сообщение приложите файл.
   TXT
 
-  def notify
-    message = params.dig(:message, :text).presence
-
-    if message == "/start"
-      reply_with(WELCOME_MESSAGE)
-    elsif message.starts_with?("/send")
-      items = message.split
-
-      unless (assignment = load_assignment(items[1]))
-        reply_with("Invalid assignment ID")
-
-        return head :ok
-      end
-
-      unless repository_url_valid?(items[2])
-        reply_with("Invalid repository URL")
-
-        return head :ok
-      end
-
-      submission = Submission.create(assignment: assignment, author: author_name, url: items[2], branch: items[3])
-      unless submission
-        reply_with("Unknown error, please retry later")
-
-        return head :ok
-      end
-
-      Assignment::CreateJob.perform_later(submission)
-      reply_with("Submission was sent")
-    else
-      reply_with("Undefined behaviour, please check available commands")
-    end
+  rescue_from StandardError do |exception|
+    Rails.logger.error(exception)
 
     head :ok
   end
 
-  private
+  def notify
+    input = Submission::ParseInputService.call(params)
 
-    def repository_url_valid?(repository_url)
-      Assignment::VerifyURLService.call(repository_url).success?
+    Rails.logger.info("Command type: #{input.command_type}")
+
+    if input.command_type.start?
+      reply_with(WELCOME_MESSAGE)
+    elsif input.command_type.send?
+      unless input.valid?
+        reply_with("Unexpected error")
+
+        return head :ok
+      end
+
+      unless (assignment = load_assignment(input.assignment_id))
+        reply_with("Некорректный номер задания")
+
+        return head :ok
+      end
+
+      submission = Submission::BuildService.call(input)
+      submission.assignment = assignment
+
+      submission.save!
+
+      Assignment::CreateJob.perform_later(submission)
+
+      reply_with("Submission was sent")
+    else
+      reply_with("Undefined behaviour, please check available commands")
     end
+  end
+
+  private
 
     def load_assignment(identifier)
       return nil if identifier.blank?
@@ -69,10 +79,6 @@ class Gateway::Telegram::WebhooksController < ApplicationController
 
     def chat_id_param
       @chat_id_param ||= chat_object[:id].to_s
-    end
-
-    def author_name
-      @author_name ||= "#{chat_object[:first_name]} #{chat_object[:last_name]} (#{chat_object[:username]})"
     end
 
     def api_client

@@ -16,11 +16,11 @@ user_2 = User.create_with(
   password_confirmation: 'password2'
 ).find_or_create_by!(username: "Nikolay B")
 
-user_3 = User.create_with(
-  email: 'mkn_demo@example.com',
-  password: 'mkn-demo-pass',
-  password_confirmation: 'mkn-demo-pass'
-).find_or_create_by!(username: "Demo User")
+# user_3 = User.create_with(
+#   email: 'mkn_demo@example.com',
+#   password: 'mkn-demo-pass',
+#   password_confirmation: 'mkn-demo-pass'
+# ).find_or_create_by!(username: "Demo User")
 
 # Courses
 

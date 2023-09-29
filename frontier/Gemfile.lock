@@ -172,6 +172,10 @@ GEM
     docker-api (1.22.4)
       excon (>= 0.38.0)
       json
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     draper (4.0.2)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
@@ -382,6 +386,7 @@ DEPENDENCIES
   debug
   devise (= 4.9.2)
   docker-api (~> 1.22.0)
+  dotenv-rails (= 2.8.1)
   draper (= 4.0.2)
   enumerize (= 2.6.1)
   git (= 1.18.0)

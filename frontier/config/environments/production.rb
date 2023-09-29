@@ -24,7 +24,8 @@ Rails.application.configure do
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
-  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
+  # config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
+  config.public_file_server.enabled = true
 
   # Compress CSS using a preprocessor.
   # config.assets.css_compressor = :sass
@@ -33,7 +34,8 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
+  # config.asset_host = "https://84.201.141.113"
+  config.asset_host = "https://localhost"
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
@@ -60,7 +62,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  config.log_formatter = Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require "syslog/logger"
@@ -71,4 +73,7 @@ Rails.application.configure do
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
+
+  # config.x.ip_address = "84.201.141.113"
+  config.x.ip_address = "127.0.0.1"
 end

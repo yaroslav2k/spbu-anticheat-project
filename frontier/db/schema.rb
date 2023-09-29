@@ -20,6 +20,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_14_122273) do
     t.uuid "course_id", null: false
     t.string "title", null: false
     t.string "identifier", null: false
+    t.jsonb "options", default: {}, null: false
+    t.integer "submissions_count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_assignments_on_course_id"
@@ -38,10 +40,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_14_122273) do
 
   create_table "submissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assignment_id"
-    t.string "url", null: false
-    t.string "branch", default: "master", null: false
     t.string "author", null: false
+    t.string "type", null: false
     t.string "status", default: "created", null: false
+    t.jsonb "data", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["assignment_id"], name: "index_submissions_on_assignment_id"

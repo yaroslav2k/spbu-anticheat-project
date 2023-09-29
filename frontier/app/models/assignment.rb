@@ -30,8 +30,8 @@ class Assignment < ApplicationRecord
   scope :for, ->(user) { joins(:course).where(course: { user: user }) }
 
   jsonb_accessor :options,
-                 ngram_size: [:integer, { default: 2 }],
-                 threshold: [:float, { default: 0.5 }]
+    ngram_size: [:integer, { default: 2 }],
+    threshold: [:float, { default: 0.5 }]
 
   before_validation do
     self.identifier = generate_identifier

@@ -1,7 +1,7 @@
 package ru.spbu.detector.client.config;
 
 import feign.RequestInterceptor;
-import org.apache.http.HttpHeaders;
+import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 

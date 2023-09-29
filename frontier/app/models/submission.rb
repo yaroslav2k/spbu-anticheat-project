@@ -25,15 +25,59 @@ class Submission < ApplicationRecord
 
   enumerize :status, in: %i[created completed failed], scope: :shallow, predicates: true
 
-  def to_s
-    "#{url} (#{branch}) — #{author}"
-  end
-
-  def storage_key
-    "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
-  end
-
   def storage_identifier
     id
+  end
+
+  def download_url = nil
+
+  class Git < Submission
+    validates :url, presence: true
+    validates :branch, presence: true
+
+    jsonb_accessor :data,
+      url: :string,
+      branch: [:string, { default: "main" }]
+
+    def storage_key
+      "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
+    end
+
+    def source_label = "(git)"
+
+    def source_url = url
+
+    def to_s
+      "#{url} (#{branch}) — #{author}"
+    end
+  end
+
+  class File < Submission
+    with_options presence: true do
+      validates :external_id
+      validates :external_unique_id
+      validates :filename
+      validates :mime_type
+    end
+
+    jsonb_accessor :data,
+      external_id: :string,
+      external_unique_id: :string,
+      filename: :string,
+      mime_type: :string
+
+    def source_label = "(file)"
+
+    def source_url
+      Storage::PRIMARY.public_url(storage_key)
+    end
+
+    def storage_key
+      "uploads/#{storage_identifier}"
+    end
+
+    def to_s
+      "File (#{filename})"
+    end
   end
 end

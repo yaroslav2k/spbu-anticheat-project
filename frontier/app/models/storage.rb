@@ -6,12 +6,16 @@ class Storage
   end
 
   def public_url(key)
-    "http://localhost/storage/development/#{key}" # FIXME
+    "https://#{host}/storage/development/#{key}" # FIXME
   end
 
   PRIMARY = new(Rails.application.credentials.services.s3)
 
   private
+
+    def host
+      Rails.application.config.x.ip_address
+    end
 
     attr_reader :config
 end

@@ -9,8 +9,9 @@ RUN bundle install
 
 COPY . .
 
-EXPOSE 3000
+RUN bundle exec rails assets:precompile
 
+EXPOSE 3000
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["rails", "server"]

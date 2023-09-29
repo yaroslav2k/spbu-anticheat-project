@@ -11,14 +11,16 @@ ActiveAdmin.register Submission do
 
   config.sort_order = "created_at_desc"
 
-  scope("Recent") { |scope| scope.where(created_at: DateTime.now.beginning_of_day..DateTime.now.end_of_day) }
+  scope("Recent") { |scope| scope.where(created_at: DateTime.now.all_day) }
 
   index do
     column :assignment
-    column :url
-    column :branch
     column :author
     column :status
+
+    column :source do |submission|
+      link_to submission.source_label, submission.source_url, target: "_blank", rel: "noopener"
+    end
 
     column :sent_at
   end

@@ -4,7 +4,13 @@ x-frontier-ror: &frontier-ror
   build: frontier
   environment:
     DOCKER: "true"
-    # RAILS_ENV: "production"
+
+    PG_HOST: postgresql
+    PG_DATABASE: frontier_db
+    PG_USERNAME: frontier
+    PG_PASSWORD: frontier
+
+    RAILS_LOG_TO_STDOUT: "true"
 
 services:
   nginx:
@@ -24,7 +30,7 @@ services:
         }
 
         server {
-          listen 80 default_server;
+          listen 80;
 
           server_name _;
 
@@ -53,7 +59,7 @@ services:
           add_header X-Content-Type-Options nosniff;
 
           location /storage {
-            rewrite /storage/(.*) /$$1  break;
+            rewrite /storage/(.*) /$$1 break;
 
             proxy_redirect     off;
             proxy_set_header   Host $$host;
@@ -89,7 +95,7 @@ services:
       - ./nginx/ssl/ca.key:/etc/ssl/certs/ca.key:ro
     healthcheck:
       test: ["CMD", "service", "nginx", "status"]
-      interval: 5s
+      interval: 30s
       timeout: 5s
       retries: 5
       start_period: 20s
@@ -105,10 +111,10 @@ services:
       backend:
         aliases:
           - "frontier"
-    command: ["bundle exec rake db:create db:migrate && rails server -b 0.0.0.0"]
+    command: ["bundle exec rake db:create db:migrate && rails server -e production -b 0.0.0.0"]
     healthcheck:
       test: ["CMD", "curl", "localhost:3000/api/status"]
-      interval: 30s
+      interval: 10m
       timeout: 5s
       retries: 5
       start_period: 20s
@@ -127,7 +133,7 @@ services:
       - backend
     healthcheck:
       test: ["CMD", "bash", "/app/bin/utils/sidekiq-liveness-probe"]
-      interval: 5s
+      interval: 30s
       timeout: 5s
       retries: 20
       start_period: 20s
@@ -164,7 +170,7 @@ services:
     command: server --console-address ":9001" /data
     healthcheck:
       test: ["CMD-SHELL", "curl -f -I http://localhost:9000/minio/health/live || exit 1"]
-      interval: 10s
+      interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
@@ -176,10 +182,7 @@ services:
       - postgresql-data:/var/lib/postgresql/data
     networks:
       - backend
-    environment:
-      POSTGRES_DB: "frontier_db"
-      POSTGRES_USER: "frontier"
-      POSTGRES_PASSWORD: "frontier"
+    env_file: .postgresql.env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U frontier -d frontier_db"]
       interval: 30s
