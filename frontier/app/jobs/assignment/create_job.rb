@@ -43,7 +43,7 @@ class Assignment::CreateJob < ApplicationJob
       begin
         s3_client.put_object(
           body: data,
-          bucket: "development",
+          bucket: Rails.env,
           key: "/#{submission.storage_key}",
           content_type: "application/json"
         )
@@ -70,7 +70,7 @@ class Assignment::CreateJob < ApplicationJob
 
         s3_client.put_object(
           body: response.body,
-          bucket: "development",
+          bucket: Rails.env,
           key: "/#{submission.storage_key}",
           content_type: submission.mime_type
         )
