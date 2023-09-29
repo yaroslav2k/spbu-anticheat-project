@@ -15,6 +15,7 @@ class Assignment < ApplicationRecord
   TITLE_MIN_LENGTH = 8
   TITLE_MAX_LENGTH = 80
 
+  IDENTIFIER_ALPHABET = [*"0".."9", *"a".."z", *"A".."Z"].freeze
   IDENTIFIER_LENGTH = 6
 
   belongs_to :course
@@ -63,6 +64,6 @@ class Assignment < ApplicationRecord
   private
 
     def generate_identifier
-      IDENTIFIER_LENGTH.times.map { rand(10) }.join
+      IDENTIFIER_ALPHABET.sample(IDENTIFIER_LENGTH).join
     end
 end

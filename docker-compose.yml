@@ -2,15 +2,7 @@ version: "3.8"
 
 x-frontier-ror: &frontier-ror
   build: frontier
-  environment:
-    DOCKER: "true"
-
-    PG_HOST: postgresql
-    PG_DATABASE: frontier_db
-    PG_USERNAME: frontier
-    PG_PASSWORD: frontier
-
-    RAILS_LOG_TO_STDOUT: "true"
+  env_file: .env
 
 services:
   nginx:
