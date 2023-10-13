@@ -7,4 +7,4 @@ development: &development
   pool: 5
 
 production:
- <<: *development
+  <<: *development

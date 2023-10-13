@@ -28,3 +28,7 @@
 /config/credentials/development.key
 /config/credentials/lint.key
 /config/credentials/test.key
+
+
+# TODO: remove
+.todo.txt

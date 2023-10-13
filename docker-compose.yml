@@ -103,7 +103,8 @@ services:
       backend:
         aliases:
           - "frontier"
-    command: ["bundle exec rake db:create db:migrate && rails server -e production -b 0.0.0.0"]
+    # command: ["bundle exec rake db:create db:migrate && rails server -e production -b 0.0.0.0"]
+    command: ["bundle exec rake db:create db:migrate && rails server -e development -b 0.0.0.0"]
     healthcheck:
       test: ["CMD", "curl", "localhost:3000/api/status"]
       interval: 10m
@@ -114,7 +115,8 @@ services:
   frontier-worker:
     <<: *frontier-ror
     container_name: frontier-worker
-    command: ["bundle exec sidekiq --environment production"]
+    # command: ["bundle exec sidekiq --environment production"]
+    command: ["bundle exec sidekiq"]
     volumes:
       - ./.volumes/git-repositories:/app/git-repositories
       - /var/run/docker.sock:/var/run/docker.sock

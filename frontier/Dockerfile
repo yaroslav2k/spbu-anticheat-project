@@ -15,3 +15,4 @@ EXPOSE 3000
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["rails", "server"]
+

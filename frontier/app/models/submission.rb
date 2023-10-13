@@ -5,13 +5,21 @@
 # Table name: submissions
 #
 #  id            :uuid             not null, primary key
-#  assignment_id :uuid
-#  url           :string           not null
-#  branch        :string           default("master"), not null
 #  author        :string           not null
+#  data          :jsonb            not null
 #  status        :string           default("created"), not null
+#  type          :string           not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  assignment_id :uuid
+#
+# Indexes
+#
+#  index_submissions_on_assignment_id  (assignment_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (assignment_id => assignments.id)
 #
 class Submission < ApplicationRecord
   extend Enumerize

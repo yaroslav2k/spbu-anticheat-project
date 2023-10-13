@@ -5,12 +5,20 @@
 # Table name: courses
 #
 #  id         :uuid             not null, primary key
-#  user_id    :uuid
-#  title      :string           not null
 #  semester   :string           not null
+#  title      :string           not null
 #  year       :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  user_id    :uuid
+#
+# Indexes
+#
+#  index_courses_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
 #
 class Course < ApplicationRecord
   TITLE_MIN_LENGTH = 3
