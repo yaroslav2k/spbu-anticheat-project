@@ -39,7 +39,7 @@ jobs:
           POSTGRES_DB: frontier_ci
           POSTGRES_USER: frontier_ci_user
           POSTGRES_PASSWORD: postgres
-        run: bundle exec rake db:create db:migrate
+        run: bundle exec rails db:create db:migrate
       - name: Run tests
         working-directory: frontier
         env:
