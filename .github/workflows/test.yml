@@ -26,11 +26,11 @@ jobs:
         options: --entrypoint redis-server
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.0
+          ruby-version: "3.0.0"
       - name: Setup test database
         env:
           RAILS_ENV: test
@@ -38,7 +38,7 @@ jobs:
           POSTGRES_DB: frontier_ci
           POSTGRES_USER: frontier_ci_user
           POSTGRES_PASSWORD: postgres
-        run: rake db:create db:migrate
+        run: bundle exec rake db:create db:migrate
       - name: Run tests
         env:
           PGHOST: localhost
@@ -47,4 +47,4 @@ jobs:
           POSTGRES_PASSWORD: postgres
           PGPORT: ${{ job.services.postgres.ports[5432] }}
           RAILS_ENV: test
-        run: rspec
+        run: bundle exec rspec
