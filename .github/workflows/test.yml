@@ -10,8 +10,8 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: frontier_ci_user
           POSTGRES_DB: frontier_ci
+          POSTGRES_USER: frontier_ci_user
           POSTGRES_PASSWORD: postgres
         ports: ["5432:5432"]
         options: >-
@@ -36,16 +36,16 @@ jobs:
         env:
           RAILS_ENV: test
           PGHOST: localhost
-          POSTGRES_DB: frontier_ci
-          POSTGRES_USER: frontier_ci_user
+          POSTGRES_DATABASE: frontier_ci
+          POSTGRES_USERNAME: frontier_ci_user
           POSTGRES_PASSWORD: postgres
         run: bundle install && bundle exec rails db:create db:migrate
       - name: Run tests
         working-directory: frontier
         env:
-          PGHOST: localhost
-          POSTGRES_DB: frontier_ci
-          POSTGRES_USER: frontier_ci_user
+          POSTGRES_HOSTNAME: localhost
+          POSTGRES_DATABASE: frontier_ci
+          POSTGRES_USERNAME: frontier_ci_user
           POSTGRES_PASSWORD: postgres
           PGPORT: ${{ job.services.postgres.ports[5432] }}
           RAILS_ENV: test
