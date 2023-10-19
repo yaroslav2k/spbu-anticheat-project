@@ -5,15 +5,15 @@ return unless Rails.env.development?
 # Users
 
 user_1 = User.create_with(
-  email: 'admin@example.com',
-  password: 'password',
-  password_confirmation: 'password'
+  email: "admin@example.com",
+  password: "password",
+  password_confirmation: "password"
 ).find_or_create_by!(username: "Yaroslav K")
 
 user_2 = User.create_with(
-  email: 'admin2@example.com',
-  password: 'password2',
-  password_confirmation: 'password2'
+  email: "admin2@example.com",
+  password: "password2",
+  password_confirmation: "password2"
 ).find_or_create_by!(username: "Nikolay B")
 
 # user_3 = User.create_with(

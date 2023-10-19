@@ -9,24 +9,36 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     completed: "Принято"
   }.freeze
 
-  rescue_from StandardError do |exception|
-    Rails.logger.error(exception)
+  before_action do
+    next if chat_object.present?
 
-    head :ok
+    head :unprocessable_entity
   end
+
+  # rescue_from StandardError do |exception|
+  #   Rails.logger.error(exception)
+  #   require "pry"; binding.pry
+
+  #   head :ok
+  # end
 
   # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength
   def notify
-    telegram_form = TelegramForm.find_or_create_by!(chat_identifier: chat_id_param)
+    telegram_form = TelegramForm.find_or_initialize_by(chat_identifier: chat_id_param)
+
+    if telegram_form.new_record?
+      telegram_form.save!
+      reply_with(MESSAGES_MAPPING.fetch(:initial))
+
+      head :ok
+      return
+    end
 
     case telegram_form.stage.to_sym
     when :initial
       course = Course.find_by(title: message_param)
-      if course && telegram_form.update(stage: "course_provided", course: course)
-        reply_with(MESSAGES_MAPPING.fetch(:course_provided))
-      else
-        reply_with(MESSAGES_MAPPING.fetch(:initial))
-      end
+      telegram_form.update!(stage: "course_provided", course: course)
+      reply_with(MESSAGES_MAPPING.fetch(:course_provided))
     when :course_provided
       assignment = Assignment.find_by(identifier: message_param)
       if assignment && telegram_form.update(stage: "assignment_provided", assignment: assignment)
@@ -83,7 +95,7 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     end
 
     def chat_id_param
-      @chat_id_param ||= chat_object[:id].to_s
+      @chat_id_param ||= chat_object[:id]
     end
 
     def message_param
