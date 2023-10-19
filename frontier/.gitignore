@@ -26,8 +26,6 @@
 # Ignore master key for decrypting credentials and more.
 /config/credentials/production.key
 /config/credentials/development.key
-/config/credentials/lint.key
-/config/credentials/test.key
 
 
 # TODO: remove
