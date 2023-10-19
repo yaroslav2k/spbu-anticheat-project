@@ -1,0 +1,50 @@
+name: Test
+on: push
+
+jobs:
+  test-frontier:
+    name: Build
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: frontier_ci_user
+          POSTGRES_DB: frontier_ci
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+        - 6379:6379
+        options: --entrypoint redis-server
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 3.0.0
+      - name: Setup test database
+        env:
+          RAILS_ENV: test
+          PGHOST: localhost
+          POSTGRES_DB: frontier_ci
+          POSTGRES_USER: frontier_ci_user
+          POSTGRES_PASSWORD: postgres
+        run: rake db:create db:migrate
+      - name: Run tests
+        env:
+          PGHOST: localhost
+          POSTGRES_DB: frontier_ci
+          POSTGRES_USER: frontier_ci_user
+          POSTGRES_PASSWORD: postgres
+          PGPORT: ${{ job.services.postgres.ports[5432] }}
+          RAILS_ENV: test
+        run: rspec

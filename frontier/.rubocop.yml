@@ -8,7 +8,7 @@ AllCops:
     - "bin/bundle"
 
 Style/StringLiterals:
-  Enabled: false
+  EnforcedStyle: double_quotes
 
 Metrics/BlockLength:
   Exclude:
@@ -40,9 +40,6 @@ Metrics/CyclomaticComplexity:
 Metrics/AbcSize:
   Enabled: false
 
-Style/NumericLiterals:
-  Enabled: false
-
 Layout/LineLength:
   Max: 140
   Exclude:
@@ -55,4 +52,16 @@ Naming/PredicateName:
   Enabled: false
 
 Rails/Inquiry:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/LetSetup:
   Enabled: false
