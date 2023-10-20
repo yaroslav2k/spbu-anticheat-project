@@ -38,11 +38,15 @@ class TelegramForm < ApplicationRecord
 
   extend Enumerize
 
+  scope :incompleted, -> { where.not(stage: "completed") }
+
   enumerize :stage, in: STAGES, predicates: true, default: "initial"
 
   belongs_to :course, optional: true
   belongs_to :assignment, optional: true
   belongs_to :submission, optional: true
+
+  validates :stage, presence: true
 
   with_options presence: true do
     validates :course, if: :course_provided?

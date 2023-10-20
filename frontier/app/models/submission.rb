@@ -39,6 +39,9 @@ class Submission < ApplicationRecord
 
   def download_url = nil
 
+  scope :git, -> { where(type: "Submission::Git") }
+  scope :files_group, -> { where(type: "Submission::FilesGroup") }
+
   class Git < Submission
     validates :url, presence: true
     validates :branch, presence: true
@@ -60,19 +63,8 @@ class Submission < ApplicationRecord
     end
   end
 
-  class File < Submission
-    with_options presence: true do
-      validates :external_id
-      validates :external_unique_id
-      validates :filename
-      validates :mime_type
-    end
-
-    jsonb_accessor :data,
-      external_id: :string,
-      external_unique_id: :string,
-      filename: :string,
-      mime_type: :string
+  class FilesGroup < Submission
+    has_many :uploads, as: :uploadable, dependent: :destroy
 
     def source_label = "(file)"
 
@@ -85,7 +77,7 @@ class Submission < ApplicationRecord
     end
 
     def to_s
-      "File (#{filename})"
+      "File (#{author})"
     end
   end
 end

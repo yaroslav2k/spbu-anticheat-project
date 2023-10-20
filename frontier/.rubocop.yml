@@ -65,3 +65,6 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/LetSetup:
   Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false

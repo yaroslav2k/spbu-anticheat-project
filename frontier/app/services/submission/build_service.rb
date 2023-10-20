@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# deprecated
 class Submission::BuildService < ApplicationService
   subject :input
 

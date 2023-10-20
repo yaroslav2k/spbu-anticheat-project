@@ -29,6 +29,7 @@ class Course < ApplicationRecord
   has_many :assignments, dependent: :destroy
 
   scope :for, ->(user) { where(user: user) }
+  scope :active, -> { where(year: Date.current.year) }
 
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
   validates :semester, inclusion: { in: %w[spring fall] }
@@ -37,6 +38,4 @@ class Course < ApplicationRecord
   before_validation do
     self.year ||= Date.current.year
   end
-
-  scope :active, -> { where(year: Date.current.year) }
 end
