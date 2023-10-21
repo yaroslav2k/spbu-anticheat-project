@@ -9,6 +9,8 @@ RUN bundle install
 
 COPY . .
 
+ENV RAILS_ENV=production
+
 RUN bundle exec rails assets:precompile
 
 EXPOSE 3000
