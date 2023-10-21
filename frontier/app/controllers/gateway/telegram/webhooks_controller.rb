@@ -4,8 +4,9 @@ class Gateway::Telegram::WebhooksController < ApplicationController
   MESSAGES_MAPPING = {
     initial: "Пожалуйста, введите название доступного курса:",
     course_provided: "Пожалуйста, веберите задание",
-    assignment_provided: "Введите ФИО и группу",
-    author_provided: "Введите задание (одним файлом)",
+    assignment_provided: "Введите свое ФИО",
+    author_name_provided: "Введите номер свой группы",
+    author_group_provided: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`",
     completed: "Файл принят",
     form_submitted: "Решение принято"
   }.freeze
@@ -81,14 +82,22 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     end
 
     def process_state_assignment_provided(telegram_form)
-      if telegram_form.update(stage: "author_provided", author: message_param)
-        reply_with(response_message(:author_provided))
+      if telegram_form.update(stage: "author_name_provided", author_name: message_param)
+        reply_with(response_message(:author_name_provided))
       else
         reply_with("Не удалось сохранить имя автора")
       end
     end
 
-    def process_state_author_provided(telegram_form)
+    def process_state_author_name_provided(telegram_form)
+      if telegram_form.update(stage: "author_group_provided", author_group: message_param)
+        reply_with(response_message(:author_group_provided))
+      else
+        reply_with("Не удалось сохранить имя автора")
+      end
+    end
+
+    def process_state_author_group_provided(telegram_form)
       submission = create_submission!(telegram_form)
       _upload = create_upload!(submission)
 
@@ -112,7 +121,8 @@ class Gateway::Telegram::WebhooksController < ApplicationController
 
     def create_submission!(telegram_form)
       telegram_form.assignment.submissions.files_group.first_or_create!(
-        author: telegram_form.author
+        author_name: telegram_form.author_name,
+        author_group: telegram_form.author_group
       )
     end
 
@@ -121,7 +131,8 @@ class Gateway::Telegram::WebhooksController < ApplicationController
         external_id: params.dig(:message, :document, :file_id),
         external_unique_id: params.dig(:message, :document, :file_unique_id),
         filename: params.dig(:message, :document, :file_name),
-        mime_type: params.dig(:message, :document, :mime_type)
+        mime_type: params.dig(:message, :document, :mime_type),
+        source: :telegram
       )
     end
 

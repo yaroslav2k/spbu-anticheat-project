@@ -15,13 +15,29 @@ ActiveAdmin.register Submission do
 
   index do
     column :assignment
-    column :author
+    column :author_name
     column :status
-
-    column :source do |submission|
-      link_to submission.source_label, submission.source_url, target: "_blank", rel: "noopener"
-    end
+    column :type
 
     column :sent_at
+
+    actions
+  end
+
+  show do
+    attributes_table do
+      row :assignment
+      row :author_name
+      row :author_group
+      row :status
+
+      row :uploads do |submission|
+        safe_join(
+          submission.uploads.reduce([]) do |links, upload|
+            links << link_to(upload.filename, upload.source_url, target: "_blank", rel: "noopener")
+          end, tag.br
+        )
+      end
+    end
   end
 end

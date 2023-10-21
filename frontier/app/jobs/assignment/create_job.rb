@@ -63,14 +63,14 @@ class Assignment::CreateJob < ApplicationJob
     end
 
     def process_file_submission
-      submission.uploads.each do
-          response = telegram_bot_client.download_file_by_id(submission.external_id)
+      submission.uploads.find_each do |upload|
+          response = telegram_bot_client.download_file_by_id(upload.external_id)
 
           s3_client.put_object(
             body: response.body,
             bucket: Rails.env,
             key: "/#{upload.storage_key}",
-            content_type: submission.mime_type
+            content_type: upload.mime_type
           )
       rescue Aws::S3::Errors::ServiceError, Telegram::Bot::Client::HTTPError => e
           Rails.logger.error e.inspect

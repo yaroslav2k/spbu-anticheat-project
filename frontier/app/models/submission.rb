@@ -5,7 +5,8 @@
 # Table name: submissions
 #
 #  id            :uuid             not null, primary key
-#  author        :string           not null
+#  author_group  :string           not null
+#  author_name   :string           not null
 #  data          :jsonb            not null
 #  status        :string           default("created"), not null
 #  type          :string           not null
@@ -33,10 +34,6 @@ class Submission < ApplicationRecord
 
   enumerize :status, in: %i[created completed failed], scope: :shallow, predicates: true
 
-  def storage_identifier
-    id
-  end
-
   def download_url = nil
 
   scope :git, -> { where(type: "Submission::Git") }
@@ -59,7 +56,7 @@ class Submission < ApplicationRecord
     def source_url = url
 
     def to_s
-      "#{url} (#{branch}) — #{author}"
+      "#{url} (#{branch}) — #{author_name} (#{author_group})"
     end
   end
 
@@ -77,7 +74,7 @@ class Submission < ApplicationRecord
     end
 
     def to_s
-      "File (#{author})"
+      "File (#{author_name})"
     end
   end
 end

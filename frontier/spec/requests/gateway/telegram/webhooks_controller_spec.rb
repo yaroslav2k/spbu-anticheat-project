@@ -136,7 +136,7 @@ describe Gateway::Telegram::WebhooksController do
 
         expect(response).to have_http_status(:ok)
         expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Введите ФИО и группу"
+          chat_id: chat_id_param.to_s, text: "Введите свое ФИО"
         ).once
       end
     end
@@ -154,7 +154,7 @@ describe Gateway::Telegram::WebhooksController do
       let(:course) { create(:course, title: "advanced-haskell") }
       let(:assignment) { create(:assignment) }
 
-      let(:message_text_param) { "Имя Рек ЭФ0123" }
+      let(:message_text_param) { "Имя Рек" }
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
@@ -163,23 +163,25 @@ describe Gateway::Telegram::WebhooksController do
 
         expect(response).to have_http_status(:ok)
         expect(TelegramForm.sole).to have_attributes(
-          author: message_text_param
+          author_name: message_text_param
         )
         expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Введите задание (одним файлом)"
+          chat_id: chat_id_param.to_s,
+          text: "Введите номер свой группы"
         ).once
       end
     end
 
-    context "with telegram form on `author_provided` stage" do
+    context "with telegram form on `author_group_provided` stage" do
       let!(:telegram_form) do
         create(
           :telegram_form,
-          :author_provided,
+          :author_group_provided,
           chat_identifier: chat_id_param,
           course: course,
           assignment: assignment,
-          author: "Анна Ц ЭФ0123"
+          author_name: "Анна Ц",
+          author_group: "18б04-э"
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }
@@ -207,7 +209,8 @@ describe Gateway::Telegram::WebhooksController do
         ).once
         expect(Submission::FilesGroup.sole).to have_attributes(
           assignment: assignment,
-          author: telegram_form.author
+          author_name: telegram_form.author_name,
+          author_group: telegram_form.author_group
         )
         expect(Upload.sole).to have_attributes(
           external_id: "BQACAgIAAxkBAAPAZTKE2NJ5njiw3SbtNWT7nRevMqgAArEyAAIGrJlJ_Rd7mB_MgmkwBA",
@@ -226,12 +229,12 @@ describe Gateway::Telegram::WebhooksController do
       let!(:telegram_form) do
         create(
           :telegram_form,
-          :author_provided,
+          :author_name_provided,
           chat_identifier: chat_id_param,
           course: course,
           assignment: assignment,
           submission: submission,
-          author: "Анна Ц ЭФ0123"
+          author_name: "Анна Ц ЭФ0123"
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }

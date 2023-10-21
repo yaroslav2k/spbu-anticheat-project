@@ -5,7 +5,8 @@
 # Table name: telegram_forms
 #
 #  id              :bigint           not null, primary key
-#  author          :string
+#  author_group    :string
+#  author_name     :string
 #  chat_identifier :string
 #  stage           :string           default("initial"), not null
 #  created_at      :datetime         not null
@@ -51,7 +52,8 @@ RSpec.describe TelegramForm do
 
     it { expect(build(:telegram_form, :course_provided)).to validate_presence_of(:course) }
     it { expect(build(:telegram_form, :assignment_provided)).to validate_presence_of(:assignment) }
-    it { expect(build(:telegram_form, :author_provided)).to validate_presence_of(:author) }
+    it { expect(build(:telegram_form, :author_name_provided)).to validate_presence_of(:author_name) }
+    it { expect(build(:telegram_form, :author_group_provided)).to validate_presence_of(:author_group) }
     it { expect(build(:telegram_form, :completed)).to validate_presence_of(:submission) }
   end
 end

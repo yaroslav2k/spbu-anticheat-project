@@ -40,7 +40,8 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
 
   create_table "submissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assignment_id"
-    t.string "author", null: false
+    t.string "author_name", null: false
+    t.string "author_group", null: false
     t.string "type", null: false
     t.string "status", default: "created", null: false
     t.jsonb "data", default: {}, null: false
@@ -54,7 +55,8 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
     t.uuid "assignment_id"
     t.uuid "submission_id"
     t.string "chat_identifier"
-    t.string "author"
+    t.string "author_name"
+    t.string "author_group"
     t.string "stage", default: "initial", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -64,9 +66,9 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
     t.index ["submission_id"], name: "index_telegram_forms_on_submission_id"
   end
 
-  create_table "uploads", force: :cascade do |t|
+  create_table "uploads", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "uploadable_type", null: false
-    t.bigint "uploadable_id", null: false
+    t.uuid "uploadable_id", null: false
     t.string "filename", null: false
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", null: false

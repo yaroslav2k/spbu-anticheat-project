@@ -4,19 +4,26 @@
 #
 # Table name: uploads
 #
-#  id              :bigint           not null, primary key
+#  id              :uuid             not null, primary key
 #  filename        :string           not null
 #  metadata        :jsonb            not null
 #  uploadable_type :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  uploadable_id   :bigint           not null
+#  uploadable_id   :uuid             not null
 #
 # Indexes
 #
 #  index_uploads_on_uploadable  (uploadable_type,uploadable_id)
 #
 RSpec.describe Upload do
+  describe "constants" do
+    describe "AVAILABLE_SOURCES" do
+      it { expect(described_class::AVAILABLE_SOURCES).to eq(%w[telegram]) }
+      it { expect(described_class::AVAILABLE_SOURCES).to be_frozen }
+    end
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:uploadable) }
   end
