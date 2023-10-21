@@ -42,13 +42,9 @@ ActiveAdmin.register Assignment do
 
     f.inputs do
       input :title
-      input :course_id, as: :select, collection: Course.all.for(current_user).map { |c| [c.title, c.id] }, include_blank: false
-
-      # FIXME
-      # f.inputs name: :Options, for: :options do |options_form|
-      #   options_form.input :ngram_size, input_html: { value: assignment.ngram_size }
-      #   options_form.input :threshold, input_html: { value: assignment.threshold }
-      # end
+      input :course_id, as: :select,
+        collection: Course.all.for(current_user).map { |c| [c.title, c.id] },
+        include_blank: false
     end
 
     f.actions

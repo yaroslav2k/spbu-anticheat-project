@@ -103,8 +103,7 @@ services:
       backend:
         aliases:
           - "frontier"
-    # command: ["bundle exec rake db:create db:migrate && rails server -e production -b 0.0.0.0"]
-    command: ["bundle exec rake db:create db:migrate && rails server -e development -b 0.0.0.0"]
+    command: ["bundle exec rake db:create db:migrate && rails server -b 0.0.0.0"]
     healthcheck:
       test: ["CMD", "curl", "localhost:3000/api/status"]
       interval: 10m
@@ -173,7 +172,7 @@ services:
     image: postgres:15.2-alpine3.17
     container_name: frontier-postgresql
     volumes:
-      - ./.volumes/.postgresql:/var/lib/postgresql/data
+      - ./.volumes/postgresql:/var/lib/postgresql/data
     networks:
       - backend
     env_file: .postgresql.env

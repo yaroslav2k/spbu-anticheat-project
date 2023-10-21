@@ -5,7 +5,8 @@
 # Table name: telegram_forms
 #
 #  id              :bigint           not null, primary key
-#  author          :string
+#  author_group    :string
+#  author_name     :string
 #  chat_identifier :string
 #  stage           :string           default("initial"), not null
 #  created_at      :datetime         not null
@@ -32,11 +33,14 @@ class TelegramForm < ApplicationRecord
     initial
     course_provided
     assignment_provided
-    author_provided
+    author_name_provided
+    author_group_provided
     completed
   ].freeze
 
   extend Enumerize
+
+  scope :incompleted, -> { where.not(stage: "completed") }
 
   enumerize :stage, in: STAGES, predicates: true, default: "initial"
 
@@ -44,10 +48,13 @@ class TelegramForm < ApplicationRecord
   belongs_to :assignment, optional: true
   belongs_to :submission, optional: true
 
+  validates :stage, presence: true
+
   with_options presence: true do
     validates :course, if: :course_provided?
     validates :assignment, if: :assignment_provided?
-    validates :author, if: :author_provided?
+    validates :author_name, if: :author_name_provided?
+    validates :author_group, if: :author_group_provided?
     validates :submission, if: :completed?
   end
 end

@@ -26,6 +26,10 @@ FactoryBot.define do
     title { Faker::Lorem.characters(number: 10) }
     year { (2000..2023).to_a.sample }
 
+    trait :active do
+      year { Date.current.year }
+    end
+
     association :user
   end
 end

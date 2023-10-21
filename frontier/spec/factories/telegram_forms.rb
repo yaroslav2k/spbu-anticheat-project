@@ -5,7 +5,8 @@
 # Table name: telegram_forms
 #
 #  id              :bigint           not null, primary key
-#  author          :string
+#  author_group    :string
+#  author_name     :string
 #  chat_identifier :string
 #  stage           :string           default("initial"), not null
 #  created_at      :datetime         not null

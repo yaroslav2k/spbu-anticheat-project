@@ -19,7 +19,7 @@ class Assignment::CreateJob < ApplicationJob
 
     if submission.type == "Submission::Git"
       process_git_submission
-    elsif submission.type == "Submission::File"
+    elsif submission.type == "Submission::FilesGroup"
       process_file_submission
     else
       raise ArgumentError, "Unexpected submission type #{submission_type.type.inspect}"
@@ -63,21 +63,19 @@ class Assignment::CreateJob < ApplicationJob
     end
 
     def process_file_submission
-      Rails.logger.info(submission)
+      submission.uploads.find_each do |upload|
+          response = telegram_bot_client.download_file_by_id(upload.external_id)
 
-      begin
-        response = telegram_bot_client.download_file_by_id(submission.external_id)
-
-        s3_client.put_object(
-          body: response.body,
-          bucket: Rails.env,
-          key: "/#{submission.storage_key}",
-          content_type: submission.mime_type
-        )
+          s3_client.put_object(
+            body: response.body,
+            bucket: Rails.env,
+            key: "/#{upload.storage_key}",
+            content_type: upload.mime_type
+          )
       rescue Aws::S3::Errors::ServiceError, Telegram::Bot::Client::HTTPError => e
-        Rails.logger.error e.inspect
+          Rails.logger.error e.inspect
 
-        submission.update!(status: :failed)
+          submission.update!(status: :failed)
       end
     end
 

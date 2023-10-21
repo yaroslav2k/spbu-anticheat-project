@@ -38,20 +38,15 @@ class Assignment < ApplicationRecord
   validates :ngram_size, numericality: { only_integer: true, greater_than_or_equal_to: 2 }
   validates :threshold, numericality: { in: (0..1) }
 
-  scope :active, -> { joins(:course).where(course: { year: Date.current.year }) }
   scope :for, ->(user) { joins(:course).where(course: { user: user }) }
+  scope :active, -> { joins(:course).where(course: { year: Date.current.year }) }
 
   jsonb_accessor :options,
     ngram_size: [:integer, { default: 2 }],
     threshold: [:float, { default: 0.5 }]
 
-  before_validation do
-    self.identifier = generate_identifier
-  end
-
-  def initialize(...)
-    super(...)
-
+  after_initialize do
+    self.identifier ||= generate_identifier
     self.ngram_size ||= 2
     self.threshold ||= 0.5
   end
