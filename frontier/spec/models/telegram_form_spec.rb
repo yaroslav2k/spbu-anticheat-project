@@ -4,7 +4,7 @@
 #
 # Table name: telegram_forms
 #
-#  id              :bigint           not null, primary key
+#  id              :uuid             not null, primary key
 #  author_group    :string
 #  author_name     :string
 #  chat_identifier :string
@@ -38,7 +38,15 @@ RSpec.describe TelegramForm do
   end
 
   describe "enumerations" do
-    it { is_expected.to enumerize(:stage).in(described_class::STAGES).with_default("initial") }
+    subject(:telegram_form) { described_class.new }
+
+    specify do
+      expect(telegram_form).to enumerize(:stage)
+        .in(described_class::STAGES)
+        .with_default("created")
+        .with_scope(:shallow)
+        .with_predicates(true)
+    end
   end
 
   describe "associations" do
@@ -54,6 +62,6 @@ RSpec.describe TelegramForm do
     it { expect(build(:telegram_form, :assignment_provided)).to validate_presence_of(:assignment) }
     it { expect(build(:telegram_form, :author_name_provided)).to validate_presence_of(:author_name) }
     it { expect(build(:telegram_form, :author_group_provided)).to validate_presence_of(:author_group) }
-    it { expect(build(:telegram_form, :completed)).to validate_presence_of(:submission) }
+    it { expect(build(:telegram_form, :uploads_provided)).to validate_presence_of(:submission) }
   end
 end

@@ -26,6 +26,6 @@ FactoryBot.define do
   factory :assignment do
     title { Faker::Lorem.characters(number: 10) }
 
-    association :course
+    course
   end
 end

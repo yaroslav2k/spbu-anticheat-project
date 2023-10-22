@@ -27,7 +27,7 @@ FactoryBot.define do
     author_name { Faker::Name.name }
     author_group { "group-#{Faker::Number.positive.to_i}" }
 
-    association :assignment
+    assignment
 
     trait :files_group do
       type { "Submission::FilesGroup" }

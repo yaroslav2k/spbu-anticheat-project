@@ -40,7 +40,7 @@ RSpec.describe Course do
     describe ".for" do
       let(:user) { create(:user) }
 
-      it { expect(described_class.for(user).to_sql).to eq(described_class.where(user: user).to_sql) }
+      it { expect(described_class.for(user).to_sql).to eq(described_class.where(user:).to_sql) }
     end
 
     describe ".active" do

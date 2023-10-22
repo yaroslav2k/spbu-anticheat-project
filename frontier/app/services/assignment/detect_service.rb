@@ -9,7 +9,7 @@ class Assignment::DetectService < ApplicationService
   def call
     response = api_client.detect(task_spec)
 
-    success! response: response
+    success! response:
   rescue StandardError => e
     failure! exception: e
   end

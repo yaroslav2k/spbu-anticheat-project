@@ -44,7 +44,7 @@ RSpec.describe Assignment do
 
       specify do
         expect(described_class.for(user).to_sql).to eq(
-          described_class.joins(:course).where(course: { user: user }).to_sql
+          described_class.joins(:course).where(course: { user: }).to_sql
         )
       end
     end

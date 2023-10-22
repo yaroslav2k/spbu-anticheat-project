@@ -38,7 +38,7 @@ class Assignment < ApplicationRecord
   validates :ngram_size, numericality: { only_integer: true, greater_than_or_equal_to: 2 }
   validates :threshold, numericality: { in: (0..1) }
 
-  scope :for, ->(user) { joins(:course).where(course: { user: user }) }
+  scope :for, ->(user) { joins(:course).where(course: { user: }) }
   scope :active, -> { joins(:course).where(course: { year: Date.current.year }) }
 
   jsonb_accessor :options,
