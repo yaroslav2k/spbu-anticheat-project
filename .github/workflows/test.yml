@@ -1,5 +1,5 @@
 name: Test
-on: push
+"on": push
 
 jobs:
   test-frontier:
@@ -21,7 +21,7 @@ jobs:
       redis:
         image: redis
         ports:
-        - 6379:6379
+          - 6379:6379
         options: --entrypoint redis-server
     steps:
       - uses: actions/checkout@v4

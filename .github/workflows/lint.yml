@@ -1,5 +1,5 @@
 name: Lint
-on: push
+"on": push
 
 jobs:
   lint-ruby:
@@ -16,4 +16,15 @@ jobs:
         env:
           RAILS_ENV: test
         run: bundle install && bundle exec rubocop
-
+  lint-yaml:
+    name: lint-yaml
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+      - name: Run YAML linter
+        uses: karancode/yamllint-github-action@master
+        with:
+          yamllint_file_or_dir: .
+          yamllint_strict: true
+          yamllint_comment: true
