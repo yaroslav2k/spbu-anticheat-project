@@ -1,0 +1,28 @@
+name: Lint
+"on": push
+
+jobs:
+  lint-ruby:
+    name: lint-ruby
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+      - name: Run linter
+        working-directory: frontier
+        env:
+          RAILS_ENV: test
+        run: bundle install && bundle exec rubocop
+  lint-yaml:
+    name: lint-yaml
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+      - name: Run YAML linter
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          strict: true
