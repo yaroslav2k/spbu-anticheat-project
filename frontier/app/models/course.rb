@@ -28,7 +28,7 @@ class Course < ApplicationRecord
 
   has_many :assignments, dependent: :destroy
 
-  scope :for, ->(user) { where(user: user) }
+  scope :for, ->(user) { where(user:) }
   scope :active, -> { where(year: Date.current.year) }
 
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }

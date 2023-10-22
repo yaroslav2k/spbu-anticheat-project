@@ -12,7 +12,7 @@ class API::SubmissionsController < API::ApplicationController
   end
 
   def update
-    if submission.update(status: status)
+    if submission.update(status:)
       head :no_content
     else
       head :server_error
@@ -42,7 +42,7 @@ class API::SubmissionsController < API::ApplicationController
     def submission
       return @submission if defined?(@submission)
 
-      @submission = Submission.find_by(id: id)
+      @submission = Submission.find_by(id:)
     end
 
     def id = params[:id]

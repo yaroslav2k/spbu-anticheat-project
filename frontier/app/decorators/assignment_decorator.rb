@@ -51,9 +51,9 @@ class AssignmentDecorator < ApplicationDecorator
         Item.new(raw_item.transform_keys(&:to_s).transform_keys(&:underscore))
       end
 
-      Cluster.new(items: items)
+      Cluster.new(items:)
     end
 
-    Report.new(clusters: clusters)
+    Report.new(clusters:)
   end
 end

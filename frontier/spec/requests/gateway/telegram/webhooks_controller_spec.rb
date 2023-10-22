@@ -3,13 +3,13 @@
 describe Gateway::Telegram::WebhooksController do
   describe "#notify" do
     def perform(params)
-      post "/gateway/telegram/webhooks/notify", params: params
+      post "/gateway/telegram/webhooks/notify", params:
     end
 
     let(:telegram_client_double) { instance_double(Telegram::Bot::Client, send_message: true) }
 
     let(:chat_id_param) { 983_390_842 }
-    let(:message_text_param) { "/start" }
+    let(:message_text_param) { nil }
     let(:message_document_param) { nil }
 
     let(:params) do
@@ -70,6 +70,17 @@ describe Gateway::Telegram::WebhooksController do
       end
     end
 
+    shared_examples "it responds to telegram chat" do |text:|
+      specify do
+        perform(params)
+
+        expect(telegram_client_double).to have_received(:send_message).with(
+          chat_id: chat_id_param.to_s,
+          text:
+        ).once
+      end
+    end
+
     context "with invalid request" do
       specify do
         perform({})
@@ -79,65 +90,44 @@ describe Gateway::Telegram::WebhooksController do
       end
     end
 
-    context "with new chat" do
-      let(:telegram_form) { nil }
+    context "with telegram form on `created` stage" do
+      let!(:telegram_form) { create(:telegram_form, :created, chat_identifier: chat_id_param) }
+      let(:message_text_param) { course.title }
+      let(:course) { create(:course, :active, title: "advanced-haskell") }
 
       before do
-        create(:course, :active, title: "haskell")
-        create(:course, :active, title: "python")
+        create(:assignment, course:, title: "task-foo")
+        create(:assignment, course:, title: "task-bar")
       end
-
-      specify do
-        perform(params)
-
-        expect(response).to have_http_status(:ok)
-        expect(TelegramForm.sole).to be_initial
-        expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id:
-          chat_id_param.to_s,
-          text: "Пожалуйста, введите название доступного курса:\n\nhaskell\npython"
-        ).once
-      end
-
-      it "persists an instance of `TelegramForm` model" do
-        expect { perform(params) }.to change(TelegramForm, :count).from(0).to(1)
-      end
-    end
-
-    context "with telegram form on `initial` stage" do
-      let!(:telegram_form) { create(:telegram_form, :initial, chat_identifier: chat_id_param) }
-      let(:course) { create(:course, title: "advanced-haskell") }
-
-      let(:message_text_param) { course.title }
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
+      it_behaves_like "it responds to telegram chat",
+        text: "Пожалуйста, веберите задание из списка доступных:\n\ntask-foo\ntask-bar"
+
       specify do
         perform(params)
 
         expect(response).to have_http_status(:ok)
-        expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Пожалуйста, веберите задание"
-        ).once
       end
     end
 
     context "with telegram form on `course_provided` stage" do
-      let!(:telegram_form) { create(:telegram_form, :course_provided, chat_identifier: chat_id_param, course: course) }
-      let(:course) { create(:course, title: "advanced-haskell") }
-      let(:assignment) { create(:assignment) }
+      let!(:telegram_form) { create(:telegram_form, :course_provided, chat_identifier: chat_id_param, course:) }
+      let(:course) { create(:course, :active, title: "advanced-haskell") }
+      let(:assignment) { create(:assignment, course:) }
 
-      let(:message_text_param) { assignment.identifier }
+      let(:message_text_param) { assignment.title }
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+      it_behaves_like "it responds to telegram chat",
+        text: "Введите свое ФИО"
 
       specify do
         perform(params)
 
         expect(response).to have_http_status(:ok)
-        expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Введите свое ФИО"
-        ).once
       end
     end
 
@@ -147,8 +137,8 @@ describe Gateway::Telegram::WebhooksController do
           :telegram_form,
           :assignment_provided,
           chat_identifier: chat_id_param,
-          course: course,
-          assignment: assignment
+          course:,
+          assignment:
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }
@@ -158,6 +148,9 @@ describe Gateway::Telegram::WebhooksController do
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
+      it_behaves_like "it responds to telegram chat",
+        text: "Введите номер своей группы"
+
       specify do
         perform(params)
 
@@ -165,10 +158,42 @@ describe Gateway::Telegram::WebhooksController do
         expect(TelegramForm.sole).to have_attributes(
           author_name: message_text_param
         )
+      end
+    end
+
+    context "with telegram form on `author_name_provided` stage" do
+      let!(:telegram_form) do
+        create(
+          :telegram_form,
+          :author_name_provided,
+          chat_identifier: chat_id_param,
+          course:,
+          assignment:,
+          author_name: "Анна Ц"
+        )
+      end
+      let(:course) { create(:course, :active, title: "advanced-haskell") }
+      let(:assignment) { create(:assignment, course:) }
+
+      let(:message_text_param) { "ЭФ-0123" }
+
+      it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+      specify do
+        perform(params)
+
+        expect(response).to have_http_status(:ok)
+        expect(TelegramForm.sole).to have_attributes(
+          stage: "author_group_provided",
+          author_group: "ЭФ-0123"
+        )
         expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s,
-          text: "Введите номер свой группы"
+          chat_id: chat_id_param.to_s, text: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`"
         ).once
+      end
+
+      specify do
+        expect { perform(params) }.not_to have_enqueued_job(Assignment::CreateJob)
       end
     end
 
@@ -178,14 +203,14 @@ describe Gateway::Telegram::WebhooksController do
           :telegram_form,
           :author_group_provided,
           chat_identifier: chat_id_param,
-          course: course,
-          assignment: assignment,
+          course:,
+          assignment:,
           author_name: "Анна Ц",
           author_group: "18б04-э"
         )
       end
-      let(:course) { create(:course, title: "advanced-haskell") }
-      let(:assignment) { create(:assignment, course: course) }
+      let(:course) { create(:course, :active, title: "advanced-haskell") }
+      let(:assignment) { create(:assignment, course:) }
 
       let(:message_text_param) { nil }
       let(:message_document_param) do
@@ -200,15 +225,15 @@ describe Gateway::Telegram::WebhooksController do
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
+      it_behaves_like "it responds to telegram chat",
+        text: "Файл принят (Аленова_София_01.py)"
+
       specify do
         perform(params)
 
         expect(response).to have_http_status(:ok)
-        expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Файл принят (Аленова_София_01.py)"
-        ).once
         expect(Submission::FilesGroup.sole).to have_attributes(
-          assignment: assignment,
+          assignment:,
           author_name: telegram_form.author_name,
           author_group: telegram_form.author_group
         )
@@ -225,21 +250,47 @@ describe Gateway::Telegram::WebhooksController do
       end
     end
 
+    context "with `/start` command" do
+      let(:telegram_form) { nil }
+
+      let(:message_text_param) { "/start" }
+
+      before do
+        create(:course, :active, title: "haskell")
+        create(:course, :active, title: "python")
+      end
+
+      it_behaves_like "it responds to telegram chat",
+        text: "Пожалуйста, введите название доступного курса:\n\nhaskell\npython"
+
+      specify do
+        perform(params)
+
+        expect(response).to have_http_status(:ok)
+        expect(TelegramForm.sole).to be_created
+      end
+
+      it "persists an instance of `TelegramForm` model" do
+        expect { perform(params) }.to change(TelegramForm, :count).from(0).to(1)
+      end
+    end
+
     context "with `/submit` command" do
       let!(:telegram_form) do
         create(
           :telegram_form,
-          :author_name_provided,
+          :author_group_provided,
           chat_identifier: chat_id_param,
-          course: course,
-          assignment: assignment,
-          submission: submission,
-          author_name: "Анна Ц ЭФ0123"
+          course:,
+          assignment:,
+          submission:,
+          author_name: "Анна Ц",
+          author_group: "ЭФ-0123"
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }
       let(:assignment) { create(:assignment) }
-      let(:submission) { create(:submission, :files_group, assignment: assignment) }
+      let(:submission) { create(:submission, :files_group, assignment:) }
 
       let(:message_text_param) { "/submit" }
 
@@ -249,9 +300,11 @@ describe Gateway::Telegram::WebhooksController do
         perform(params)
 
         expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Решение принято"
+          chat_id: chat_id_param.to_s, text: "Решение задания принято"
         ).once
-        expect(TelegramForm.sole).to be_completed
+        expect(TelegramForm.sole).to have_attributes(
+          stage: "uploads_provided"
+        )
       end
 
       specify do

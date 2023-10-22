@@ -30,6 +30,6 @@ FactoryBot.define do
       year { Date.current.year }
     end
 
-    association :user
+    user
   end
 end

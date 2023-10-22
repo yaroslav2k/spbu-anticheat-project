@@ -322,7 +322,7 @@ end
 
 # gem_ext
 module NamespaceWithoutComments
-  def register(resource_class, options = {}, &block)
+  def register(resource_class, options = {}, &)
     super unless resource_class == ActiveAdmin::Comment
   end
 end

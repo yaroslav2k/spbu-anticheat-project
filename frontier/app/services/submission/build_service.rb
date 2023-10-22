@@ -11,13 +11,13 @@ class Submission::BuildService < ApplicationService
     case input.submission_type.to_sym
     when :git
       Submission::Git.new(
-        author: author,
+        author:,
         url: input.options.fetch("git-url"),
         branch: input.options.fetch("branch", "master")
       )
     when :file
       Submission::File.new(
-        author: author,
+        author:,
         external_id: input.data.dig(:message, :document, :file_id),
         external_unique_id: input.data.dig(:message, :document, :file_unique_id),
         filename: input.data.dig(:message, :document, :file_name),

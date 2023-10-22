@@ -7,8 +7,8 @@ class ApplicationService
   class << self
     alias build new
 
-    def call(*args)
-      build(*args).call
+    def call(*)
+      build(*).call
     end
 
     private
@@ -33,12 +33,12 @@ class ApplicationService
         end
       end
 
-      def result_on_success(*names)
-        const_set :Success, Struct.new(*names, :success?, :failure?, keyword_init: true)
+      def result_on_success(*)
+        const_set :Success, Struct.new(*, :success?, :failure?, keyword_init: true)
       end
 
-      def result_on_failure(*names)
-        const_set :Failure, Struct.new(*names, :success?, :failure?, keyword_init: true)
+      def result_on_failure(*)
+        const_set :Failure, Struct.new(*, :success?, :failure?, keyword_init: true)
       end
   end
 
@@ -54,14 +54,14 @@ class ApplicationService
   end
 
   def async_call(method = :call)
-    self.class.async_call(subject, context, method: method)
+    self.class.async_call(subject, context, method:)
   end
 
-  def success!(**kwargs)
-    self.class::Success.new(success?: true, failure?: false, **kwargs)
+  def success!(**)
+    self.class::Success.new(success?: true, failure?: false, **)
   end
 
-  def failure!(**kwargs)
-    self.class::Failure.new(success?: false, failure?: true, **kwargs)
+  def failure!(**)
+    self.class::Failure.new(success?: false, failure?: true, **)
   end
 end

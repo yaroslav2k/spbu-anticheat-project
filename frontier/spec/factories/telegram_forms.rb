@@ -4,7 +4,7 @@
 #
 # Table name: telegram_forms
 #
-#  id              :bigint           not null, primary key
+#  id              :uuid             not null, primary key
 #  author_group    :string
 #  author_name     :string
 #  chat_identifier :string

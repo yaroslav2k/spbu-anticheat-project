@@ -16,8 +16,8 @@ class Telegram::Bot::Client
   def send_message(chat_id:, text:)
     response = post_to_bot(
       "/sendMessage",
-      chat_id: chat_id,
-      text: text
+      chat_id:,
+      text:
       # parse_mode: "HTML"
     )
 

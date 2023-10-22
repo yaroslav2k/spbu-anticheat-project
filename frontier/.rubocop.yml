@@ -1,6 +1,10 @@
 require:
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-factory_bot
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-thread_safety
 
 AllCops:
   NewCops: enable
@@ -67,4 +71,19 @@ RSpec/LetSetup:
   Enabled: false
 
 Metrics/ClassLength:
+  Enabled: false
+
+Rake/Desc:
+  Enabled: false
+
+Layout/ElseAlignment:
+  Enabled: false
+
+Layout/CaseIndentation:
+  Enabled: false
+
+Layout/EndAlignment:
+  Enabled: false
+
+Style/CaseLikeIf:
   Enabled: false

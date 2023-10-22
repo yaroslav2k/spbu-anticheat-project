@@ -2,7 +2,7 @@
 
 class CreateTelegramForms < ActiveRecord::Migration[7.0]
   def change
-    create_table :telegram_forms do |t|
+    create_table :telegram_forms, id: :uuid do |t|
       t.references :course, index: true, foreign_key: true, type: :uuid
       t.references :assignment, index: true, foreign_key: true, type: :uuid
       t.references :submission, index: true, foreign_key: true, type: :uuid
