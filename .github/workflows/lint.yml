@@ -25,5 +25,4 @@ jobs:
       - name: Run YAML linter
         uses: ibiqlik/action-yamllint@v3
         with:
-          file_or_dir: ./**/.yml ./**/.yaml
           strict: true
