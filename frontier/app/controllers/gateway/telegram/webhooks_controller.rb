@@ -4,6 +4,8 @@ class Gateway::Telegram::WebhooksController < ApplicationController
   rescue_from StandardError do |exception|
     Rails.logger.error(exception)
 
+    raise exception unless Rails.env.production?
+
     head :ok
   end
 
@@ -34,6 +36,9 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     end
 
     def event_response(event, context)
+      # NOTE: dirty!
+      return context.fetch(:preview) if event == :succeeded_preview
+
       context = if event == :created_upload
         { filename: context.fetch(:upload).filename }
       elsif event == :updated_to_course_provided_stage

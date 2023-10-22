@@ -43,5 +43,7 @@ module Frontier
     config.active_job.queue_adapter = :sidekiq
 
     config.x.ip_address = "127.0.0.1"
+
+    config.i18n.raise_on_missing_translations = true
   end
 end

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class TelegramForm::ParseInputService < ApplicationService
+  AVAILABLE_COMMANDS = %w[start preview submit].freeze
+  private_constant :AVAILABLE_COMMANDS
+
   subject :params
 
   result_on_success :input
@@ -8,7 +11,7 @@ class TelegramForm::ParseInputService < ApplicationService
   Input = Struct.new(:chat_object, :message, :document, keyword_init: true) do
     def chat_id = chat_object&.[](:id)
 
-    def command_type = ((message || [])[1..].presence_in(%w[start submit]) || "unknown").inquiry
+    def command_type = ((message || [])[1..].presence_in(AVAILABLE_COMMANDS) || "unknown").inquiry
   end
 
   def call

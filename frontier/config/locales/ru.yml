@@ -1,4 +1,10 @@
 ru:
+  course: Курс
+  assignment: Задание
+  author_name: Автор
+  author_group: Группа
+  uploads: Файлов
+  unspecified: Не введено
   controllers:
     gateway:
       telegram:

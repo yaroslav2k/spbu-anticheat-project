@@ -39,6 +39,11 @@ class TelegramForm::ProcessRequestService < ApplicationService
       end
     end
 
+    def process_command_preview
+      success! event: :succeeded_preview,
+        context: { preview: TelegramForm::PreviewService.call(telegram_form).preview }
+    end
+
     def process_command_unknown
       send(:"process_state_#{telegram_form.stage}")
     end
