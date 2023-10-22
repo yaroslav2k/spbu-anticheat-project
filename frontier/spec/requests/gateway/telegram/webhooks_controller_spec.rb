@@ -92,7 +92,6 @@ describe Gateway::Telegram::WebhooksController do
 
     context "with telegram form on `created` stage" do
       let!(:telegram_form) { create(:telegram_form, :created, chat_identifier: chat_id_param) }
-      let(:message_text_param) { course.title }
       let(:course) { create(:course, :active, title: "advanced-haskell") }
 
       before do
@@ -100,15 +99,34 @@ describe Gateway::Telegram::WebhooksController do
         create(:assignment, course:, title: "task-bar")
       end
 
-      it_behaves_like "it does not persist any instances of `TelegramForm` model"
+      context "with exact course title match" do
+        let(:message_text_param) { course.title }
 
-      it_behaves_like "it responds to telegram chat",
-        text: "Пожалуйста, веберите задание из списка доступных:\n\ntask-foo\ntask-bar"
+        it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
-      specify do
-        perform(params)
+        it_behaves_like "it responds to telegram chat",
+          text: "Пожалуйста, веберите задание из списка доступных:\n\ntask-bar\ntask-foo"
 
-        expect(response).to have_http_status(:ok)
+        specify do
+          perform(params)
+
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "with course title case mismatch" do
+        let(:message_text_param) { course.title.upcase }
+
+        it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+        it_behaves_like "it responds to telegram chat",
+          text: "Пожалуйста, веберите задание из списка доступных:\n\ntask-bar\ntask-foo"
+
+        specify do
+          perform(params)
+
+          expect(response).to have_http_status(:ok)
+        end
       end
     end
 

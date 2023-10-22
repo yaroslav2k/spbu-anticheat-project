@@ -8,7 +8,15 @@ class TelegramForm::PreviewService < ApplicationService
   result_on_success :preview
 
   def call
-    success! preview: I18n.with_locale(:ru) { build_preview }
+    preview = I18n.with_locale(:ru) do
+      if telegram_form
+        build_preview
+      else
+        I18n.t("no_telegram_form")
+      end
+    end
+
+    success! preview:
   end
 
   private

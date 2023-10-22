@@ -10,7 +10,7 @@ nginx/ssl/ca.crt
 .env
 .postgresql.env
 
-/.ruby-lsp
+.ruby-lsp
 
 .volumes/**
 !.volumes/.gitkeep

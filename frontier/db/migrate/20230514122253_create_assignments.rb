@@ -5,8 +5,7 @@ class CreateAssignments < ActiveRecord::Migration[7.0]
     create_table :assignments, id: :uuid do |t|
       t.references :course, foreign_key: true, null: false, type: :uuid
 
-      t.string :title, null: false
-      t.string :identifier, null: false, index: { unique: true }
+      t.citext :title, null: false
 
       t.jsonb :options, null: false, default: {}
 
@@ -14,5 +13,7 @@ class CreateAssignments < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+
+    add_index :assignments, %i[course_id title], unique: true
   end
 end

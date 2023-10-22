@@ -6,7 +6,7 @@
 #
 #  id         :uuid             not null, primary key
 #  semester   :string           not null
-#  title      :string           not null
+#  title      :citext           not null
 #  year       :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -14,6 +14,7 @@
 #
 # Indexes
 #
+#  index_courses_on_title    (title) UNIQUE
 #  index_courses_on_user_id  (user_id)
 #
 # Foreign Keys
