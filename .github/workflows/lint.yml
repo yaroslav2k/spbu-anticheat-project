@@ -23,8 +23,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@master
       - name: Run YAML linter
-        uses: karancode/yamllint-github-action@master
+        uses: ibiqlik/action-yamllint@v3
         with:
-          yamllint_file_or_dir: .
-          yamllint_strict: true
-          yamllint_comment: true
+          file_or_dir: ./**/.yml ./**/.yaml
+          strict: true
