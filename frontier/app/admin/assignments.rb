@@ -24,7 +24,6 @@ ActiveAdmin.register Assignment do
 
     column :course
     column :title
-    column :identifier
 
     column :report do |assignment|
       if assignment.has_report?

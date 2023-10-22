@@ -5,18 +5,17 @@
 # Table name: assignments
 #
 #  id                :uuid             not null, primary key
-#  identifier        :string           not null
 #  options           :jsonb            not null
 #  submissions_count :integer
-#  title             :string           not null
+#  title             :citext           not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  course_id         :uuid             not null
 #
 # Indexes
 #
-#  index_assignments_on_course_id   (course_id)
-#  index_assignments_on_identifier  (identifier) UNIQUE
+#  index_assignments_on_course_id            (course_id)
+#  index_assignments_on_course_id_and_title  (course_id,title) UNIQUE
 #
 # Foreign Keys
 #

@@ -87,3 +87,6 @@ Layout/EndAlignment:
 
 Style/CaseLikeIf:
   Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false

@@ -5,6 +5,7 @@ ru:
   author_group: Группа
   uploads: Файлов
   unspecified: Не введено
+  no_telegram_form: Не найдено активных форм
   controllers:
     gateway:
       telegram:

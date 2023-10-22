@@ -1,13 +1,18 @@
-development: &development
+.default: &default
   adapter: postgresql
   host: <%= ENV.fetch("POSTGRES_HOSTNAME", "localhost") %>
-  database: <%= ENV.fetch("POSTGRES_DATABASE", "frontier_#{Rails.env}") %>
   username: <%= ENV.fetch("POSTGRES_USERNAME", "postgres") %>
   password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
   pool: 5
 
+development:
+  <<: *default
+  database: frontier_development
+
 test:
-  <<: *development
+  <<: *default
+  database: frontier_test
 
 production:
-  <<: *development
+  <<: *default
+  database: frontier_development

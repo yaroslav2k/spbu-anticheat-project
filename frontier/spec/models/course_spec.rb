@@ -6,7 +6,7 @@
 #
 #  id         :uuid             not null, primary key
 #  semester   :string           not null
-#  title      :string           not null
+#  title      :citext           not null
 #  year       :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -14,6 +14,7 @@
 #
 # Indexes
 #
+#  index_courses_on_title    (title) UNIQUE
 #  index_courses_on_user_id  (user_id)
 #
 # Foreign Keys
@@ -49,7 +50,10 @@ RSpec.describe Course do
   end
 
   describe "validations" do
+    subject(:course) { create(:course) }
+
     it { is_expected.to validate_presence_of(:title) }
+    it { is_expected.to validate_uniqueness_of(:title).case_insensitive }
     it { is_expected.to validate_length_of(:title).is_at_least(3).is_at_most(40) }
     it { is_expected.to validate_inclusion_of(:semester).in_array(%w[spring fall]) }
     it { is_expected.to validate_numericality_of(:year).only_integer }

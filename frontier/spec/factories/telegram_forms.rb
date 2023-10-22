@@ -8,7 +8,7 @@
 #  author_group    :string
 #  author_name     :string
 #  chat_identifier :string
-#  stage           :string           default("initial"), not null
+#  stage           :string           default(NULL), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  assignment_id   :uuid

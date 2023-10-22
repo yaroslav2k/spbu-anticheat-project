@@ -14,27 +14,28 @@
 
 ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "citext"
   enable_extension "plpgsql"
 
   create_table "assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "course_id", null: false
-    t.string "title", null: false
-    t.string "identifier", null: false
+    t.citext "title", null: false
     t.jsonb "options", default: {}, null: false
     t.integer "submissions_count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index %w[course_id title], name: "index_assignments_on_course_id_and_title", unique: true
     t.index ["course_id"], name: "index_assignments_on_course_id"
-    t.index ["identifier"], name: "index_assignments_on_identifier", unique: true
   end
 
   create_table "courses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
-    t.string "title", null: false
+    t.citext "title", null: false
     t.string "semester", null: false
     t.integer "year", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_courses_on_title", unique: true
     t.index ["user_id"], name: "index_courses_on_user_id"
   end
 
@@ -83,8 +84,8 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at", precision: nil
-    t.datetime "remember_created_at", precision: nil
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
