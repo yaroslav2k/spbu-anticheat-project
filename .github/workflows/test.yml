@@ -3,9 +3,8 @@ on: push
 
 jobs:
   test-frontier:
-    name: Build
+    name: test-frontier
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:13
@@ -24,7 +23,6 @@ jobs:
         ports:
         - 6379:6379
         options: --entrypoint redis-server
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up Ruby
