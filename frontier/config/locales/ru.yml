@@ -18,5 +18,5 @@ ru:
             updated_to_author_group_provided_stage: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`"
             created_upload: "Файл принят (%{filename})"
             unable_to_process_record: "Не удалось применить изменения. Попробуйте позже"
-            updated_to_uploads_provided_stage: "Решение задания принято"
+            updated_to_uploads_provided_stage: "Ваше решение зарегистрировано\n\nСдано:\n\n%{assignments}"
             nochange: "..."

@@ -45,6 +45,8 @@ class Gateway::Telegram::WebhooksController < ApplicationController
         { assignments: telegram_form.course.assignments.pluck(:title).join("\n") }
       elsif event == :updated_to_created_stage
         { courses: Course.active.pluck(:title).join("\n") }
+      elsif event == :updated_to_uploads_provided_stage
+        { assignments: context.fetch(:assignments).pluck(:title).map.with_index(1) { |val, index| "#{index}. #{val}" }.join("\n") }
       else
         {}
       end

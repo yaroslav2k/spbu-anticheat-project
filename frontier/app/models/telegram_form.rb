@@ -83,6 +83,7 @@ class TelegramForm < ApplicationRecord
 
   enumerize :stage, in: STAGES, predicates: true, scope: :shallow, default: "created"
 
+  scope :completed, -> { where(stage: "uploads_provided") }
   scope :incompleted, -> { where.not(stage: "uploads_provided") }
 
   belongs_to :course, optional: true

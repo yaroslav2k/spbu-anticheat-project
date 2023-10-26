@@ -33,7 +33,14 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
       if telegram_form&.update(stage: :uploads_provided)
         Assignment::CreateJob.perform_later(telegram_form.submission)
-        success! event: :updated_to_uploads_provided_stage
+
+        assignments = Assignment
+                      .joins(submissions: :telegram_form)
+                      .where(telegram_form: { chat_identifier: input.chat_id })
+                      .where(telegram_form: { course_id: telegram_form.course_id })
+                      .order(:created_at)
+
+        success! event: :updated_to_uploads_provided_stage, context: { assignments: }
       else
         failure! reason: :unable_to_process_record
       end

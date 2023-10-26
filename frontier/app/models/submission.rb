@@ -34,6 +34,8 @@ class Submission < ApplicationRecord
 
   enumerize :status, in: %i[created completed failed], scope: :shallow, predicates: true
 
+  has_one :telegram_form, dependent: :destroy
+
   def download_url = nil
 
   scope :git, -> { where(type: "Submission::Git") }

@@ -307,10 +307,21 @@ describe Gateway::Telegram::WebhooksController do
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }
-      let(:assignment) { create(:assignment) }
+      let(:assignment) { create(:assignment, title: "assignment-1") }
       let(:submission) { create(:submission, :files_group, assignment:) }
 
       let(:message_text_param) { "/submit" }
+
+      before do
+        a1 = create(:assignment, title: "assignment-2", course:)
+        a2 = create(:assignment, title: "assignment-3", course:)
+
+        s1 = create(:submission, :files_group, assignment: a1)
+        s2 = create(:submission, :files_group, assignment: a2)
+
+        create(:telegram_form, :uploads_provided, chat_identifier: chat_id_param, course:, assignment: a1, submission: s1)
+        create(:telegram_form, :uploads_provided, chat_identifier: chat_id_param, course:, assignment: a2, submission: s2)
+      end
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
@@ -318,7 +329,8 @@ describe Gateway::Telegram::WebhooksController do
         perform(params)
 
         expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: "Решение задания принято"
+          chat_id: chat_id_param.to_s,
+          text: "Ваше решение зарегистрировано\n\nСдано:\n\n1. assignment-3\n2. assignment-2\n3. assignment-1"
         ).once
       end
     end
