@@ -35,24 +35,42 @@ class Gateway::Telegram::WebhooksController < ApplicationController
       end
     end
 
+    # rubocop:disable Metrics/PerceivedComplexity
     def event_response(event, context)
       # NOTE: dirty!
       return context.fetch(:preview) if event == :succeeded_preview
 
+      i18n_key = event.dup
+
+      Rails.logger.info(event)
+      Rails.logger.info(context)
+
       context = if event == :created_upload
         { filename: context.fetch(:upload).filename }
       elsif event == :updated_to_course_provided_stage
-        { assignments: telegram_form.course.assignments.pluck(:title).join("\n") }
-      elsif event == :updated_to_created_stage
-        { courses: Course.active.pluck(:title).join("\n") }
+        assignments = telegram_form.course.assignments.pluck(:title).join("\n")
+        last_telegram_form = telegram_form.telegram_chat.telegram_forms.completed.order(updated_at: :desc).take
+        i18n_key = if last_telegram_form
+          "#{event}.with_existing_submission"
+        else
+          "#{event}.default"
+        end
+        { assignments: }
+      elsif event == :telegram_chat_group_provided
+        courses = Course.active.where(group: telegram_chat.group).pluck(:title).join("\n")
+        i18n_key = :courses_not_found if courses.blank?
+
+        { courses: Course.active.where(group: telegram_chat.group).pluck(:title).join("\n") }
       elsif event == :updated_to_uploads_provided_stage
-        { assignments: context.fetch(:assignments).pluck(:title).map.with_index(1) { |val, index| "#{index}. #{val}" }.join("\n") }
+        assignments = context.fetch(:assignments).pluck(:title).map.with_index(1) { |val, index| "#{index}. #{val}" }.join("\n")
+        { assignments: }
       else
         {}
       end
 
-      I18n.with_locale(:ru) { t event, context }
+      I18n.with_locale(:ru) { t i18n_key, context }
     end
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def t(key, context = {})
       I18n.t(key, **context, scope: "controllers.gateway.telegram.webhooks.messages")
@@ -61,8 +79,16 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     def telegram_form
       return @telegram_form if defined?(@telegram_form)
 
-      @telegram_form = TelegramForm.incompleted.find_by(chat_identifier: input.chat_id)
+      @telegram_form = telegram_chat.telegram_forms.incompleted.take
     end
+
+    # rubocop:disable MultilineMethodCallIndentation
+    def telegram_chat
+      @telegram_chat ||= TelegramChat
+        .create_with(username: input.username)
+        .find_or_create_by!(external_identifier: input.chat_id)
+    end
+    # rubocop:enable MultilineMethodCallIndentation
 
     def reply_with(message) = api_client.send_message(chat_id: input.chat_id, text: message)
 

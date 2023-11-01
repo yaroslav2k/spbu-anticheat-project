@@ -5,6 +5,7 @@
 # Table name: courses
 #
 #  id         :uuid             not null, primary key
+#  group      :citext           not null
 #  semester   :string           not null
 #  title      :citext           not null
 #  year       :integer          not null
@@ -26,6 +27,7 @@ FactoryBot.define do
     semester { %w[fall spring].sample }
     title { Faker::Lorem.characters(number: 10) }
     year { (2000..2023).to_a.sample }
+    group { Faker::Lorem.word }
 
     trait :active do
       year { Date.current.year }

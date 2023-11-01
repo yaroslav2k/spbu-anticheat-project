@@ -15,28 +15,38 @@ class TelegramForm::ProcessRequestService < ApplicationService
   private
 
     def process_command_start
-      TelegramForm.incompleted.find_by(
-        chat_identifier: input.chat_id
-      )&.destroy!
+      telegram_chat.telegram_forms.incompleted.take&.destroy!
 
-      telegram_form = TelegramForm.create!(
-        chat_identifier: input.chat_id
-      )
+      options = {}
+      event, telegram_form_stage = if telegram_chat.completed? && (course = telegram_chat.latest_submitted_course)
+        options = { course: }
+        %i[updated_to_course_provided_stage course_provided]
+      elsif telegram_chat.completed?
+        %i[telegram_chat_group_provided telegram_chat_populated]
+      else
+        %i[updated_to_created_stage created]
+      end
 
-      success! event: :updated_to_created_stage, context: { telegram_form: }
+      telegram_form = telegram_chat.telegram_forms.create!(telegram_chat:, stage: telegram_form_stage, **options)
+
+      success! event:, context: { telegram_form: }
     end
 
     def process_command_submit
-      telegram_form = TelegramForm.incompleted.find_or_initialize_by(
-        chat_identifier: input.chat_id
-      )
+      telegram_form = telegram_chat.telegram_forms.incompleted.sole
+      return failure! reason: :unable_to_process_record unless telegram_form
 
-      if telegram_form&.update(stage: :uploads_provided)
+      tx_result = ApplicationRecord.transaction do
+        telegram_form.update!(stage: :uploads_provided)
+        telegram_chat.update!(last_submitted_course: telegram_form.course)
+      end
+
+      if tx_result
         Assignment::CreateJob.perform_later(telegram_form.submission)
 
         assignments = Assignment
-                      .joins(submissions: :telegram_form)
-                      .where(telegram_form: { chat_identifier: input.chat_id })
+                      .joins(submissions: { telegram_form: :telegram_chat })
+                      .where(telegram_chat: { external_identifier: input.chat_id })
                       .where(telegram_form: { course_id: telegram_form.course_id })
                       .order(:created_at)
 
@@ -51,12 +61,41 @@ class TelegramForm::ProcessRequestService < ApplicationService
         context: { preview: TelegramForm::PreviewService.call(telegram_form).preview }
     end
 
+    def process_command_reset
+      return failure! reason: :unable_to_process_record unless telegram_form
+
+      tx_result = ApplicationRecord.transaction do
+        telegram_chat.update!(last_submitted_course: nil)
+        telegram_form.update!(stage: :telegram_chat_populated, course: nil)
+      end
+
+      if tx_result
+        success! event: :telegram_chat_group_provided
+      else
+        failure! reason: :unable_to_process_record
+      end
+    end
+
     def process_command_unknown
-      send(:"process_state_#{telegram_form.stage}")
+      if telegram_chat.status.created?
+        telegram_chat.update!(status: "name_provided", name: input.message)
+        success! event: :telegram_chat_name_provided
+      elsif telegram_chat.status.name_provided?
+        telegram_chat.update!(status: "group_provided", group: input.message)
+        telegram_form.update!(stage: :telegram_chat_populated)
+        success! event: :telegram_chat_group_provided
+      elsif telegram_chat.status.group_provided?
+        send(:"process_state_#{telegram_form.stage}")
+      end
     end
 
     def process_state_created
+      success! event: :updated_to_created_stage
+    end
+
+    def process_state_telegram_chat_populated
       course = Course.find_by(title: input.message)
+
       if telegram_form.update(stage: "course_provided", course:)
         success! event: :updated_to_course_provided_stage
       else
@@ -75,22 +114,6 @@ class TelegramForm::ProcessRequestService < ApplicationService
     end
 
     def process_state_assignment_provided
-      if telegram_form.update(stage: "author_name_provided", author_name: input.message)
-        success! event: :updated_to_author_name_provided_stage
-      else
-        failure! reason: :unable_to_process_record
-      end
-    end
-
-    def process_state_author_name_provided
-      if telegram_form.update(stage: "author_group_provided", author_group: input.message)
-        success! event: :updated_to_author_group_provided_stage
-      else
-        failure! reason: :unable_to_process_record
-      end
-    end
-
-    def process_state_author_group_provided
       submission = create_submission!(telegram_form)
       upload = create_upload!(submission)
 
@@ -105,8 +128,8 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
     def create_submission!(telegram_form)
       telegram_form.assignment.submissions.files_group.first_or_create!(
-        author_name: telegram_form.author_name,
-        author_group: telegram_form.author_group
+        author_name: telegram_chat.name,
+        author_group: telegram_chat.group
       )
     end
 
@@ -118,5 +141,9 @@ class TelegramForm::ProcessRequestService < ApplicationService
         mime_type: input.document.fetch(:mime_type),
         source: :telegram
       )
+    end
+
+    def telegram_chat
+      @telegram_chat ||= TelegramChat.find_or_create_by!(external_identifier: input.chat_id)
     end
 end

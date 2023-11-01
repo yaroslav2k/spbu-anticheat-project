@@ -5,6 +5,7 @@
 # Table name: courses
 #
 #  id         :uuid             not null, primary key
+#  group      :citext           not null
 #  semester   :string           not null
 #  title      :citext           not null
 #  year       :integer          not null
@@ -32,6 +33,7 @@ class Course < ApplicationRecord
   scope :for, ->(user) { where(user:) }
   scope :active, -> { where(year: Date.current.year) }
 
+  validates :group, presence: true
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
   validates :title, uniqueness: { case_sensitive: false }
   validates :semester, inclusion: { in: %w[spring fall] }

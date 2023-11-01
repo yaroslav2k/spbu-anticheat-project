@@ -11,6 +11,7 @@ class CreateCourses < ActiveRecord::Migration[7.0]
       t.references :user, foreign_key: true, type: :uuid
 
       t.citext :title, null: false, index: { unique: true }
+      t.citext :group, null: false
       t.string :semester, null: false
       t.integer :year, null: false
 

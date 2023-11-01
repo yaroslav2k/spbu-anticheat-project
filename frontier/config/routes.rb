@@ -7,11 +7,6 @@ Rails.application.routes.draw do
 
   root to: "admin/dashboard#index"
 
-  namespace :api do
-    resource :status, only: %i[show]
-    resources :submissions, only: %i[create update]
-  end
-
   namespace :gateway do
     namespace :telegram do
       resources :webhooks, only: %i[] do

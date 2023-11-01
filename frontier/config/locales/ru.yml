@@ -11,11 +11,14 @@ ru:
       telegram:
         webhooks:
           messages:
-            updated_to_created_stage: "Пожалуйста, введите название доступного курса:\n\n%{courses}"
-            updated_to_course_provided_stage: "Пожалуйста, веберите задание из списка доступных:\n\n%{assignments}"
-            updated_to_assignment_provided_stage: "Введите свое ФИО"
-            updated_to_author_name_provided_stage: "Введите номер своей группы"
-            updated_to_author_group_provided_stage: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`"
+            courses_not_found: Курсы для данной группы не найдены
+            updated_to_created_stage: "Введите свое ФИО"
+            telegram_chat_name_provided: "Введите свою группу"
+            telegram_chat_group_provided: "Введите название доступного курса:\n\n%{courses}"
+            updated_to_course_provided_stage:
+              default: "Выберите задание из списка доступных:\n\n%{assignments}"
+              with_existing_submission: "Выберите задание из списка доступных:\n\n%{assignments}\n\nЕсли хотите сменить курс, введите команду `/reset`"
+            updated_to_assignment_provided_stage: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`"
             created_upload: "Файл принят (%{filename})"
             unable_to_process_record: "Не удалось применить изменения. Попробуйте позже"
             updated_to_uploads_provided_stage: "Ваше решение зарегистрировано\n\nСдано:\n\n%{assignments}"
