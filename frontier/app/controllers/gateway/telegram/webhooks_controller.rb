@@ -1,6 +1,20 @@
 # frozen_string_literal: true
 
 class Gateway::Telegram::WebhooksController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    Rails.logger.error(exception)
+
+    head :ok
+  end
+
+  rescue_from ActiveRecord::RecordInvalid do |exception|
+    Rails.logger.error(exception)
+
+    reply_with(event_response(:failed_to_save_record, {}))
+
+    head :ok
+  end
+
   rescue_from StandardError do |exception|
     Rails.logger.error(exception)
 
@@ -57,10 +71,11 @@ class Gateway::Telegram::WebhooksController < ApplicationController
         end
         { assignments: }
       elsif event == :telegram_chat_group_provided
-        courses = Course.active.where(group: telegram_chat.group).pluck(:title).join("\n")
+        courses = Course.active.where(group: telegram_chat.reload.group).pluck(:title).join("\n")
+        Rails.logger.info(courses)
         i18n_key = :courses_not_found if courses.blank?
 
-        { courses: Course.active.where(group: telegram_chat.group).pluck(:title).join("\n") }
+        { courses: }
       elsif event == :updated_to_uploads_provided_stage
         assignments = context.fetch(:assignments).pluck(:title).map.with_index(1) { |val, index| "#{index}. #{val}" }.join("\n")
         { assignments: }
@@ -77,9 +92,7 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     end
 
     def telegram_form
-      return @telegram_form if defined?(@telegram_form)
-
-      @telegram_form = telegram_chat.telegram_forms.incompleted.take
+      telegram_chat.telegram_forms.incompleted.take
     end
 
     # rubocop:disable MultilineMethodCallIndentation

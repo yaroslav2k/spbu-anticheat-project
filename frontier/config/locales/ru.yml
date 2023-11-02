@@ -11,6 +11,7 @@ ru:
       telegram:
         webhooks:
           messages:
+            failed_to_save_record: Не удалось сохранить изменения, проверьте корректность введенных данных
             courses_not_found: Курсы для данной группы не найдены
             updated_to_created_stage: "Введите свое ФИО"
             telegram_chat_name_provided: "Введите свою группу"
