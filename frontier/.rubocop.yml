@@ -14,13 +14,27 @@ AllCops:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-Metrics/BlockLength:
-  Exclude:
-    - spec/**/*_spec.rb
-    - db/**/*.rb
-  Max: 40
-
 Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+  Exclude:
+    - config/application.rb
+
+Style/Documentation:
+  Enabled: false
+
+Style/CaseLikeIf:
+  Enabled: false
+
+Layout/ElseAlignment:
+  Enabled: false
+
+Layout/CaseIndentation:
+  Enabled: false
+
+Layout/EndAlignment:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
   Enabled: false
 
 Layout/IndentationWidth:
@@ -32,8 +46,16 @@ Layout/IndentationConsistency:
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
-Style/Documentation:
-  Enabled: false
+Layout/LineLength:
+  Max: 140
+  Exclude:
+    - config/initializers/devise.rb
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*_spec.rb
+    - db/**/*.rb
+  Max: 40
 
 Metrics/MethodLength:
   Max: 30
@@ -44,10 +66,8 @@ Metrics/CyclomaticComplexity:
 Metrics/AbcSize:
   Enabled: false
 
-Layout/LineLength:
-  Max: 140
-  Exclude:
-    - config/initializers/devise.rb
+Metrics/ClassLength:
+  Enabled: false
 
 Naming/VariableNumber:
   Enabled: false
@@ -70,22 +90,7 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/LetSetup:
   Enabled: false
 
-Metrics/ClassLength:
-  Enabled: false
-
 Rake/Desc:
-  Enabled: false
-
-Layout/ElseAlignment:
-  Enabled: false
-
-Layout/CaseIndentation:
-  Enabled: false
-
-Layout/EndAlignment:
-  Enabled: false
-
-Style/CaseLikeIf:
   Enabled: false
 
 RSpec/NestedGroups:

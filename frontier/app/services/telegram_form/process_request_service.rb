@@ -127,7 +127,7 @@ class TelegramForm::ProcessRequestService < ApplicationService
     ###
 
     def create_submission!(telegram_form)
-      telegram_form.assignment.submissions.files_group.first_or_create!(
+      telegram_form.assignment.submissions.files_group.create!(
         author_name: telegram_chat.name,
         author_group: telegram_chat.group
       )

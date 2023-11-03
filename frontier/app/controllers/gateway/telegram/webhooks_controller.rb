@@ -1,27 +1,7 @@
 # frozen_string_literal: true
 
 class Gateway::Telegram::WebhooksController < ApplicationController
-  rescue_from ActiveRecord::RecordNotFound do |exception|
-    Rails.logger.error(exception)
-
-    head :ok
-  end
-
-  rescue_from ActiveRecord::RecordInvalid do |exception|
-    Rails.logger.error(exception)
-
-    reply_with(event_response(:failed_to_save_record, {}))
-
-    head :ok
-  end
-
-  rescue_from StandardError do |exception|
-    Rails.logger.error(exception)
-
-    raise exception unless Rails.env.production?
-
-    head :ok
-  end
+  include Gateway::Telegram::Rescueable
 
   before_action do
     next if input.chat_object.present?
@@ -95,13 +75,11 @@ class Gateway::Telegram::WebhooksController < ApplicationController
       telegram_chat.telegram_forms.incompleted.take
     end
 
-    # rubocop:disable MultilineMethodCallIndentation
     def telegram_chat
       @telegram_chat ||= TelegramChat
         .create_with(username: input.username)
         .find_or_create_by!(external_identifier: input.chat_id)
     end
-    # rubocop:enable MultilineMethodCallIndentation
 
     def reply_with(message) = api_client.send_message(chat_id: input.chat_id, text: message)
 
