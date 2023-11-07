@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-class TelegramForm::PreviewService < ApplicationService
+class TelegramForm::ProcessRequestService::PreviewService < TelegramForm::ProcessRequestService::ApplicationService
   FIELD_SEPARATOR = ": "
-
-  subject :telegram_form
-
-  result_on_success :preview
 
   def call
     preview = I18n.with_locale(:ru) do
@@ -16,7 +12,7 @@ class TelegramForm::PreviewService < ApplicationService
       end
     end
 
-    success! preview:
+    success! event: :succeeded_preview, context: { preview: }
   end
 
   private
