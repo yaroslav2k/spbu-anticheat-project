@@ -7,7 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-libcst = "^0.4.9"
+libcst = "1.1.0"
+tokenizer = "^3.4.3"
 
 
 [build-system]

@@ -14,13 +14,19 @@ class FunctionBodyCollector(cst.CSTVisitor):
             end: int
 
         def __init__(self) -> None:
-            self.data: dict[Tuple[str, str], 'FunctionBodyCollector.Result.FunctionInfo'] = {}
+            self.data: dict[
+                Tuple[str, str], "FunctionBodyCollector.Result.FunctionInfo"
+            ] = {}
 
-        def add(self, class_name: str, function_name: str, body: str, start: int, end: int):
-            self.data[(class_name, function_name)] = FunctionBodyCollector.Result.FunctionInfo(body, start, end)
+        def add(
+            self, class_name: str, function_name: str, body: str, start: int, end: int
+        ):
+            self.data[
+                (class_name, function_name)
+            ] = FunctionBodyCollector.Result.FunctionInfo(body, start, end)
 
     class ResultPrinter:
-        def __init__(self, result: 'FunctionBodyCollector.Result') -> None:
+        def __init__(self, result: "FunctionBodyCollector.Result") -> None:
             self.result = result
 
         def call(self):
