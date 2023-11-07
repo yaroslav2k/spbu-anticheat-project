@@ -1,5 +1,6 @@
 import math
 
+
 def func_a(a: int, b: int):
     c = b - (a % 2)
     stat = "foobar"
