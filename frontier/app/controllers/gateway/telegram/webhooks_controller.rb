@@ -79,7 +79,6 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
       return @telegram_chat if defined?(@telegram_chat)
 
       @telegram_chat = TelegramChat
-        .create_with(username: input.username)
         .find_by(external_identifier: input.chat_id)
     end
 
