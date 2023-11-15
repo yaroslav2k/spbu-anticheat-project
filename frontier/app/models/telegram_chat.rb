@@ -39,6 +39,14 @@ class TelegramChat < ApplicationRecord
 
   belongs_to :last_submitted_course, class_name: "Course", optional: true
 
+  def self.ransackable_attributes(*)
+    %w[created_at external_identifier group id id_value last_submitted_course_id name status updated_at username]
+  end
+
+  def self.ransackable_associations(*)
+    %w[last_submitted_course telegram_forms]
+  end
+
   def completed?
     status.group_provided?
   end

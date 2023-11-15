@@ -89,4 +89,8 @@ class TelegramForm < ApplicationRecord
     validates :assignment, if: :assignment_provided?
     validates :submission, if: :uploads_provided?
   end
+
+  def self.ransackable_attributes(*)
+    %w[assignment_id course_id created_at id id_value stage submission_id telegram_chat_id updated_at]
+  end
 end

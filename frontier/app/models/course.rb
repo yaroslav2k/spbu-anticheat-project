@@ -42,4 +42,12 @@ class Course < ApplicationRecord
   before_validation do
     self.year ||= Date.current.year
   end
+
+  def self.ransackable_attributes(*)
+    %w[created_at group id id_value semester title updated_at user_id year]
+  end
+
+  def self.ransackable_associations(*)
+    %w[assignments user]
+  end
 end
