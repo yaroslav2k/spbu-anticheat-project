@@ -10,7 +10,7 @@ class TelegramForm::ProcessRequestService::StartService < TelegramForm::ProcessR
   private
 
     def process_request
-      telegram_chat ||= TelegramChat
+      self.telegram_chat ||= TelegramChat
         .create!(username: input.username, external_identifier: input.chat_id)
 
       telegram_chat.telegram_forms.incompleted.take&.destroy!
