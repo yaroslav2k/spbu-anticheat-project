@@ -48,6 +48,14 @@ class Assignment < ApplicationRecord
     self.threshold ||= 0.5
   end
 
+  def self.ransackable_attributes(*)
+    %w[course_id created_at id id_value options submissions_count title updated_at]
+  end
+
+  def self.ransackable_associations(*)
+    %w[course submissions]
+  end
+
   def has_report?
     submissions.completed.any?
   end

@@ -3,7 +3,7 @@
 describe Gateway::Telegram::WebhooksController do
   describe "#notify" do
     def perform(params)
-      post "/gateway/telegram/webhooks/notify", params:
+      post :notify, params:
     end
 
     let(:telegram_client_double) { instance_double(Telegram::Bot::Client, send_message: true) }

@@ -1,0 +1,21 @@
+name: Security
+"on": push
+
+jobs:
+  bundle-audit:
+    name: frontier-security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+      - working-directory: frontier
+        run: bundle install
+      - name: Run `bundler-audit`
+        working-directory: frontier
+        run: bundle exec bundle-audit
+      - name: Run `brakeman` SAST
+        working-directory: frontier
+        run: bundle exec brakeman

@@ -41,6 +41,14 @@ class Submission < ApplicationRecord
   scope :git, -> { where(type: "Submission::Git") }
   scope :files_group, -> { where(type: "Submission::FilesGroup") }
 
+  def self.ransackable_attributes(*)
+    %w[assignment_id author_group author_name created_at data id id_value sent_at status type updated_at]
+  end
+
+  def self.ransackable_associations(*)
+    %w[assignment telegram_form]
+  end
+
   class Git < Submission
     validates :url, presence: true
     validates :branch, presence: true

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Gateway::Telegram::WebhooksController < ApplicationController
+class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationController
   include Gateway::Telegram::Rescueable
 
   before_action do
