@@ -9,7 +9,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     resource :status, only: %i[show]
-    resources :submissions, only: %i[create update]
   end
 
   namespace :gateway do

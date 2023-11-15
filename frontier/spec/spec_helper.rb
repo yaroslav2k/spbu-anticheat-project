@@ -4,6 +4,8 @@ require "rails_helper"
 
 require "enumerize/integrations/rspec"
 
+Dir["#{__dir__}/support/**/*.rb"].each { require_relative(_1) }
+
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 

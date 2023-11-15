@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
+ActiveRecord::Schema[7.0].define(version: 20_231_028_164_424) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -31,6 +31,7 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
   create_table "courses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
     t.citext "title", null: false
+    t.citext "group", null: false
     t.string "semester", null: false
     t.integer "year", null: false
     t.datetime "created_at", null: false
@@ -51,20 +52,31 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
     t.index ["assignment_id"], name: "index_submissions_on_assignment_id"
   end
 
+  create_table "telegram_chats", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "external_identifier", null: false
+    t.string "username", null: false
+    t.string "name"
+    t.string "group"
+    t.uuid "last_submitted_course_id"
+    t.string "status", default: "created", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_identifier"], name: "index_telegram_chats_on_external_identifier", unique: true
+    t.index ["last_submitted_course_id"], name: "index_telegram_chats_on_last_submitted_course_id"
+  end
+
   create_table "telegram_forms", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "course_id"
     t.uuid "assignment_id"
     t.uuid "submission_id"
-    t.string "chat_identifier"
-    t.string "author_name"
-    t.string "author_group"
+    t.uuid "telegram_chat_id", null: false
     t.string "stage", default: "initial", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["assignment_id"], name: "index_telegram_forms_on_assignment_id"
-    t.index ["chat_identifier"], name: "index_telegram_forms_on_chat_identifier"
     t.index ["course_id"], name: "index_telegram_forms_on_course_id"
     t.index ["submission_id"], name: "index_telegram_forms_on_submission_id"
+    t.index ["telegram_chat_id"], name: "index_telegram_forms_on_telegram_chat_id"
   end
 
   create_table "uploads", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -94,7 +106,9 @@ ActiveRecord::Schema[7.0].define(version: 20_231_020_182_643) do
   add_foreign_key "assignments", "courses"
   add_foreign_key "courses", "users"
   add_foreign_key "submissions", "assignments"
+  add_foreign_key "telegram_chats", "courses", column: "last_submitted_course_id"
   add_foreign_key "telegram_forms", "assignments"
   add_foreign_key "telegram_forms", "courses"
   add_foreign_key "telegram_forms", "submissions"
+  add_foreign_key "telegram_forms", "telegram_chats"
 end

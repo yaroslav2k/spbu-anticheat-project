@@ -7,7 +7,7 @@ ActiveAdmin.register Course do
     end
   end
 
-  permit_params :title, :year, :semester
+  permit_params :title, :year, :semester, :group
 
   before_build do |record|
     record.user = current_user
@@ -22,6 +22,9 @@ ActiveAdmin.register Course do
     column :year
     column :semester
     column :title
+    column :group
+
+    actions
   end
 
   form do |f|
@@ -31,6 +34,7 @@ ActiveAdmin.register Course do
       input :title
       input :year
       input :semester
+      input :group
     end
 
     f.actions

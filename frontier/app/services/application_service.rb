@@ -53,10 +53,6 @@ class ApplicationService
     raise "Not implemented"
   end
 
-  def async_call(method = :call)
-    self.class.async_call(subject, context, method:)
-  end
-
   def success!(**)
     self.class::Success.new(success?: true, failure?: false, **)
   end

@@ -5,6 +5,7 @@
 # Table name: courses
 #
 #  id         :uuid             not null, primary key
+#  group      :citext           not null
 #  semester   :string           not null
 #  title      :citext           not null
 #  year       :integer          not null
@@ -52,6 +53,7 @@ RSpec.describe Course do
   describe "validations" do
     subject(:course) { create(:course) }
 
+    it { is_expected.to validate_presence_of(:group) }
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_uniqueness_of(:title).case_insensitive }
     it { is_expected.to validate_length_of(:title).is_at_least(3).is_at_most(40) }

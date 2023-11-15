@@ -327,8 +327,6 @@ module NamespaceWithoutComments
   end
 end
 
-module ActiveAdmin
-  class Namespace
-    prepend NamespaceWithoutComments
-  end
+class ActiveAdmin::Namespace
+  prepend NamespaceWithoutComments
 end

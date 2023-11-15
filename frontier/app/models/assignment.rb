@@ -25,9 +25,6 @@ class Assignment < ApplicationRecord
   TITLE_MIN_LENGTH = 4
   TITLE_MAX_LENGTH = 80
 
-  IDENTIFIER_ALPHABET = [*"0".."9", *"a".."z", *"A".."Z"].freeze
-  IDENTIFIER_LENGTH = 6
-
   belongs_to :course
 
   has_many :submissions, dependent: :destroy
@@ -54,6 +51,8 @@ class Assignment < ApplicationRecord
   def has_report?
     submissions.completed.any?
   end
+
+  # FIXME: Extract persistence-related logic to separate concern/layer.
 
   def storage_key
     "courses/#{course.id}/assignments/#{storage_identifier}"
