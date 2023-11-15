@@ -19,7 +19,7 @@ class Gateway::Telegram::WebhooksController < ApplicationController
 
     def dispatch_command
       service_result = TelegramForm::ProcessRequestService.call(
-        telegram_form, input:
+        telegram_form, telegram_chat:, input:
       )
 
       if service_result.success?
@@ -72,13 +72,15 @@ class Gateway::Telegram::WebhooksController < ApplicationController
     end
 
     def telegram_form
-      telegram_chat.telegram_forms.incompleted.take
+      telegram_chat&.telegram_forms&.incompleted&.take
     end
 
     def telegram_chat
-      @telegram_chat ||= TelegramChat
+      return @telegram_chat if defined?(@telegram_chat)
+
+      @telegram_chat = TelegramChat
         .create_with(username: input.username)
-        .find_or_create_by!(external_identifier: input.chat_id)
+        .find_by(external_identifier: input.chat_id)
     end
 
     def reply_with(message) = api_client.send_message(chat_id: input.chat_id, text: message)

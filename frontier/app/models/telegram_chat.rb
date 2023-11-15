@@ -36,6 +36,7 @@ class TelegramChat < ApplicationRecord
   end
 
   has_many :telegram_forms, dependent: :destroy
+
   belongs_to :last_submitted_course, class_name: "Course", optional: true
 
   def completed?

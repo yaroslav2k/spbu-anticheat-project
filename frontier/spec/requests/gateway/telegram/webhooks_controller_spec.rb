@@ -90,45 +90,71 @@ describe Gateway::Telegram::WebhooksController do
       end
     end
 
-    context "with telegram form on `created` stage" do
-      let!(:telegram_form) { create(:telegram_form, :created) }
+    context "without telegram form" do
+      let(:message_text_param) { "start" }
       let(:course) { create(:course, :active, title: "advanced-haskell") }
 
       before do
         create(:assignment, course:, title: "task-foo")
-        create(:assignment, course:, title: "task-bar")
       end
 
-      context "with exact course title match" do
-        let(:message_text_param) { course.title }
+      specify do
+        perform(params)
 
-        it_behaves_like "it does not persist any instances of `TelegramForm` model"
-
-        it_behaves_like "it responds to telegram chat",
-          text: "Введите свою группу"
-
-        specify do
-          perform(params)
-
-          expect(response).to have_http_status(:ok)
-        end
+        expect(response).to have_http_status(:ok)
       end
 
-      context "with course title case mismatch" do
-        let(:message_text_param) { course.title.upcase }
+      specify do
+        perform(params)
 
-        it_behaves_like "it does not persist any instances of `TelegramForm` model"
-
-        it_behaves_like "it responds to telegram chat",
-          text: "Введите свою группу"
-
-        specify do
-          perform(params)
-
-          expect(response).to have_http_status(:ok)
-        end
+        expect(TelegramForm).to be_none
+        expect(TelegramChat).to be_none
       end
+
+      it_behaves_like "it responds to telegram chat",
+        text: "Некорректная команда"
     end
+
+    # context "with telegram form on `created` stage" do
+    #   let(:telegram_chat) { create(:telegram_chat)}
+    #   let!(:telegram_form) { create(:telegram_form, :created) }
+    #   let(:course) { create(:course, :active, title: "advanced-haskell") }
+
+    #   before do
+    #     create(:assignment, course:, title: "task-foo")
+    #     create(:assignment, course:, title: "task-bar")
+    #   end
+
+    #   context "with exact course title match" do
+    #     let(:message_text_param) { course.title }
+
+    #     it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+    #     it_behaves_like "it responds to telegram chat",
+    #       text: "Введите свою группу"
+
+    #     specify do
+    #       perform(params)
+
+    #       expect(response).to have_http_status(:ok)
+    #     end
+    #   end
+
+    #   context "with course title case mismatch" do
+    #     let(:message_text_param) { course.title.upcase }
+
+    #     it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+    #     it_behaves_like "it responds to telegram chat",
+    #       text: "Введите свою группу"
+
+    #     specify do
+    #       perform(params)
+
+    #       expect(response).to have_http_status(:ok)
+    #     end
+    #   end
+    # end
 
     # context "with telegram form on `telegram_chat_populated` stage" do
     # end

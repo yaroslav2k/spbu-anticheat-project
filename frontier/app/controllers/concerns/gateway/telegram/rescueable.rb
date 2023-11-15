@@ -9,9 +9,9 @@ module Gateway::Telegram::Rescueable
 
       reply_with(event_response(:failed_to_save_record, {}))
 
-      raise exception unless Rails.env.production?
+      raise exception # unless Rails.env.production?
 
-      head :ok
+      # head :ok
     end
   end
 end

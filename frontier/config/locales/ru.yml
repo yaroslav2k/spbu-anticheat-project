@@ -24,3 +24,4 @@ ru:
             unable_to_process_record: "Не удалось применить изменения. Попробуйте позже"
             updated_to_uploads_provided_stage: "Ваше решение зарегистрировано\n\nСдано:\n\n%{assignments}"
             nochange: "..."
+            invalid_command: Некорректная команда
