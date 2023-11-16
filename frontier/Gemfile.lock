@@ -26,7 +26,7 @@ GIT
 
 GIT
   remote: https://github.com/rspec/rspec-rails.git
-  revision: 7fdab6a76cf094220ea0eb79223bdc1a079259d3
+  revision: 6c89ad416254be5b5e0664b4a8f9efddddd33fdf
   branch: main
   specs:
     rspec-rails (6.1.0.pre)
@@ -148,7 +148,7 @@ GEM
       ruby2_keywords (>= 0.0.2)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.850.0)
+    aws-partitions (1.852.0)
     aws-sdk-core (3.186.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
@@ -285,7 +285,7 @@ GEM
       timeout
     net-smtp (0.4.0)
       net-protocol
-    nio4r (2.5.9)
+    nio4r (2.6.0)
     nokogiri (1.15.4-x86_64-linux)
       racc (~> 1.4)
     orm_adapter (0.5.0)
