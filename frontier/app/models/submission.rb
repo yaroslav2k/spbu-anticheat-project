@@ -32,7 +32,7 @@ class Submission < ApplicationRecord
 
   alias_attribute :sent_at, :created_at
 
-  enumerize :status, in: %i[created completed failed], scope: :shallow, predicates: true
+  enumerize :status, in: %i[created completed failed], default: "created", scope: :shallow, predicates: true
 
   has_one :telegram_form, dependent: :destroy
 

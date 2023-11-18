@@ -95,3 +95,6 @@ Rake/Desc:
 
 RSpec/NestedGroups:
   Enabled: false
+
+RSpec/IndexedLet:
+  Enabled: false
