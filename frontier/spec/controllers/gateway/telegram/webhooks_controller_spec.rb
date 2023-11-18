@@ -334,30 +334,57 @@ describe Gateway::Telegram::WebhooksController do
       end
       let(:course) { create(:course, title: "advanced-haskell") }
       let(:assignment) { create(:assignment) }
-      let(:submission) { create(:submission, :files_group, assignment:) }
       let(:telegram_chat) { create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param) }
+      let(:submission) { nil }
 
       let(:message_text_param) { "/submit" }
 
-      let(:expected_response) do
-        "Ваше решение зарегистрировано\n\nСдано:\n\n1. #{assignment.title}"
+      context "with provided uploads" do
+        let(:submission) { create(:submission, :files_group, assignment:) }
+
+        let(:expected_response) do
+          "Ваше решение зарегистрировано\n\nСдано:\n\n1. #{assignment.title}"
+        end
+
+        it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+        specify do
+          perform(params)
+
+          expect(telegram_client_double).to have_received(:send_message).with(
+            chat_id: chat_id_param.to_s, text: expected_response
+          ).once
+          expect(TelegramForm.sole).to have_attributes(
+            stage: "uploads_provided"
+          )
+        end
+
+        specify do
+          expect { perform(params) }.to have_enqueued_job(Assignment::CreateJob)
+        end
       end
 
-      it_behaves_like "it does not persist any instances of `TelegramForm` model"
+      context "without provided uploads" do
+        let(:expected_response) do
+          "Не удалось сохранить изменения, отправьте хотя бы один и введите '/submit' еще раз"
+        end
 
-      specify do
-        perform(params)
+        it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
-        expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: expected_response
-        ).once
-        expect(TelegramForm.sole).to have_attributes(
-          stage: "uploads_provided"
-        )
-      end
+        specify do
+          perform(params)
 
-      specify do
-        expect { perform(params) }.to have_enqueued_job(Assignment::CreateJob)
+          expect(telegram_client_double).to have_received(:send_message).with(
+            chat_id: chat_id_param.to_s, text: expected_response
+          ).once
+          expect(TelegramForm.sole).to have_attributes(
+            stage: "assignment_provided"
+          )
+        end
+
+        specify do
+          expect { perform(params) }.not_to have_enqueued_job(Assignment::CreateJob)
+        end
       end
     end
   end

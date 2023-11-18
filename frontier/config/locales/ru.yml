@@ -25,3 +25,4 @@ ru:
             updated_to_uploads_provided_stage: "Ваше решение зарегистрировано\n\nСдано:\n\n%{assignments}"
             nochange: "..."
             invalid_command: Некорректная команда
+            missing_uploads: Не удалось сохранить изменения, отправьте хотя бы один и введите '/submit' еще раз

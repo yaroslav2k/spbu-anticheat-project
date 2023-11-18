@@ -68,6 +68,8 @@ class TelegramForm::ProcessRequestService < ApplicationService
       tx_result = ApplicationRecord.transaction do
         telegram_form.update!(stage: :uploads_provided)
         telegram_chat.update!(last_submitted_course: telegram_form.course)
+      rescue ActiveRecord::RecordInvalid
+        false
       end
 
       if tx_result
@@ -81,7 +83,7 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
         success! event: :updated_to_uploads_provided_stage, context: { assignments: }
       else
-        failure! reason: :unable_to_process_record
+        failure! reason: :missing_uploads
       end
     end
   end
