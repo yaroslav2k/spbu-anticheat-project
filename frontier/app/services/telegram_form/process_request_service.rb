@@ -37,7 +37,7 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
     private
 
-      def process_request
+      def process_request # rubocop:disable Metrics/PerceivedComplexity
         self.telegram_chat ||= TelegramChat
           .create!(username: input.username, external_identifier: input.chat_id)
 
@@ -48,13 +48,6 @@ class TelegramForm::ProcessRequestService < ApplicationService
         options = {}
         event, telegram_form_stage = if telegram_chat.completed? && (course = telegram_chat.latest_submitted_course)
           options = { course: }
-          assignments = Assignment
-            .joins(submissions: { telegram_form: :telegram_chat })
-            .where(telegram_chat: { external_identifier: input.chat_id })
-            .where(telegram_form: { course_id: telegram_form.course_id })
-            .order(:created_at)
-
-          assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
 
           %i[updated_to_course_provided_stage course_provided]
         elsif telegram_chat.completed?
@@ -65,6 +58,16 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
         telegram_chat.save! if telegram_chat.new_record?
         telegram_form = telegram_chat.telegram_forms.create!(telegram_chat:, stage: telegram_form_stage, **options)
+
+        if event == :updated_to_course_provided_stage
+          assignments = Assignment
+            .joins(submissions: { telegram_form: :telegram_chat })
+            .where(telegram_chat: { external_identifier: input.chat_id })
+            .where(telegram_form: { course_id: telegram_form.course_id })
+            .order(:created_at)
+
+          assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
+        end
 
         success! event:, context: { telegram_form:, assignments: }.compact
       end
