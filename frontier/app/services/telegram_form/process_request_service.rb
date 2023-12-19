@@ -232,7 +232,7 @@ class TelegramForm::ProcessRequestService < ApplicationService
           external_id: input.document.fetch(:file_id),
           external_unique_id: input.document.fetch(:file_unique_id),
           filename: input.document.fetch(:file_name),
-          mime_type: input.document.fetch(:mime_type),
+          mime_type: input.document.fetch(:mime_type, "application/octet-stream"),
           source: :telegram
         )
       end
