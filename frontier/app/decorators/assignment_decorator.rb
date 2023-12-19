@@ -20,7 +20,7 @@ class AssignmentDecorator < ApplicationDecorator
       super(...)
 
       %i[class_name function_name].each do |attribute|
-        public_send("#{attribute}=", handle_blank(public_send(attribute)))
+        public_send(:"#{attribute}=", handle_blank(public_send(attribute)))
       end
 
       self.file_name = file_name.split("/")[4..].join("/")

@@ -42,7 +42,7 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
       context = if event == :created_upload
         { filename: context.fetch(:upload).filename }
       elsif event == :updated_to_course_provided_stage
-        assignments = telegram_form.course.assignments.pluck(:title).join("\n")
+        assignments = context.fetch(:assignments).pluck(:title).join("\n")
         last_telegram_form = telegram_form.telegram_chat.telegram_forms.completed.order(updated_at: :desc).take
         i18n_key = if last_telegram_form
           "#{event}.with_existing_submission"
@@ -52,7 +52,6 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
         { assignments: }
       elsif event == :telegram_chat_group_provided
         courses = Course.active.where(group: telegram_chat.reload.group).pluck(:title).join("\n")
-        Rails.logger.info(courses)
         i18n_key = :courses_not_found if courses.blank?
 
         { courses: }

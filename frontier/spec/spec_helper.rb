@@ -6,6 +6,9 @@ require "enumerize/integrations/rspec"
 
 Dir["#{__dir__}/support/**/*.rb"].each { require_relative(_1) }
 
+require "simplecov"
+SimpleCov.start
+
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 

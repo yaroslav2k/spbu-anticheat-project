@@ -156,8 +156,37 @@ describe Gateway::Telegram::WebhooksController do
     #   end
     # end
 
-    # context "with telegram form on `telegram_chat_populated` stage" do
-    # end
+    context "with telegram form on `telegram_chat_populated` stage" do
+      let!(:telegram_form) { create(:telegram_form, :telegram_chat_populated, course:, telegram_chat:) }
+      let(:course) { create(:course, :active, title: "advanced-haskell") }
+      let!(:assignment_1) { create(:assignment, course:, title: "haskell-1") }
+      let!(:assignment_2) { create(:assignment, course:, title: "haskell-2") }
+      let!(:assignment_3) { create(:assignment, course:, title: "haskell-3") }
+      let!(:assignment_4) { create(:assignment, course:, title: "haskell-4") }
+      let(:telegram_chat) { create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param) }
+
+      let(:message_text_param) { course.title }
+
+      before do
+        create(
+          :submission,
+          :files_group,
+          assignment: assignment_4,
+          telegram_form: create(:telegram_form, course:, telegram_chat:)
+        )
+      end
+
+      it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+      it_behaves_like "it responds to telegram chat",
+        text: "Выберите задание из списка доступных:\n\nhaskell-3\nhaskell-2\nhaskell-1"
+
+      specify do
+        perform(params)
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
 
     context "with telegram form on `course_provided` stage" do
       let!(:telegram_form) { create(:telegram_form, :course_provided, course:, telegram_chat:) }
@@ -305,30 +334,57 @@ describe Gateway::Telegram::WebhooksController do
       end
       let(:course) { create(:course, title: "advanced-haskell") }
       let(:assignment) { create(:assignment) }
-      let(:submission) { create(:submission, :files_group, assignment:) }
       let(:telegram_chat) { create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param) }
+      let(:submission) { nil }
 
       let(:message_text_param) { "/submit" }
 
-      let(:expected_response) do
-        "Ваше решение зарегистрировано\n\nСдано:\n\n1. #{assignment.title}"
+      context "with provided uploads" do
+        let(:submission) { create(:submission, :files_group, assignment:) }
+
+        let(:expected_response) do
+          "Ваше решение зарегистрировано\n\nСдано:\n\n1. #{assignment.title}"
+        end
+
+        it_behaves_like "it does not persist any instances of `TelegramForm` model"
+
+        specify do
+          perform(params)
+
+          expect(telegram_client_double).to have_received(:send_message).with(
+            chat_id: chat_id_param.to_s, text: expected_response
+          ).once
+          expect(TelegramForm.sole).to have_attributes(
+            stage: "uploads_provided"
+          )
+        end
+
+        specify do
+          expect { perform(params) }.to have_enqueued_job(Assignment::CreateJob)
+        end
       end
 
-      it_behaves_like "it does not persist any instances of `TelegramForm` model"
+      context "without provided uploads" do
+        let(:expected_response) do
+          "Не удалось сохранить изменения, отправьте хотя бы один и введите '/submit' еще раз"
+        end
 
-      specify do
-        perform(params)
+        it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
-        expect(telegram_client_double).to have_received(:send_message).with(
-          chat_id: chat_id_param.to_s, text: expected_response
-        ).once
-        expect(TelegramForm.sole).to have_attributes(
-          stage: "uploads_provided"
-        )
-      end
+        specify do
+          perform(params)
 
-      specify do
-        expect { perform(params) }.to have_enqueued_job(Assignment::CreateJob)
+          expect(telegram_client_double).to have_received(:send_message).with(
+            chat_id: chat_id_param.to_s, text: expected_response
+          ).once
+          expect(TelegramForm.sole).to have_attributes(
+            stage: "assignment_provided"
+          )
+        end
+
+        specify do
+          expect { perform(params) }.not_to have_enqueued_job(Assignment::CreateJob)
+        end
       end
     end
   end

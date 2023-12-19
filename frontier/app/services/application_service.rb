@@ -28,7 +28,7 @@ class ApplicationService
           context.fetch(name, default)
         end
 
-        define_method("#{name}=") do |value|
+        define_method(:"#{name}=") do |value|
           context[name] = value
         end
       end

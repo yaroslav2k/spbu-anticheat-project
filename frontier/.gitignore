@@ -27,6 +27,5 @@
 /config/credentials/production.key
 /config/credentials/development.key
 
-
-# TODO: remove
-.todo.txt
+# Ignore code coverage data.
+/coverage
