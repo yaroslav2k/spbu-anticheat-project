@@ -15,7 +15,7 @@ namespace :telegram do
 
     desc "Remove webhook URL for telegram bot"
     task remove_webhook: :environment do
-      api_token = (ENV["API_TOKEN"].presence || raise("Missing API_TOKEN environment variable"))
+      api_token = ENV["API_TOKEN"].presence || raise("Missing API_TOKEN environment variable")
 
       response = HTTParty.post(
         "https://api.telegram.org/bot#{api_token}/setWebhook?url="
