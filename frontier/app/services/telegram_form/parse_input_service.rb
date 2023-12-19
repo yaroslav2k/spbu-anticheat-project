@@ -8,6 +8,12 @@ class TelegramForm::ParseInputService < ApplicationService
 
   result_on_success :input
 
+  GitRevision = Data.define(:repository_url, :branch) do
+    def initialize(repository_url:, branch:)
+      super(repository_url: repository_url.strip, branch: branch.presence || "main")
+    end
+  end
+
   Input = Struct.new(:chat_object, :message, :document, keyword_init: true) do
     def chat_id = chat_object&.[](:id)
 
@@ -16,13 +22,15 @@ class TelegramForm::ParseInputService < ApplicationService
     def command_type = ((message || [])[1..].presence_in(AVAILABLE_COMMANDS) || "unknown").inquiry
 
     def git_revision
-      @git_revision ||= if (parts = message&.split)&.size == 2 && Assignment::VerifyURLService.call(parts.first).success?
-        parts
+      @git_revision ||= begin
+        parts = message&.split
+
+        GitRevision.new(repository_url: parts[0], branch: parts[1]) if parts.present? && Assignment::VerifyURLService.call(parts.first)
       end
     end
 
     def git_revision?
-      git_revision.present?
+      !!git_revision
     end
   end
 
