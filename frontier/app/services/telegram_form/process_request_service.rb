@@ -232,8 +232,8 @@ class TelegramForm::ProcessRequestService < ApplicationService
          telegram_form.assignment.submissions.git.create!(
            author_name: telegram_chat.name,
            author_group: telegram_chat.group,
-           url: input.git_revision.first,
-           branch: input.git_revision.second
+           url: input.git_revision.repository_url,
+           branch: input.git_revision.branch
          )
         else
           telegram_form.assignment.submissions.files_group.create!(
