@@ -19,10 +19,17 @@ ru:
             updated_to_course_provided_stage:
               default: "Выберите задание из списка доступных:\n\n%{assignments}"
               with_existing_submission: "Выберите задание из списка доступных:\n\n%{assignments}\n\nЕсли хотите сменить курс, введите команду `/reset`"
-            updated_to_assignment_provided_stage: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`"
+            updated_to_assignment_provided_stage: |
+              Приложите решение, отправив один или несколько файлов.
+              Также вы можете отправить ссылку на публичный Github-репозиторий в формате
+              `<git-repo-url> <branch:=main>`,
+              например: `https://github.com/leanprover/lean4 master`
+
+              Затем введите команду `/submit`.
             created_upload: "Файл принят (%{filename})"
             unable_to_process_record: "Не удалось применить изменения. Попробуйте позже"
             updated_to_uploads_provided_stage: "Ваше решение зарегистрировано\n\nСдано:\n\n%{assignments}"
             nochange: "..."
             invalid_command: Некорректная команда
             missing_uploads: Не удалось сохранить изменения, отправьте хотя бы один и введите '/submit' еще раз
+            github_url_provided: "Git-репозиторий успешно добавлен в очередь на обработку. Введите `/submit`"

@@ -31,12 +31,22 @@ ActiveAdmin.register Submission do
       row :author_group
       row :status
 
-      row :uploads do |submission|
-        safe_join(
-          submission.uploads.reduce([]) do |links, upload|
-            links << link_to(upload.filename, upload.source_url, target: "_blank", rel: "noopener")
-          end, tag.br
-        )
+      if submission.of_type.files_group?
+        row :uploads do
+          safe_join(
+            submission.uploads.reduce([]) do |links, upload|
+              links << link_to(upload.filename, upload.source_url, target: "_blank", rel: "noopener")
+            end, tag.br
+          )
+        end
+      elsif submission.of_type.git?
+        row :"Github URL" do
+          link_to submission.url, submission.url, target: "_blank", rel: "noopener"
+        end
+
+        row :branch do
+          submission.branch
+        end
       end
     end
   end
