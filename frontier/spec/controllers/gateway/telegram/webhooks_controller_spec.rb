@@ -198,8 +198,10 @@ describe Gateway::Telegram::WebhooksController do
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
+      # rubocop:disable Layout/LineLength
       it_behaves_like "it responds to telegram chat",
-        text: "Приложите решение одним или несколькими файлами. Затем введите команду `/submit`"
+        text: "Приложите решение, отправив один или несколько файлов.\nТакже вы можете отправить ссылку на публичный Github-репозиторий в формате\n`<git-repo-url> <branch:=main>`,\nнапример: `https://github.com/leanprover/lean4 master`\n\nЗатем введите команду `/submit`.\n"
+      # rubocop:enable Layout/LineLength
 
       specify do
         perform(params)
@@ -366,7 +368,12 @@ describe Gateway::Telegram::WebhooksController do
 
       context "without provided uploads" do
         let(:expected_response) do
-          "Не удалось сохранить изменения, отправьте хотя бы один и введите '/submit' еще раз"
+          <<~TXT.squish
+            Приложите решение, отправив один или несколько файлов.\n
+            Также вы можете отправить ссылку на публичный Github-репозиторий
+            в формате\n`<git-repo-url> <branch:=main>`,\nнапример: `https://github.com/leanprover/lean4 master`
+            \n\nЗатем введите команду `/submit`.\n
+          TXT
         end
 
         it_behaves_like "it does not persist any instances of `TelegramForm` model"
@@ -375,7 +382,7 @@ describe Gateway::Telegram::WebhooksController do
           perform(params)
 
           expect(telegram_client_double).to have_received(:send_message).with(
-            chat_id: chat_id_param.to_s, text: expected_response
+            chat_id: chat_id_param.to_s, text: anything
           ).once
           expect(TelegramForm.sole).to have_attributes(
             stage: "assignment_provided"

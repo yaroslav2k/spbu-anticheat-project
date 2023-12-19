@@ -209,10 +209,17 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
       def process_state_assignment_provided
         submission = create_submission!(telegram_form)
-        upload = create_upload!(submission)
+
+        upload = create_upload!(submission) if submission.of_type.files_group?
 
         if telegram_form.update(submission:)
-          success! event: :created_upload, context: { upload: }
+          if submission.of_type.files_group?
+            success! event: :created_upload, context: { upload: }
+          elsif submission.of_type.git?
+            success! event: :github_url_provided, context: { url: submission.url }
+          else
+            raise "Unexpected submission type `#{submission.of_type}`"
+          end
         else
           failure! reason: :unable_to_process_record
         end
@@ -221,10 +228,19 @@ class TelegramForm::ProcessRequestService < ApplicationService
       ###
 
       def create_submission!(telegram_form)
-        telegram_form.assignment.submissions.files_group.create!(
-          author_name: telegram_chat.name,
-          author_group: telegram_chat.group
-        )
+        if input.git_revision?
+         telegram_form.assignment.submissions.git.create!(
+           author_name: telegram_chat.name,
+           author_group: telegram_chat.group,
+           url: input.git_revision.first,
+           branch: input.git_revision.second
+         )
+        else
+          telegram_form.assignment.submissions.files_group.create!(
+            author_name: telegram_chat.name,
+            author_group: telegram_chat.group
+          )
+        end
       end
 
       def create_upload!(submission)

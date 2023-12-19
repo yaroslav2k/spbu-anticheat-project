@@ -49,6 +49,10 @@ class Submission < ApplicationRecord
     %w[assignment telegram_form]
   end
 
+  def of_type
+    self.class.name.demodulize.underscore.inquiry
+  end
+
   class Git < Submission
     validates :url, presence: true
     validates :branch, presence: true

@@ -39,7 +39,7 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
       Rails.logger.info(event)
       Rails.logger.info(context)
 
-      context = if event == :created_upload
+      context = if event == :created_upload # FIXME: Align naming with current implementation.
         { filename: context.fetch(:upload).filename }
       elsif event == :updated_to_course_provided_stage
         assignments = context.fetch(:assignments).pluck(:title).join("\n")
@@ -58,6 +58,8 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
       elsif event == :updated_to_uploads_provided_stage
         assignments = context.fetch(:assignments).pluck(:title).map.with_index(1) { |val, index| "#{index}. #{val}" }.join("\n")
         { assignments: }
+      elsif event == :github_url_provided
+        { url: context.fetch(:url) }
       else
         {}
       end

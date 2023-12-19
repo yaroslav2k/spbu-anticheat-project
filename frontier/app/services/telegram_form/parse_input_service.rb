@@ -14,6 +14,16 @@ class TelegramForm::ParseInputService < ApplicationService
     def username = chat_object&.[](:username)
 
     def command_type = ((message || [])[1..].presence_in(AVAILABLE_COMMANDS) || "unknown").inquiry
+
+    def git_revision
+      @git_revision ||= if (parts = message&.split)&.size == 2 && Assignment::VerifyURLService.call(parts.first).success?
+        parts
+      end
+    end
+
+    def git_revision?
+      git_revision.present?
+    end
   end
 
   def call
