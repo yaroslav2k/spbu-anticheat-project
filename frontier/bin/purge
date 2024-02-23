@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eoux
+
+docker compose down
+docker compose build
+docker volume rm spbu-anticheat-project_git-repositories

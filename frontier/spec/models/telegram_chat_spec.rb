@@ -54,5 +54,21 @@ RSpec.describe TelegramChat do
       it { expect(build(:telegram_chat, :with_status_name_provided)).not_to be_completed }
       it { expect(build(:telegram_chat, :with_status_group_provided)).to be_completed }
     end
+
+    describe "#latest_submitted_course" do
+      subject(:telegram_chat) { create(:telegram_chat) }
+
+      let(:telegram_chat_without_forms) { create(:telegram_chat) }
+
+      let(:course_1) { create(:course) }
+      let(:course_2) { create(:course) }
+
+      let!(:telegram_form_1) { create(:telegram_form, :uploads_provided, course: course_1, telegram_chat:, updated_at: 1.year.ago) }
+      let!(:telegram_form_2) { create(:telegram_form, :uploads_provided, course: course_2, telegram_chat:, updated_at: 1.day.ago) }
+
+      its(:latest_submitted_course) { is_expected.to eq(course_2) }
+
+      it { expect(telegram_chat_without_forms.latest_submitted_course).to be_nil }
+    end
   end
 end

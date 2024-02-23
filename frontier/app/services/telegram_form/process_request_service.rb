@@ -1,32 +1,35 @@
 # frozen_string_literal: true
 
 class TelegramForm::ProcessRequestService < ApplicationService
-  subject :telegram_form
+  input :telegram_form, type: TelegramForm, allow_nil: true
+  input :telegram_chat, type: TelegramChat, allow_nil: true
+  input :input, type: TelegramForm::ParseInputService::Input
 
-  context :telegram_chat
-  context :input
-
-  result_on_success :event, :context
-  result_on_failure :reason
+  output :event, type: Symbol, allow_nil: true
+  output :context, type: Hash, default: {}, allow_nil: true
+  output :reason
 
   def call
-    return failure! reason: :invalid_command if !input.command_type.start? && !telegram_chat
+    return self.event = :invalid_command if !input.command_type.start? && !telegram_chat
 
-    "#{self.class}::#{input.command_type.upcase_first}".constantize.call(
-      telegram_form, telegram_chat:, input:
+    service_result = "#{self.class}::#{input.command_type.upcase_first}".constantize.call(
+      telegram_form:, telegram_chat:, input:
     )
+
+    self.event = service_result.event
+    self.context = service_result.context
+    self.reason = service_result.reason
   end
 
-  class Base < ::ApplicationService
-    subject :telegram_form
+  class Base < ApplicationService
+    input :telegram_form, type: TelegramForm, allow_nil: true
+    input :telegram_chat, type: TelegramChat, allow_nil: true
+    input :input
 
-    context :telegram_chat
-    context :input
-
-    result_on_success :event, :context
-    result_on_failure :reason
+    output :event
+    output :context
+    output :reason
   end
-  private_constant :Base
 
   class Start < Base
     def call
@@ -38,7 +41,7 @@ class TelegramForm::ProcessRequestService < ApplicationService
     private
 
       def process_request # rubocop:disable Metrics/PerceivedComplexity
-        self.telegram_chat ||= TelegramChat
+        telegram_chat ||= TelegramChat
           .create!(username: input.username, external_identifier: input.chat_id)
 
         assignments = nil
@@ -69,10 +72,10 @@ class TelegramForm::ProcessRequestService < ApplicationService
           assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
         end
 
-        success! event:, context: { telegram_form:, assignments: }.compact
+        self.event = event
+        self.context = { telegram_form:, assignments: }.compact
       end
   end
-  private_constant :Start
 
   class Submit < Base
     def call
@@ -81,12 +84,14 @@ class TelegramForm::ProcessRequestService < ApplicationService
       tx_result = ApplicationRecord.transaction do
         telegram_form.update!(stage: :uploads_provided)
         telegram_chat.update!(last_submitted_course: telegram_form.course)
+
+        true
       rescue ActiveRecord::RecordInvalid
         false
       end
 
       if tx_result
-        Assignment::CreateJob.perform_later(telegram_form.submission)
+        Submission::ProcessJob.perform_later(telegram_form.submission)
 
         assignments = Assignment
                       .joins(submissions: { telegram_form: :telegram_chat })
@@ -94,13 +99,13 @@ class TelegramForm::ProcessRequestService < ApplicationService
                       .where(telegram_form: { course_id: telegram_form.course_id })
                       .order(:created_at)
 
-        success! event: :updated_to_uploads_provided_stage, context: { assignments: }
+        self.event = :updated_to_uploads_provided_stage
+        self.context = { assignments: }
       else
-        failure! reason: :missing_uploads
+        self.reason = :missing_uploads
       end
     end
   end
-  private_constant :Submit
 
   class Preview < Base
     FIELD_SEPARATOR = ": "
@@ -114,7 +119,8 @@ class TelegramForm::ProcessRequestService < ApplicationService
         end
       end
 
-      success! event: :succeeded_preview, context: { preview: }
+      self.event = :succeeded_preview
+      self.context = { preview: }
     end
 
     private
@@ -139,35 +145,33 @@ class TelegramForm::ProcessRequestService < ApplicationService
         @telegram_chat ||= telegram_form.telegram_chat
       end
   end
-  private_constant :Preview
 
   class Reset < Base
     def call
-      return failure! reason: :unable_to_process_record unless telegram_form
+      fail!(error: :unable_to_process_record) unless telegram_form
 
       tx_result = ApplicationRecord.transaction do
         telegram_chat.update!(last_submitted_course: nil)
         telegram_form.update!(stage: :telegram_chat_populated, course: nil)
       end
 
-      if tx_result
-        success! event: :telegram_chat_group_provided
+      self.event = if tx_result
+        :telegram_chat_group_provided
       else
-        failure! reason: :unable_to_process_record
+        :unable_to_process_record
       end
     end
   end
-  private_constant :Reset
 
   class Unknown < Base
     def call
       if telegram_chat.status.created?
         telegram_chat.update!(status: "name_provided", name: input.message)
-        success! event: :telegram_chat_name_provided
+        self.event = :telegram_chat_name_provided
       elsif telegram_chat.status.name_provided?
         telegram_chat.update!(status: "group_provided", group: input.message)
         telegram_form.update!(stage: :telegram_chat_populated)
-        success! event: :telegram_chat_group_provided
+        self.event = :telegram_chat_group_provided
       elsif telegram_chat.status.group_provided?
         send(:"process_state_#{telegram_form.stage}")
       end
@@ -176,7 +180,7 @@ class TelegramForm::ProcessRequestService < ApplicationService
     private
 
     def process_state_created
-      success! event: :updated_to_created_stage
+      self.event = :updated_to_created_stage
     end
 
     def process_state_telegram_chat_populated
@@ -191,9 +195,10 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
         assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
 
-        success! event: :updated_to_course_provided_stage, context: { assignments: }
+        self.event = :updated_to_course_provided_stage
+        self.context = { assignments: }
       else
-        failure! reason: :unable_to_process_record
+        fail! error: :unable_to_process_record
       end
     end
 
@@ -201,57 +206,61 @@ class TelegramForm::ProcessRequestService < ApplicationService
       assignment = telegram_form.course.assignments.find_by(title: input.message)
 
       if assignment && telegram_form.update(stage: "assignment_provided", assignment:)
-        success! event: :updated_to_assignment_provided_stage
+        self.event = :updated_to_assignment_provided_stage
       else
-        failure! reason: :unable_to_process_record
+        fail! error: :unable_to_process_record
       end
     end
 
-      def process_state_assignment_provided
-        submission = create_submission!(telegram_form)
+    def process_state_assignment_provided
+      submission = find_or_create_submission!(telegram_form)
 
-        upload = create_upload!(submission) if submission.of_type.files_group?
+      upload = create_upload!(submission) if submission.of_type.files_group?
 
-        if telegram_form.update(submission:)
-          if submission.of_type.files_group?
-            success! event: :created_upload, context: { upload: }
-          elsif submission.of_type.git?
-            success! event: :github_url_provided, context: { url: submission.url }
-          else
-            raise "Unexpected submission type `#{submission.of_type}`"
-          end
+      if telegram_form.update(submission:)
+        if submission.of_type.files_group?
+          self.event = :created_upload
+          self.context = { upload: }
+        elsif submission.of_type.git?
+          self.event = :github_url_provided
+          self.context = { url: submission.url }
         else
-          failure! reason: :unable_to_process_record
+          raise "Unexpected submission type `#{submission.of_type}`"
         end
+      else
+        fail! error: :unable_to_process_record
       end
+    end
 
-      ###
+    ###
 
-      def create_submission!(telegram_form)
-        if input.git_revision?
-         telegram_form.assignment.submissions.git.create!(
-           author_name: telegram_chat.name,
-           author_group: telegram_chat.group,
-           url: input.git_revision.repository_url,
-           branch: input.git_revision.branch
-         )
-        else
-          telegram_form.assignment.submissions.files_group.create!(
-            author_name: telegram_chat.name,
-            author_group: telegram_chat.group
-          )
-        end
+    def find_or_create_submission!(telegram_form)
+      if input.git_revision?
+        telegram_form.assignment.submissions.git.create!(
+          author_name: telegram_chat.name,
+          author_group: telegram_chat.group,
+          url: input.git_revision.repository_url,
+          branch: input.git_revision.branch
+        )
+      else
+        telegram_form.assignment.submissions.files_group.create_with(
+          author_name: telegram_chat.name,
+          author_group: telegram_chat.group
+        ).find_or_create_by!({})
       end
+    end
 
-      def create_upload!(submission)
-        submission.uploads.create!(
+    def create_upload!(submission)
+      Upload::CreateService.call(
+        submission:,
+        attributes: {
           external_id: input.document.fetch(:file_id),
           external_unique_id: input.document.fetch(:file_unique_id),
           filename: input.document.fetch(:file_name),
           mime_type: input.document.fetch(:mime_type, "application/octet-stream"),
           source: :telegram
-        )
-      end
+        }
+      ).record
+    end
   end
-  private_constant :Unknown
 end

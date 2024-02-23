@@ -28,9 +28,12 @@ FactoryBot.define do
     author_group { "group-#{Faker::Number.positive.to_i}" }
 
     assignment
-
-    trait :files_group do
-      type { "Submission::FilesGroup" }
-    end
   end
+
+  factory :submission_git, parent: :submission, class: "Submission::Git" do
+    branch { %w[main master feature].sample }
+    url { "https://github.com/agda" }
+  end
+
+  factory :submission_files_group, parent: :submission, class: "Submission::FilesGroup"
 end

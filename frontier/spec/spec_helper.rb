@@ -1,13 +1,27 @@
 # frozen_string_literal: true
 
+require "simplecov"
+SimpleCov.start do
+  enable_coverage :branch
+  enable_coverage_for_eval
+
+  add_group "lib", "lib"
+  %w[models controllers jobs services decorators validators helpers].each do |group|
+    add_group group, "app/#{group}"
+  end
+
+  add_filter "app/admin"
+  add_filter "config"
+  add_filter "lib/tasks"
+  add_filter "spec"
+  add_filter "db"
+end
+
 require "rails_helper"
 
 require "enumerize/integrations/rspec"
 
 Dir["#{__dir__}/support/**/*.rb"].each { require_relative(_1) }
-
-require "simplecov"
-SimpleCov.start
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
@@ -24,6 +38,10 @@ RSpec.configure do |config|
 
   config.infer_spec_type_from_file_location!
 
+  config.before type: :job do
+    config.include ActiveJob::TestHelper
+  end
+
   config.before :suite do
     FactoryBot.find_definitions
   end
@@ -35,3 +53,5 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+def described_module = described_class

@@ -1,20 +1,24 @@
 # frozen_string_literal: true
 
 class Assignment::DetectService < ApplicationService
-  subject :task_spec
+  input :submission
 
-  result_on_success :response
-  result_on_failure :exception
+  output :response
+  output :exception
 
-  def call
-    response = api_client.detect(task_spec)
-
-    success! response:
-  rescue StandardError => e
-    failure! exception: e
-  end
+  play :perform_api_request
 
   private
+
+    def call
+      super
+    rescue StandardError => e
+      self.exception = e
+    end
+
+    def perform_api_request
+      self.response = api_client.detect(submission)
+    end
 
     def api_client
       @api_client ||= DetectorClient.new(

@@ -4,9 +4,11 @@ class TelegramForm::ParseInputService < ApplicationService
   AVAILABLE_COMMANDS = %w[start preview reset submit].freeze
   private_constant :AVAILABLE_COMMANDS
 
-  subject :params
+  input :params, type: Hash
 
-  result_on_success :input
+  output :input
+
+  play :build_input_object
 
   GitRevision = Data.define(:repository_url, :branch) do
     def initialize(repository_url:, branch:)
@@ -25,7 +27,7 @@ class TelegramForm::ParseInputService < ApplicationService
       @git_revision ||= begin
         parts = message&.split
 
-        GitRevision.new(repository_url: parts[0], branch: parts[1]) if parts.present? && Assignment::VerifyURLService.call(parts.first)
+        GitRevision.new(repository_url: parts[0], branch: parts[1]) if parts.present?
       end
     end
 
@@ -34,14 +36,10 @@ class TelegramForm::ParseInputService < ApplicationService
     end
   end
 
-  def call
-    success! input: build_input_object
-  end
-
   private
 
     def build_input_object
-      Input.new(
+      self.input = Input.new(
         chat_object: params.dig(:message, :chat).presence,
         message: params.dig(:message, :text).presence,
         document: params.dig(:message, :document).presence

@@ -32,4 +32,12 @@ RSpec.describe Upload do
     it { is_expected.to validate_length_of(:filename).is_at_least(3).is_at_most(128) }
     it { is_expected.to validate_presence_of(:filename) }
   end
+
+  describe "instance methods" do
+    describe "#source_url" do
+      subject(:upload) { create(:upload) }
+
+      its(:source_url) { is_expected.to eq("https://127.0.0.1/storage/test/uploads/#{upload.id}") }
+    end
+  end
 end

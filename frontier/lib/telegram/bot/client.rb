@@ -9,6 +9,10 @@ class Telegram::Bot::Client
 
   headers "Content-Type" => "application/json"
 
+  def self.default
+    new(Rails.application.credentials.services.fetch(:telegram_bot))
+  end
+
   def initialize(config)
     @api_token = config.fetch(:api_token)
   end
@@ -18,7 +22,6 @@ class Telegram::Bot::Client
       "/sendMessage",
       chat_id:,
       text:
-      # parse_mode: "HTML"
     )
 
     raise_on_erroneous_response(response)
@@ -37,10 +40,7 @@ class Telegram::Bot::Client
   end
 
   def download_file(path)
-    response = post_to_file_api(path)
-    raise_on_erroneous_response(response)
-
-    response
+    post_to_file_api(path).tap { raise_on_erroneous_response(_1) }
   end
 
   def download_file_by_id(id)

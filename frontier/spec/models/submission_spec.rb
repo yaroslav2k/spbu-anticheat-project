@@ -40,4 +40,35 @@ RSpec.describe Submission do
 
     it { is_expected.to have_one(:telegram_form).dependent(:destroy) }
   end
+
+  describe "instance methods" do
+    describe "#to_s" do
+      context "with `git` submission type" do
+        subject(:submission) { create(:submission_git) }
+
+        its(:to_s) do
+ is_expected.to eq("#{submission.url} (#{submission.branch}) — #{submission.author_name} (#{submission.author_group})")
+        end
+      end
+
+      context "with `files_group` submission type" do
+        subject(:submission) { create(:submission_files_group) }
+
+        its(:to_s) { is_expected.to eq("File (#{submission.author_name})") }
+      end
+    end
+
+    describe "#source_url" do
+      subject(:submission) { create(:submission_files_group) }
+
+      let(:assignment) { submission.assignment }
+      let(:course) { assignment.course }
+
+      its(:source_url) do
+        is_expected.to eq(
+          "https://127.0.0.1/storage/test/courses/#{course.id}/assignments/#{assignment.id}/submissions/#{submission.id}"
+        )
+      end
+    end
+  end
 end

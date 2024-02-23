@@ -67,7 +67,11 @@ class Assignment < ApplicationRecord
   end
 
   def report_storage_key
-    "courses/#{course.id}/assignments/#{storage_identifier}/clusterisation_report.json"
+    "courses/#{course.id}/assignments/#{storage_identifier}/detector-report.json"
+  end
+
+  def report_url
+    Storage::PRIMARY.public_url(report_storage_key)
   end
 
   def storage_identifier

@@ -43,5 +43,5 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 
 COPY . /app
 
-ENTRYPOINT ["python", "utils/tt.py"]
+ENTRYPOINT ["python", "utils/evaluate.py"]
 CMD [""]

@@ -53,22 +53,25 @@ class Submission < ApplicationRecord
     self.class.name.demodulize.underscore.inquiry
   end
 
+  def storage_key
+    "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
+  end
+
+  def storage_identifier = id
+
   class Git < Submission
-    validates :url, presence: true
+    validates :url, url: { domain: "github.com" }
     validates :branch, presence: true
 
     jsonb_accessor :data,
       url: :string,
       branch: [:string, { default: "main" }]
 
-    def storage_key
-      "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
-    end
-
     def source_label = "(git)"
 
     def source_url = url
 
+    # FIXME: Move to presentation layer.
     def to_s
       "#{url} (#{branch}) — #{author_name} (#{author_group})"
     end
@@ -81,10 +84,6 @@ class Submission < ApplicationRecord
 
     def source_url
       Storage::PRIMARY.public_url(storage_key)
-    end
-
-    def storage_key
-      "uploads/#{storage_identifier}"
     end
 
     def to_s

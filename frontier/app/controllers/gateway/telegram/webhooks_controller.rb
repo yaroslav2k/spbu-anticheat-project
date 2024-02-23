@@ -19,7 +19,7 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
 
     def dispatch_command
       service_result = TelegramForm::ProcessRequestService.call(
-        telegram_form, telegram_chat:, input:
+        telegram_form:, telegram_chat:, input:
       )
 
       if service_result.success?
@@ -85,9 +85,7 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
 
     def reply_with(message) = api_client.send_message(chat_id: input.chat_id, text: message)
 
-    def input = @input ||= TelegramForm::ParseInputService.call(params).input
+    def input = @input ||= TelegramForm::ParseInputService.call(params: params.to_unsafe_h).input
 
-    def api_client
-      @api_client ||= Telegram::Bot::Client.new(Rails.application.credentials.services.telegram_bot)
-    end
+    def api_client = Telegram::Bot::Client.default
 end

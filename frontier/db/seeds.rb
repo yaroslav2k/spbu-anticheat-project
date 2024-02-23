@@ -13,14 +13,14 @@ user_1 = User.create_with(
 # Courses
 
 course_1 = Course.create_with(
-  year: 2023,
+  year: Time.zone.now.year,
   semester: "fall",
   user: user_1,
   group: "mkn-1"
 ).find_or_create_by!(title: "DB internals")
 
 course_2 = Course.create_with(
-  year: 2023,
+  year: Time.zone.now.year,
   semester: "fall",
   user: user_1,
   group: "mkn-2"
