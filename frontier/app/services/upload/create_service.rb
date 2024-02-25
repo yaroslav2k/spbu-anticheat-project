@@ -21,8 +21,6 @@ class Upload::CreateService < ApplicationService
     end
 
     def perform_creation_callbacks
-      return unless record.source.telegram?
-
       download_from_telegram
     end
 

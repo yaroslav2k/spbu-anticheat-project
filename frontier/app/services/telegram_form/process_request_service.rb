@@ -62,14 +62,13 @@ class TelegramForm::ProcessRequestService < ApplicationService
         telegram_form = telegram_chat.telegram_forms.create!(telegram_chat:, stage: telegram_form_stage, **options)
 
         if event == :updated_to_course_provided_stage
-          # assignments = Assignment
-          #   .joins(submissions: { telegram_form: :telegram_chat })
-          #   .where(telegram_chat: { external_identifier: input.chat_id })
-          #   .where(telegram_form: { course_id: telegram_form.course_id })
-          #   .order(:created_at)
+          assignments = Assignment
+            .joins(submissions: { telegram_form: :telegram_chat })
+            .where(telegram_chat: { external_identifier: input.chat_id })
+            .where(telegram_form: { course_id: telegram_form.course_id })
+            .order(:created_at)
 
-          # assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
-          assignments = telegram_form.course.assignments
+          assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
         end
 
         self.event = event
@@ -81,29 +80,19 @@ class TelegramForm::ProcessRequestService < ApplicationService
     def call
       # telegram_form = telegram_chat.telegram_forms.incompleted.sole
       # return failure! reason: :unable_to_process_record unless telegram_form
-      tx_result = ApplicationRecord.transaction do
-        telegram_form.update!(stage: :uploads_provided)
-        telegram_chat.update!(last_submitted_course: telegram_form.course)
+      telegram_form.update!(stage: :uploads_provided)
+      telegram_chat.update!(last_submitted_course: telegram_form.course)
 
-        true
-      rescue ActiveRecord::RecordInvalid
-        false
-      end
+      Submission::ProcessJob.perform_later(telegram_form.submission)
 
-      if tx_result
-        Submission::ProcessJob.perform_later(telegram_form.submission)
+      assignments = Assignment
+                    .joins(submissions: { telegram_form: :telegram_chat })
+                    .where(telegram_chat: { external_identifier: input.chat_id })
+                    .where(telegram_form: { course_id: telegram_form.course_id })
+                    .order(:created_at)
 
-        assignments = Assignment
-                      .joins(submissions: { telegram_form: :telegram_chat })
-                      .where(telegram_chat: { external_identifier: input.chat_id })
-                      .where(telegram_form: { course_id: telegram_form.course_id })
-                      .order(:created_at)
-
-        self.event = :updated_to_uploads_provided_stage
-        self.context = { assignments: }
-      else
-        self.reason = :missing_uploads
-      end
+      self.event = :updated_to_uploads_provided_stage
+      self.context = { assignments: }
     end
   end
 
@@ -178,26 +167,24 @@ class TelegramForm::ProcessRequestService < ApplicationService
     end
 
     def process_state_telegram_chat_populated
-      course = Course.find_by(title: input.message)
-
+      course = Course.active.find_by!(title: input.message)
       telegram_form.update!(stage: "course_provided", course:)
 
-      # assignments = Assignment
-      #   .joins(submissions: { telegram_form: :telegram_chat })
-      #   .where(telegram_chat: { external_identifier: input.chat_id })
-      #   .where(telegram_form: { course_id: telegram_form.course_id })
-      #   .order(:created_at)
+      assignments = Assignment
+        .joins(submissions: { telegram_form: :telegram_chat })
+        .where(telegram_chat: { external_identifier: input.chat_id })
+        .where(telegram_form: { course_id: telegram_form.course_id })
+        .order(:created_at)
 
-      # assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
-      assignments = telegram_form.course.assignments
+      assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
 
       self.event = :updated_to_course_provided_stage
       self.context = { assignments: }
     end
 
     def process_state_course_provided
-      assignment = telegram_form.course.assignments.find_by(title: input.message)
-      telegram_form.update(stage: "assignment_provided", assignment:)
+      assignment = telegram_form.course.assignments.find_by!(title: input.message)
+      telegram_form.update!(stage: "assignment_provided", assignment:)
 
       self.event = :updated_to_assignment_provided_stage
     end

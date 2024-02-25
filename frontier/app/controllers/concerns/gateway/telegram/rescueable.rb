@@ -19,5 +19,9 @@ module Gateway::Telegram::Rescueable
 
       head :ok
     end
+
+    rescue_from ActiveRecord::RecordNotFound do |exception|
+      reply_with(I18n.t(".errors.record_not_found", model_name: I18n.t(exception.model.downcase).downcase))
+    end
   end
 end

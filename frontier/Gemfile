@@ -28,6 +28,7 @@ gem "sidekiq", "~> 7.2"
 gem "slim", "~> 5.2.0"
 gem "sprockets-rails"
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
+gem "with_advisory_lock"
 
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]

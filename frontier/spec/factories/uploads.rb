@@ -22,6 +22,7 @@ FactoryBot.define do
 
     filename { Faker::File.file_name }
     metadata { {} }
+    source { %w[telegram].sample }
 
     trait :for_submission do
       uploadable factory: %i[submission_files_group]

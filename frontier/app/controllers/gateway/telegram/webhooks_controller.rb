@@ -10,12 +10,28 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
   end
 
   def notify
-    dispatch_command
+    within_transaction do
+      within_lock do
+        dispatch_command
+      end
+    end
 
     head :ok
   end
 
   private
+
+    def within_transaction(&)
+      ApplicationRecord.transaction(&)
+    end
+
+    def within_lock(&)
+      if telegram_chat
+        ApplicationRecord.with_advisory_lock([self.class.name, telegram_chat.id], transaction: true, &)
+      else
+        yield
+      end
+    end
 
     def dispatch_command
       service_result = TelegramForm::ProcessRequestService.call(

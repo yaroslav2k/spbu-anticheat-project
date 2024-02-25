@@ -419,6 +419,9 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    with_advisory_lock (5.1.0)
+      activerecord (>= 6.1)
+      zeitwerk (>= 2.6)
     zeitwerk (2.6.13)
 
 PLATFORMS
@@ -471,6 +474,7 @@ DEPENDENCIES
   spring
   sprockets-rails
   tzinfo-data
+  with_advisory_lock
 
 RUBY VERSION
    ruby 3.3.0p0

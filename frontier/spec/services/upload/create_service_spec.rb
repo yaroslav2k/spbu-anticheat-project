@@ -58,5 +58,21 @@ RSpec.describe Upload::CreateService do
         ).once
       end
     end
+
+    context "when upload has non-`telegram` source" do
+      let(:attributes) do
+        {
+          external_id: "file-id",
+          external_unique_id: "file-unique-id",
+          filename: "program.py",
+          mime_type: "application/x-python",
+          source: "teapot"
+        }
+      end
+
+      specify do
+        expect { perform(submission, attributes) }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
   end
 end
