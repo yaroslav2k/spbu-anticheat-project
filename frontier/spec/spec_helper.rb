@@ -3,7 +3,6 @@
 require "simplecov"
 SimpleCov.start do
   enable_coverage :branch
-  enable_coverage_for_eval
 
   add_group "lib", "lib"
   %w[models controllers jobs services decorators validators helpers].each do |group|

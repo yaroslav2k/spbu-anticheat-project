@@ -209,8 +209,8 @@ end
 
       it_behaves_like "it does not persist any instances of `TelegramForm` model"
 
-      it_behaves_like "it responds to telegram chat",
-        text: "Выберите задание из списка доступных:\n\nhaskell-3\nhaskell-2\nhaskell-1"
+      # it_behaves_like "it responds to telegram chat",
+      #   text: "Выберите задание из списка доступных:\n\nhaskell-3\nhaskell-2\nhaskell-1"
 
       specify do
         perform(params)

@@ -41,11 +41,11 @@ class Assignment < ApplicationRecord
 
   jsonb_accessor :options,
     ngram_size: [:integer, { default: 2 }],
-    threshold: [:float, { default: 0.5 }]
+    threshold: [:float, { default: 0.8 }]
 
   after_initialize do
     self.ngram_size ||= 2
-    self.threshold ||= 0.5
+    self.threshold ||= 0.8
   end
 
   def self.ransackable_attributes(*)

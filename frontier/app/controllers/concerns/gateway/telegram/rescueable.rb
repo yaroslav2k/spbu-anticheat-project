@@ -13,5 +13,11 @@ module Gateway::Telegram::Rescueable
 
       head :ok
     end
+
+    rescue_from ActiveRecord::RecordInvalid do |exception|
+      reply_with(exception.record.errors.full_messages.join("\n"))
+
+      head :ok
+    end
   end
 end

@@ -1,4 +1,12 @@
 ru:
+  errors:
+    attributes:
+      group:
+        does_not_exist: Группа с таким названием не найдена
+      url:
+        invalid_domain: Некорректный домен
+        invalid_uri: Некорректная ссылка
+        git_remote_branch_not_found: Не удается получить доступ к Git-репозиторию. Удостоверьтесь что репозиторий публичный и ветка указана верно
   course: Курс
   assignment: Задание
   author_name: Автор

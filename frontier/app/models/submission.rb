@@ -54,14 +54,14 @@ class Submission < ApplicationRecord
   end
 
   def storage_key
-    "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
+    "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}/manifest.json"
   end
 
   def storage_identifier = id
 
   class Git < Submission
-    validates :url, url: { domain: "github.com" }
     validates :branch, presence: true
+    validates :url, url: { domain: "github.com", perform_request: true }, git_remote: { branch: ->(record) { record.branch } }
 
     jsonb_accessor :data,
       url: :string,

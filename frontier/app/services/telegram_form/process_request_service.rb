@@ -33,20 +33,19 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
   class Start < Base
     def call
-      ApplicationRecord.transaction do
-        process_request
-      end
+      ApplicationRecord.transaction { process_request }
     end
 
     private
 
-      def process_request # rubocop:disable Metrics/PerceivedComplexity
-        telegram_chat ||= TelegramChat
-          .create!(username: input.username, external_identifier: input.chat_id)
+      def process_request
+        telegram_chat = self.telegram_chat || TelegramChat.create!(
+          username: input.username, external_identifier: input.chat_id
+        )
 
         assignments = nil
 
-        telegram_chat.telegram_forms.incompleted.take&.destroy!
+        telegram_chat.telegram_forms.incompleted.destroy_all
 
         options = {}
         event, telegram_form_stage = if telegram_chat.completed? && (course = telegram_chat.latest_submitted_course)
@@ -63,13 +62,14 @@ class TelegramForm::ProcessRequestService < ApplicationService
         telegram_form = telegram_chat.telegram_forms.create!(telegram_chat:, stage: telegram_form_stage, **options)
 
         if event == :updated_to_course_provided_stage
-          assignments = Assignment
-            .joins(submissions: { telegram_form: :telegram_chat })
-            .where(telegram_chat: { external_identifier: input.chat_id })
-            .where(telegram_form: { course_id: telegram_form.course_id })
-            .order(:created_at)
+          # assignments = Assignment
+          #   .joins(submissions: { telegram_form: :telegram_chat })
+          #   .where(telegram_chat: { external_identifier: input.chat_id })
+          #   .where(telegram_form: { course_id: telegram_form.course_id })
+          #   .order(:created_at)
 
-          assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
+          # assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
+          assignments = telegram_form.course.assignments
         end
 
         self.event = event
@@ -150,16 +150,10 @@ class TelegramForm::ProcessRequestService < ApplicationService
     def call
       fail!(error: :unable_to_process_record) unless telegram_form
 
-      tx_result = ApplicationRecord.transaction do
-        telegram_chat.update!(last_submitted_course: nil)
-        telegram_form.update!(stage: :telegram_chat_populated, course: nil)
-      end
+      telegram_chat.update!(last_submitted_course: nil)
+      telegram_form.update!(stage: :telegram_chat_populated, course: nil)
 
-      self.event = if tx_result
-        :telegram_chat_group_provided
-      else
-        :unable_to_process_record
-      end
+      self.event = :telegram_chat_group_provided
     end
   end
 
@@ -186,49 +180,41 @@ class TelegramForm::ProcessRequestService < ApplicationService
     def process_state_telegram_chat_populated
       course = Course.find_by(title: input.message)
 
-      if telegram_form.update(stage: "course_provided", course:)
-        assignments = Assignment
-          .joins(submissions: { telegram_form: :telegram_chat })
-          .where(telegram_chat: { external_identifier: input.chat_id })
-          .where(telegram_form: { course_id: telegram_form.course_id })
-          .order(:created_at)
+      telegram_form.update!(stage: "course_provided", course:)
 
-        assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
+      # assignments = Assignment
+      #   .joins(submissions: { telegram_form: :telegram_chat })
+      #   .where(telegram_chat: { external_identifier: input.chat_id })
+      #   .where(telegram_form: { course_id: telegram_form.course_id })
+      #   .order(:created_at)
 
-        self.event = :updated_to_course_provided_stage
-        self.context = { assignments: }
-      else
-        fail! error: :unable_to_process_record
-      end
+      # assignments = telegram_form.course.assignments.where.not(id: assignments.ids)
+      assignments = telegram_form.course.assignments
+
+      self.event = :updated_to_course_provided_stage
+      self.context = { assignments: }
     end
 
     def process_state_course_provided
       assignment = telegram_form.course.assignments.find_by(title: input.message)
+      telegram_form.update(stage: "assignment_provided", assignment:)
 
-      if assignment && telegram_form.update(stage: "assignment_provided", assignment:)
-        self.event = :updated_to_assignment_provided_stage
-      else
-        fail! error: :unable_to_process_record
-      end
+      self.event = :updated_to_assignment_provided_stage
     end
 
     def process_state_assignment_provided
       submission = find_or_create_submission!(telegram_form)
-
       upload = create_upload!(submission) if submission.of_type.files_group?
+      telegram_form.update!(submission:)
 
-      if telegram_form.update(submission:)
-        if submission.of_type.files_group?
-          self.event = :created_upload
-          self.context = { upload: }
-        elsif submission.of_type.git?
-          self.event = :github_url_provided
-          self.context = { url: submission.url }
-        else
-          raise "Unexpected submission type `#{submission.of_type}`"
-        end
+      if submission.of_type.files_group?
+        self.event = :created_upload
+        self.context = { upload: }
+      elsif submission.of_type.git?
+        self.event = :github_url_provided
+        self.context = { url: submission.url }
       else
-        fail! error: :unable_to_process_record
+        raise "Unexpected submission type `#{submission.of_type}`"
       end
     end
 
@@ -243,10 +229,10 @@ class TelegramForm::ProcessRequestService < ApplicationService
           branch: input.git_revision.branch
         )
       else
-        telegram_form.assignment.submissions.files_group.create_with(
+        telegram_form.assignment.submissions.files_group.create!(
           author_name: telegram_chat.name,
           author_group: telegram_chat.group
-        ).find_or_create_by!({})
+        )
       end
     end
 

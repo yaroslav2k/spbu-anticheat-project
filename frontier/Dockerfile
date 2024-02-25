@@ -2,6 +2,8 @@ ARG RUBY_VERSION=3.3.0
 
 FROM ruby:${RUBY_VERSION}
 
+RUN apt-get update && apt-get -y install --no-install-recommends less
+
 WORKDIR /app
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock

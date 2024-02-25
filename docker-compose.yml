@@ -44,6 +44,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    tty: true
+    stdin_open: true
 
   frontier-worker:
     <<: *frontier-ror

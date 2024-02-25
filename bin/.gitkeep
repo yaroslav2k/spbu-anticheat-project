@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eux
+
+docker compose down
+sudo rm -rf .volumes/{postgresql,redis}
+docker container prune -f
+docker volume rm spbu-anticheat-project_git-repositories
+docker compose build
+docker compose up -d
+
+sleep 15
+
+docker compose exec frontier-web rails db:seed
+
+docker compose ps -a

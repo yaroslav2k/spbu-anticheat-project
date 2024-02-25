@@ -38,29 +38,19 @@ class Submission::ProcessJob < ApplicationJob
       handle_failure do
         clone_git_repository(submission.url, submission.branch)
 
-        container([submission.url, submission.branch].join(":")).start.attach do |_stream, chunk|
-          Rails.logger.error(chunk) if chunk.present?
-        end
-
-        data = File.read(manifest_filepath(identifier))
+        container = create_container([submission.url, submission.branch].join(":")).start.attach
 
         s3_client.put_object(
-          body: data,
+          body: File.read(manifest_filepath(identifier)),
           bucket: Rails.env,
           key: "/#{submission.storage_key}",
           content_type: "application/json"
         )
 
         Assignment::DetectService.call(submission)
+
+        container.tap(&:stop).tap(&:remove)
       end
-    end
-
-    def manifest_filepath(identifier)
-      "/app/git-repositories/#{identifier}/.manifest.json"
-    end
-
-    def mutator_manifest_filepath(identifier)
-      "/app/input/#{identifier}/.manifest.json"
     end
 
     def process_files_group_submission
@@ -74,12 +64,27 @@ class Submission::ProcessJob < ApplicationJob
           end
         end
 
-        container(submission.id).start.attach do |_stream, chunk|
-          Rails.logger.error(chunk) if chunk.present?
-        end
+        container = create_container(submission.id).start.attach
+
+        s3_client.put_object(
+          body: File.read(manifest_filepath(identifier)),
+          bucket: Rails.env,
+          key: "/#{submission.storage_key}",
+          content_type: "application/json"
+        )
 
         Assignment::DetectService.call(submission:)
+
+        container.tap(&:stop).tap(&:remove)
       end
+    end
+
+    def manifest_filepath(identifier)
+      "/app/git-repositories/#{identifier}/.manifest.json"
+    end
+
+    def mutator_manifest_filepath(identifier)
+      "/app/input/#{identifier}/.manifest.json"
     end
 
     def clone_git_repository(repository_url, branch)
@@ -90,7 +95,7 @@ class Submission::ProcessJob < ApplicationJob
       Git.clone(repository_url, "#{TARGET_PATH}/#{identifier}", **options)
     end
 
-    memoize def container(submission_identifier)
+    memoize def create_container(submission_identifier)
       Docker::Container.create(
         "Image" => IMAGE_TAG,
         "HostConfig" => { "Binds" => ["spbu-anticheat-project_git-repositories:/app/input"] },
@@ -110,6 +115,10 @@ class Submission::ProcessJob < ApplicationJob
 
     def handle_failure
       yield
+    rescue Git::FailedError, Aws::S3::Errors::ServiceError, Errno::ENOENT => e
+      submission.update!(status: "failed")
+
+      Rails.logger.error(e.inspect)
     rescue StandardError => e
       submission.update!(status: "failed")
 

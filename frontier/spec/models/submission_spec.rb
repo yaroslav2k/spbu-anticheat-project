@@ -23,6 +23,12 @@
 #  fk_rails_...  (assignment_id => assignments.id)
 #
 RSpec.describe Submission do
+  before do
+    response_double = instance_double(HTTParty::Response, success?: true)
+    evaluator_double = instance_double(Proc, call: response_double, :[] => response_double)
+    stub_const("GitRemoteValidator::HTTP_REQUEST_EVALUATOR", evaluator_double)
+  end
+
   describe "enumerations" do
     subject(:submission) { build(:submission) }
 
@@ -47,7 +53,7 @@ RSpec.describe Submission do
         subject(:submission) { create(:submission_git) }
 
         its(:to_s) do
- is_expected.to eq("#{submission.url} (#{submission.branch}) — #{submission.author_name} (#{submission.author_group})")
+          is_expected.to eq("#{submission.url} (#{submission.branch}) — #{submission.author_name} (#{submission.author_group})")
         end
       end
 
@@ -66,7 +72,7 @@ RSpec.describe Submission do
 
       its(:source_url) do
         is_expected.to eq(
-          "https://127.0.0.1/storage/test/courses/#{course.id}/assignments/#{assignment.id}/submissions/#{submission.id}"
+          "https://127.0.0.1/storage/test/courses/#{course.id}/assignments/#{assignment.id}/submissions/#{submission.id}/manifest.json"
         )
       end
     end
