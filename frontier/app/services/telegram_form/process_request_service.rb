@@ -209,14 +209,12 @@ class TelegramForm::ProcessRequestService < ApplicationService
 
     def find_or_create_submission!(telegram_form)
       if input.git_revision?
-        telegram_form.assignment.submissions.git.create!(
-          author_name: telegram_chat.name,
-          author_group: telegram_chat.group,
+        telegram_form.assignment.submissions.git.create_with(
           url: input.git_revision.repository_url,
           branch: input.git_revision.branch
-        )
+        ).find_or_create_by!(author_name: telegram_chat.name, author_group: telegram_chat.group)
       else
-        telegram_form.assignment.submissions.files_group.create!(
+        telegram_form.assignment.submissions.files_group.find_or_create_by!(
           author_name: telegram_chat.name,
           author_group: telegram_chat.group
         )

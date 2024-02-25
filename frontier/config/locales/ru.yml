@@ -41,4 +41,4 @@ ru:
             nochange: "..."
             invalid_command: Некорректная команда
             missing_uploads: Не удалось сохранить изменения, отправьте хотя бы один и введите '/submit' еще раз
-            github_url_provided: "Git-репозиторий успешно добавлен в очередь на обработку. Введите `/submit`"
+            github_url_provided: "Ссылка на git-репозиторий принята, введите команду `/submit`"
