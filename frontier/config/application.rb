@@ -18,6 +18,9 @@ class Frontier
   class Application < Rails::Application
     config.load_defaults 7.0
 
+    config.active_record.schema_format = :sql
+    config.active_record.dump_schema_after_migration = false
+
     config.time_zone = "Europe/Moscow"
 
     config.generators.system_tests = nil
@@ -28,6 +31,10 @@ class Frontier
 
     config.x.ip_address = "127.0.0.1"
 
+    config.i18n.default_locale = :ru
+    config.i18n.fallbacks = %i[ru en]
     config.i18n.raise_on_missing_translations = true
+
+    config.autoload_paths += %w[#{config.root}/validators]
   end
 end

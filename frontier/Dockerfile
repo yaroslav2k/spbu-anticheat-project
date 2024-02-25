@@ -1,6 +1,10 @@
-ARG RUBY_VERSION=3.2.2
+ARG RUBY_VERSION=3.3.0
 
 FROM ruby:${RUBY_VERSION}
+
+RUN apt-get update && apt-get -y install --no-install-recommends less && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY Gemfile Gemfile

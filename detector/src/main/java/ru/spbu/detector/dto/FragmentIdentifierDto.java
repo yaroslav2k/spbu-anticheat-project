@@ -10,8 +10,7 @@ import java.util.Objects;
  * @param fileName      Имя файла, которому принадлежит фрагмент
  * @param className     Имя класса, которому принадлежит фрагмент
  * @param functionName  Имя функции, которой принадлежит фрагмент
- * @param repositoryURL Ссылка на репозиторий, которому принадлежит фрагмент
- * @param revision      Ревизия
+ * @param revision      Identity relation buster
  * @param functionStart Начало функции
  * @param functionEnd   Конец функции
  */
@@ -20,12 +19,11 @@ public record FragmentIdentifierDto(
         String fileName,
         String className,
         String functionName,
-        String repositoryURL,
         String revision,
         int functionStart,
         int functionEnd
 ) {
     public static boolean fromSameSubmission(FragmentIdentifierDto left, FragmentIdentifierDto right) {
-        return Objects.equals(left.repositoryURL, right.repositoryURL) && Objects.equals(left.revision, right.revision);
+        return Objects.equals(left.revision, right.revision);
     }
 }

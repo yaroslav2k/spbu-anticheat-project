@@ -10,16 +10,32 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
   end
 
   def notify
-    dispatch_command
+    within_transaction do
+      within_lock do
+        dispatch_command
+      end
+    end
 
     head :ok
   end
 
   private
 
+    def within_transaction(&)
+      ApplicationRecord.transaction(&)
+    end
+
+    def within_lock(&)
+      if telegram_chat
+        ApplicationRecord.with_advisory_lock([self.class.name, telegram_chat.id], transaction: true, &)
+      else
+        yield
+      end
+    end
+
     def dispatch_command
       service_result = TelegramForm::ProcessRequestService.call(
-        telegram_form, telegram_chat:, input:
+        telegram_form:, telegram_chat:, input:
       )
 
       if service_result.success?
@@ -85,9 +101,7 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
 
     def reply_with(message) = api_client.send_message(chat_id: input.chat_id, text: message)
 
-    def input = @input ||= TelegramForm::ParseInputService.call(params).input
+    def input = @input ||= TelegramForm::ParseInputService.call(params: params.to_unsafe_h).input
 
-    def api_client
-      @api_client ||= Telegram::Bot::Client.new(Rails.application.credentials.services.telegram_bot)
-    end
+    def api_client = Telegram::Bot::Client.default
 end

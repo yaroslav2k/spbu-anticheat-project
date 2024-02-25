@@ -30,6 +30,9 @@ class Submission < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :for, ->(user) { includes(:assignment).where(assignment: Assignment.for(user)) }
 
+  normalizes :author_group, with: ->(value) { value.strip }
+  normalizes :author_name, with: ->(value) { value.strip }
+
   alias_attribute :sent_at, :created_at
 
   enumerize :status, in: %i[created completed failed], default: "created", scope: :shallow, predicates: true
@@ -53,22 +56,25 @@ class Submission < ApplicationRecord
     self.class.name.demodulize.underscore.inquiry
   end
 
+  def storage_key
+    "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}/manifest.json"
+  end
+
+  def storage_identifier = id
+
   class Git < Submission
-    validates :url, presence: true
     validates :branch, presence: true
+    validates :url, url: { domain: "github.com", perform_request: true }, git_remote: { branch: ->(record) { record.branch } }
 
     jsonb_accessor :data,
       url: :string,
       branch: [:string, { default: "main" }]
 
-    def storage_key
-      "courses/#{assignment.course.id}/assignments/#{assignment.id}/submissions/#{storage_identifier}"
-    end
-
     def source_label = "(git)"
 
     def source_url = url
 
+    # FIXME: Move to presentation layer.
     def to_s
       "#{url} (#{branch}) — #{author_name} (#{author_group})"
     end
@@ -81,10 +87,6 @@ class Submission < ApplicationRecord
 
     def source_url
       Storage::PRIMARY.public_url(storage_key)
-    end
-
-    def storage_key
-      "uploads/#{storage_identifier}"
     end
 
     def to_s

@@ -44,6 +44,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    tty: true
+    stdin_open: true
 
   frontier-worker:
     <<: *frontier-ror
@@ -51,7 +53,7 @@ services:
     # command: ["bundle exec sidekiq --environment production"]
     command: ["bundle exec sidekiq"]
     volumes:
-      - ./.volumes/git-repositories:/app/git-repositories
+      - git-repositories:/app/git-repositories
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - redis
@@ -116,6 +118,9 @@ services:
       timeout: 10s
       retries: 5
       start_period: 15s
+
+volumes:
+  git-repositories:
 
 networks:
   backend:

@@ -14,14 +14,12 @@ import visitors.function_body_visitor as fbv  # noqa: E402
 def output(
     path: str,
     result: fbv.FunctionBodyCollector.Result,
-    repository: str = None,
     revision: str = None,
 ):
     payload = []
 
     for (class_name, function_name), item in result.data.items():
         identifier = {
-            "repositoryURL": repository,
             "revision": revision,
             "fileName": str(path),
             "className": class_name,
@@ -37,7 +35,6 @@ def output(
 
 def split(
     filepath: str,
-    repository: typing.Optional[str] = None,
     revision: typing.Optional[str] = None,
 ):
     with open(filepath, "r") as source:
@@ -46,4 +43,4 @@ def split(
         visitor = fbv.FunctionBodyCollector()
         source_tree.visit(visitor)
 
-        return output(filepath, visitor.result, repository, revision)
+        return output(filepath, visitor.result, revision)

@@ -29,6 +29,8 @@ class Assignment < ApplicationRecord
 
   has_many :submissions, dependent: :destroy
 
+  normalizes :title, with: ->(value) { value.strip }
+
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
   validates :title, uniqueness: { case_sensitive: false, scope: %i[course_id] }
   validates :ngram_size, numericality: { only_integer: true, greater_than_or_equal_to: 2 }
@@ -41,11 +43,11 @@ class Assignment < ApplicationRecord
 
   jsonb_accessor :options,
     ngram_size: [:integer, { default: 2 }],
-    threshold: [:float, { default: 0.5 }]
+    threshold: [:float, { default: 0.8 }]
 
   after_initialize do
     self.ngram_size ||= 2
-    self.threshold ||= 0.5
+    self.threshold ||= 0.8
   end
 
   def self.ransackable_attributes(*)
@@ -67,7 +69,11 @@ class Assignment < ApplicationRecord
   end
 
   def report_storage_key
-    "courses/#{course.id}/assignments/#{storage_identifier}/clusterisation_report.json"
+    "courses/#{course.id}/assignments/#{storage_identifier}/detector-report.json"
+  end
+
+  def report_url
+    Storage::PRIMARY.public_url(report_storage_key)
   end
 
   def storage_identifier

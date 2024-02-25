@@ -29,6 +29,8 @@
 #
 FactoryBot.define do
   factory :telegram_form do
+    submission factory: %i[submission_files_group]
+
     traits_for_enum :stage, TelegramForm::STAGES
 
     telegram_chat

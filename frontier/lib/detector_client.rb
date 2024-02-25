@@ -4,8 +4,6 @@ class DetectorClient
   REQUEST_IDENTIFIER_HEADER = "Request-ID"
   private_constant :REQUEST_IDENTIFIER_HEADER
 
-  delegate :assignment, to: :submission, private: true
-
   include Rails.application.routes.url_helpers
 
   Algorithm = Struct.new(:name, :n, :threshold, keyword_init: true) do
@@ -20,10 +18,8 @@ class DetectorClient
   headers "Content-Type" => "application/json"
 
   def initialize(config)
-    @config = config
     @access_token = config.fetch(:access_token)
-
-    self.class.base_uri config.fetch(:base_uri)
+    @base_uri = config.fetch(:base_uri)
   end
 
   def detect(submission)
@@ -31,7 +27,7 @@ class DetectorClient
 
     with_request_identifier do |request_identifier|
       self.class.post(
-        "/detection/compare-repositories",
+        "#{base_uri}/detection/compare-repositories",
         body: request_body,
         headers: {
           "Authorization" => authorization_value(access_token),
@@ -43,20 +39,22 @@ class DetectorClient
 
   private
 
+    attr_reader :base_uri, :access_token
+
     def request_body(submission)
       {
-        "algorithm" => algorithm.to_h,
+        "algorithm" => algorithm(submission).to_h,
         "assignment" => "#{submission.assignment.storage_key}/submissions",
         "result_key" => submission.assignment.report_storage_key,
         "result_path" => api_submission_path(submission.id)
       }
     end
 
-    def algorithm
+    def algorithm(submission)
       @algorithm ||= Algorithm.new(
         name: "LCS",
-        n: 2,
-        threshold: 0.9
+        n: submission.assignment.ngram_size,
+        threshold: submission.assignment.threshold
       )
     end
 
@@ -67,6 +65,4 @@ class DetectorClient
     def with_request_identifier
       yield SecureRandom.uuid
     end
-
-    attr_reader :config, :access_token
 end

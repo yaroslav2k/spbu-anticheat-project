@@ -28,6 +28,14 @@
 #  fk_rails_...  (telegram_chat_id => telegram_chats.id)
 #
 RSpec.describe TelegramForm do
+  describe ".ransackable_attributes" do
+    specify do
+      expect(described_class.ransackable_attributes).to eq(
+        %w[assignment_id course_id created_at id id_value stage submission_id telegram_chat_id updated_at]
+      )
+    end
+  end
+
   describe "constants" do
     describe "STAGES" do
       it { expect(described_class::STAGES).to be_an_instance_of(Array) }

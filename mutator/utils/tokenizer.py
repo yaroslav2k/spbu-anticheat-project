@@ -1,9 +1,5 @@
-import argparse
-import json
 import io
 import tokenize
-import sys
-from pathlib import Path
 
 
 def substitue_function_invokations(tokens):
@@ -36,7 +32,6 @@ def transform_token(token_info: tokenize.TokenInfo) -> str:
 
 
 def extract_tokens(source: str):
-    impl = lambda item: transform_token(item)
     gen = tokenize.generate_tokens(io.StringIO(source).readline)
 
     tokens = list(filter(filter_token, map(transform_token, gen)))
@@ -45,17 +40,11 @@ def extract_tokens(source: str):
     return tokens
 
 
-def tokenize_data(data, output=None):
+def tokenize_data(data):
     result = []
 
     for datum in data:
         tokens_spec = extract_tokens(datum["item"])
         result.append({"tokens": tokens_spec, "identifier": datum["identifier"]})
 
-    print(json.dumps(result))
-
-    if output:
-        with open(output, "w") as output:
-            output.write(json.dumps(result))
-    else:
-        sys.stdout.write(json.dumps(result))
+    return result

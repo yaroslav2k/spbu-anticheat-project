@@ -4,7 +4,6 @@ class AssignmentDecorator < ApplicationDecorator
   include Memery
 
   ITEM_ATTRIBUTES = %i[
-    repository_url
     revision
     file_name
     class_name
@@ -22,14 +21,12 @@ class AssignmentDecorator < ApplicationDecorator
       %i[class_name function_name].each do |attribute|
         public_send(:"#{attribute}=", handle_blank(public_send(attribute)))
       end
-
-      self.file_name = file_name.split("/")[4..].join("/")
     end
 
-    def external_url
-      path = "tree/#{revision}/#{file_name}"
-      "#{repository_url}/#{path}?plain=#L#{function_start}-#L#{function_end}"
-    end
+    # def external_url
+    #   path = "tree/#{revision}/#{file_name}"
+    #   "#{repository_url}/#{path}?plain=#L#{function_start}-#L#{function_end}"
+    # end
 
     private
 

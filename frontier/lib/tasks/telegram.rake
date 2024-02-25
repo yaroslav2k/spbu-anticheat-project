@@ -10,7 +10,13 @@ namespace :telegram do
         "https://api.telegram.org/bot#{api_token}/setWebhook?url=#{args[:url]}/gateway/telegram/webhooks/notify"
       )
 
-      puts response.body
+      if response.success?
+        exit 0
+      else
+        p response.parsed_response
+
+        exit 1
+      end
     end
 
     desc "Remove webhook URL for telegram bot"
@@ -21,7 +27,13 @@ namespace :telegram do
         "https://api.telegram.org/bot#{api_token}/setWebhook?url="
       )
 
-      puts response.body
+      if response.success?
+        exit 0
+      else
+        p response.parsed_response
+
+        exit 1
+      end
     end
   end
 end

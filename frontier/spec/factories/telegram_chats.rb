@@ -10,7 +10,7 @@ FactoryBot.define do
     end
 
     trait :with_group do
-      group { "group-#{Faker::Number.positive.to_i}" }
+      group { Course.pluck(:group).sample }
     end
 
     trait :with_status_name_provided do

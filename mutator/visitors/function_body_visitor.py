@@ -21,9 +21,9 @@ class FunctionBodyCollector(cst.CSTVisitor):
         def add(
             self, class_name: str, function_name: str, body: str, start: int, end: int
         ):
-            self.data[
-                (class_name, function_name)
-            ] = FunctionBodyCollector.Result.FunctionInfo(body, start, end)
+            self.data[(class_name, function_name)] = (
+                FunctionBodyCollector.Result.FunctionInfo(body, start, end)
+            )
 
     class ResultPrinter:
         def __init__(self, result: "FunctionBodyCollector.Result") -> None:

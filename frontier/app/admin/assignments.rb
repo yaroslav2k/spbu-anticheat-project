@@ -27,7 +27,12 @@ ActiveAdmin.register Assignment do
 
     column :report do |assignment|
       if assignment.has_report?
-        link_to "view", report_admin_assignment_url(assignment), target: "_blank", rel: "noopener"
+        safe_join(
+          [].tap do |links|
+            links << link_to("view", report_admin_assignment_url(assignment), target: "_blank", rel: "noopener")
+            links << link_to("download", assignment.report_url, target: "_blank", rel: "noopener")
+          end, ", "
+        )
       else
         "N/A"
       end

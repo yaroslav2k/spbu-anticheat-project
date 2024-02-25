@@ -33,8 +33,8 @@ public class CodeFragment {
     }
 
     @JsonIgnore
-    public String getRepository() {
-        return identifier.repositoryURL();
+    public String getRevision() {
+        return identifier.revision();
     }
 
     @Override

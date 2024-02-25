@@ -23,6 +23,7 @@ class Upload < ApplicationRecord
 
   belongs_to :uploadable, polymorphic: true
 
+  validates :source, presence: true
   validates :filename, presence: true
   validates :filename, length: { in: (3..128) }
 

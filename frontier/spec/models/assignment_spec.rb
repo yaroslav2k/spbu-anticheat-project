@@ -66,4 +66,38 @@ RSpec.describe Assignment do
     it { is_expected.to validate_numericality_of(:ngram_size).only_integer.is_greater_than_or_equal_to(2) }
     it { is_expected.to validate_numericality_of(:threshold).is_in(0..1) }
   end
+
+  describe "instance methods" do
+    subject(:assignment) { create(:assignment) }
+
+    describe "#has_report?" do
+      it { is_expected.not_to have_report }
+
+      context "with completed submissions" do
+        before { create(:submission_files_group, status: :completed, assignment:) }
+
+        it { is_expected.to have_report }
+      end
+    end
+
+    describe "#storage_key" do
+      its(:storage_key) { is_expected.to eq("courses/#{assignment.course_id}/assignments/#{assignment.id}") }
+    end
+
+    describe "#report_storage_key" do
+      its(:report_storage_key) do
+        is_expected.to eq("courses/#{assignment.course_id}/assignments/#{assignment.id}/detector-report.json")
+      end
+    end
+
+    describe "#report_url" do
+      let(:course) { assignment.course }
+
+      its(:report_url) do
+        is_expected.to eq(
+          "https://127.0.0.1/storage/test/courses/#{course.id}/assignments/#{assignment.id}/detector-report.json"
+        )
+      end
+    end
+  end
 end

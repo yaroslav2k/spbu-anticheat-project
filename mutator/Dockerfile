@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 
-RUN pip install --no-cache /wheels/*
+RUN pip install --no-cache-dir /wheels/*
 
 
 FROM ${PYTHON_IMAGE} as final
@@ -34,7 +34,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=1.4.2
 
-RUN pip install "poetry==$POETRY_VERSION"
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 WORKDIR /app
 COPY poetry.lock pyproject.toml /app/
@@ -43,5 +43,5 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 
 COPY . /app
 
-ENTRYPOINT ["python", "utils/tt.py"]
+ENTRYPOINT ["python", "utils/evaluate.py"]
 CMD [""]

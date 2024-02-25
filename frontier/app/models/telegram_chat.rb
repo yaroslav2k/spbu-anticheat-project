@@ -28,6 +28,11 @@ class TelegramChat < ApplicationRecord
 
   enumerize :status, in: %w[created name_provided group_provided], default: "created", predicates: true
 
+  normalizes :group, with: ->(value) { value.strip }
+  normalizes :name, with: ->(value) { value.strip }
+
+  validate :validate_group_validity, if: :group
+
   validates :external_identifier, uniqueness: true
 
   with_options presence: true do
@@ -54,4 +59,12 @@ class TelegramChat < ApplicationRecord
   def latest_submitted_course
     telegram_forms.completed.order(updated_at: :desc).take&.course
   end
+
+  private
+
+    def validate_group_validity
+      return if Course.exists?(group:)
+
+      errors.add(:group, :does_not_exist)
+    end
 end
