@@ -9,8 +9,6 @@ module Gateway::Telegram::Rescueable
 
       reply_with(event_response(:failed_to_save_record, {}))
 
-      # raise exception unless Rails.env.production?
-
       head :ok
     end
 
@@ -22,6 +20,8 @@ module Gateway::Telegram::Rescueable
 
     rescue_from ActiveRecord::RecordNotFound do |exception|
       reply_with(I18n.t(".errors.record_not_found", model_name: I18n.t(exception.model.downcase).downcase))
+
+      head :ok
     end
   end
 end
