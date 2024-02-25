@@ -38,7 +38,7 @@ class Submission::ProcessJob < ApplicationJob
       handle_failure do
         clone_git_repository(submission.url, submission.branch)
 
-        container = create_container([submission.url, submission.branch].join(":")).start.attach
+        container = create_container([submission.url, submission.branch].join(":")).start.tap(&:attach)
 
         s3_client.put_object(
           body: File.read(manifest_filepath(identifier)),
@@ -47,7 +47,7 @@ class Submission::ProcessJob < ApplicationJob
           content_type: "application/json"
         )
 
-        Assignment::DetectService.call(submission)
+        Assignment::DetectService.call(submission:)
 
         container.tap(&:stop).tap(&:remove)
       end
@@ -64,7 +64,7 @@ class Submission::ProcessJob < ApplicationJob
           end
         end
 
-        container = create_container(submission.id).start.attach
+        container = create_container(submission.id).start.tap(&:attach)
 
         s3_client.put_object(
           body: File.read(manifest_filepath(identifier)),

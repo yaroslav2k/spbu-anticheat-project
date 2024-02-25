@@ -10,7 +10,7 @@ table.index_table
   - assignment.report.clusters.each do |cluster|
     - cluster.items.each do |item|
       tr.odd
-        td.col = item.revision
+        td.col = link_to item.revision, admin_submission_url(item.revision)
         td.col = item.file_name
         td.col = item.class_name
         td.col = item.function_name
