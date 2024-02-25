@@ -30,6 +30,9 @@ class Submission < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :for, ->(user) { includes(:assignment).where(assignment: Assignment.for(user)) }
 
+  normalizes :author_group, with: ->(value) { value.strip }
+  normalizes :author_name, with: ->(value) { value.strip }
+
   alias_attribute :sent_at, :created_at
 
   enumerize :status, in: %i[created completed failed], default: "created", scope: :shallow, predicates: true

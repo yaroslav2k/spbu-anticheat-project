@@ -28,6 +28,9 @@ class TelegramChat < ApplicationRecord
 
   enumerize :status, in: %w[created name_provided group_provided], default: "created", predicates: true
 
+  normalizes :group, with: ->(value) { value.strip }
+  normalizes :name, with: ->(value) { value.strip }
+
   validate :validate_group_validity, if: :group
 
   validates :external_identifier, uniqueness: true

@@ -29,6 +29,8 @@ class Assignment < ApplicationRecord
 
   has_many :submissions, dependent: :destroy
 
+  normalizes :title, with: ->(value) { value.strip }
+
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
   validates :title, uniqueness: { case_sensitive: false, scope: %i[course_id] }
   validates :ngram_size, numericality: { only_integer: true, greater_than_or_equal_to: 2 }

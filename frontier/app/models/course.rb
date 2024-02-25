@@ -33,6 +33,9 @@ class Course < ApplicationRecord
   scope :for, ->(user) { where(user:) }
   scope :active, -> { where(year: Date.current.year) }
 
+  normalizes :group, with: ->(value) { value.strip }
+  normalizes :semester, with: ->(value) { value.strip.downcase }
+
   validates :group, presence: true
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
   validates :title, uniqueness: { case_sensitive: false }
