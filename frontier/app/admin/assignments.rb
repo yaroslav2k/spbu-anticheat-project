@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ActiveAdmin.register Assignment do
+ActiveAdmin.register Assignment do # rubocop:disable Metrics/BlockLength
   actions :all
 
   controller do
@@ -17,7 +17,7 @@ ActiveAdmin.register Assignment do
     render locals: { assignment: resource.decorate(context: { raw_report: object.body.read }) }
   end
 
-  permit_params :title, :course_id, options: %i[ngram_size threshold]
+  permit_params :title, :course_id, :ngram_size, :threshold
 
   index do
     selectable_column
@@ -44,11 +44,22 @@ ActiveAdmin.register Assignment do
   form do |f|
     f.semantic_errors
 
-    f.inputs do
-      input :title
-      input :course_id, as: :select,
-        collection: Course.all.for(current_user).map { |c| [c.title, c.id] },
-        include_blank: false
+    tabs do
+      tab :Main do
+        f.inputs do
+          input :title
+          input :course_id, as: :select,
+            collection: Course.all.for(current_user).map { |c| [c.title, c.id] },
+            include_blank: false
+        end
+      end
+
+      tab :"Algorithm options" do
+        f.inputs do
+          f.input :ngram_size
+          f.input :threshold
+        end
+      end
     end
 
     f.actions
