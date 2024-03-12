@@ -47,7 +47,10 @@ class Submission::ProcessJob < ApplicationJob
           content_type: "application/json"
         )
 
-        Assignment::DetectService.call(submission:)
+        Assignment::DetectService.call(
+          assignment: submission.assignment,
+          submission:
+        )
 
         container.tap(&:stop).tap(&:remove)
       end
@@ -73,7 +76,10 @@ class Submission::ProcessJob < ApplicationJob
           content_type: "application/json"
         )
 
-        Assignment::DetectService.call(submission:)
+        Assignment::DetectService.call(
+          assignment: submission.assignment,
+          submission:
+        )
 
         container.tap(&:stop).tap(&:remove)
       end

@@ -99,6 +99,9 @@ public class DetectorService {
                 .build();
 
         s3Client.putObject(objectRequest, RequestBody.fromString(report, StandardCharsets.UTF_8));
-        frontierClient.setSubmissionStatus(dto.resultPath(), SubmissionStatusDto.COMPLETED);
+
+        if (dto.resultPath() != null) {
+            frontierClient.setSubmissionStatus(dto.resultPath(), SubmissionStatusDto.COMPLETED);
+        }
     }
 }

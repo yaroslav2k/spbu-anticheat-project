@@ -22,8 +22,8 @@ class DetectorClient
     @base_uri = config.fetch(:base_uri)
   end
 
-  def detect(submission)
-    request_body = request_body(submission).to_json
+  def detect(assignment, submission)
+    request_body = request_body(assignment, submission).to_json
 
     with_request_identifier do |request_identifier|
       self.class.post(
@@ -41,20 +41,21 @@ class DetectorClient
 
     attr_reader :base_uri, :access_token
 
-    def request_body(submission)
+    def request_body(assignment, submission)
       {
-        "algorithm" => algorithm(submission).to_h,
-        "assignment" => "#{submission.assignment.storage_key}/submissions",
-        "result_key" => submission.assignment.report_storage_key,
-        "result_path" => api_submission_path(submission.id)
-      }
+        "algorithm" => algorithm(assignment).to_h,
+        "assignment" => "#{assignment.storage_key}/submissions",
+        "result_key" => assignment.report_storage_key
+      }.tap do |hash|
+        hash["result_path"] = api_submission_path(submission.id) if submission
+      end
     end
 
-    def algorithm(submission)
+    def algorithm(assignment)
       @algorithm ||= Algorithm.new(
         name: "LCS",
-        n: submission.assignment.ngram_size,
-        threshold: submission.assignment.threshold
+        n: assignment.ngram_size,
+        threshold: assignment.threshold
       )
     end
 
