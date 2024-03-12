@@ -17,6 +17,14 @@ ActiveAdmin.register Assignment do # rubocop:disable Metrics/BlockLength
     render locals: { assignment: resource.decorate(context: { raw_report: object.body.read }) }
   end
 
+  member_action :trigger_processing, method: :post do
+    assignment = Assignment.for(current_user).find(params[:id])
+
+    Assignment::DetectJob.perform_later(assignment, nil)
+
+    redirect_back_or_to root_path, notice: "Job was enqueued successfuly"
+  end
+
   permit_params :title, :course_id, :ngram_size, :threshold
 
   index do
@@ -36,6 +44,10 @@ ActiveAdmin.register Assignment do # rubocop:disable Metrics/BlockLength
       else
         "N/A"
       end
+    end
+
+    column :actions do |assignment|
+      link_to("process", trigger_processing_admin_assignment_path(assignment), method: :POST)
     end
 
     actions

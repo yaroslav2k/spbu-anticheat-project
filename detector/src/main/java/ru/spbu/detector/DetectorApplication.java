@@ -11,5 +11,4 @@ public class DetectorApplication {
     public static void main(String[] args) {
         SpringApplication.run(DetectorApplication.class, args);
     }
-
 }
