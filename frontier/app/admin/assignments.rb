@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ActiveAdmin.register Assignment do # rubocop:disable Metrics/BlockLength
+ActiveAdmin.register Assignment do
   actions :all
 
   controller do
@@ -47,7 +47,7 @@ ActiveAdmin.register Assignment do # rubocop:disable Metrics/BlockLength
     end
 
     column :actions do |assignment|
-      link_to("process", trigger_processing_admin_assignment_path(assignment), method: :POST)
+      link_to("process", trigger_processing_admin_assignment_path(assignment), method: :post)
     end
 
     actions

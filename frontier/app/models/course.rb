@@ -15,8 +15,8 @@
 #
 # Indexes
 #
-#  index_courses_on_title    (title) UNIQUE
-#  index_courses_on_user_id  (user_id)
+#  index_courses_on_title_and_year_and_semester  (title,year,semester) UNIQUE
+#  index_courses_on_user_id                      (user_id)
 #
 # Foreign Keys
 #
@@ -38,7 +38,7 @@ class Course < ApplicationRecord
 
   validates :group, presence: true
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
-  validates :title, uniqueness: { case_sensitive: false }
+  validates :title, uniqueness: { case_sensitive: false, scope: %i[year semester] }
   validates :semester, inclusion: { in: %w[spring fall] }
   validates :year, numericality: { only_integer: true }
 
@@ -52,5 +52,14 @@ class Course < ApplicationRecord
 
   def self.ransackable_associations(*)
     %w[assignments user]
+  end
+
+  def prolongeable_copy
+    dup.tap do |record|
+      record.assign_attributes(
+        semester: Utilities::DateTime.current_semester,
+        year: Time.zone.now.year
+      )
+    end
   end
 end

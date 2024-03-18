@@ -15,8 +15,8 @@
 #
 # Indexes
 #
-#  index_courses_on_title    (title) UNIQUE
-#  index_courses_on_user_id  (user_id)
+#  index_courses_on_title_and_year_and_semester  (title,year,semester) UNIQUE
+#  index_courses_on_user_id                      (user_id)
 #
 # Foreign Keys
 #
