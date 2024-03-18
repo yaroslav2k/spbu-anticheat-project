@@ -1,5 +1,28 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: telegram_chats
+#
+#  id                       :uuid             not null, primary key
+#  external_identifier      :string           not null
+#  group                    :string
+#  name                     :string
+#  status                   :string           default("created"), not null
+#  username                 :string           not null
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  last_submitted_course_id :uuid
+#
+# Indexes
+#
+#  index_telegram_chats_on_external_identifier       (external_identifier) UNIQUE
+#  index_telegram_chats_on_last_submitted_course_id  (last_submitted_course_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (last_submitted_course_id => courses.id)
+#
 FactoryBot.define do
   factory :telegram_chat do
     external_identifier { Faker::Internet.uuid }
