@@ -45,6 +45,7 @@ end
 
 group :development do
   gem "bundler-audit"
+  gem "database_consistency", require: false
   gem "pry"
   gem "spring"
 end

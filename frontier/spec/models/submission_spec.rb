@@ -41,6 +41,12 @@ RSpec.describe Submission do
     end
   end
 
+  describe "validations" do
+    it { is_expected.to validate_presence_of(:type) }
+    it { is_expected.to validate_presence_of(:author_name) }
+    it { is_expected.to validate_presence_of(:author_group) }
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:assignment).counter_cache }
 

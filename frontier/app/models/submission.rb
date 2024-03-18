@@ -33,6 +33,12 @@ class Submission < ApplicationRecord
   normalizes :author_group, with: ->(value) { value.strip }
   normalizes :author_name, with: ->(value) { value.strip }
 
+  with_options presence: true do
+    validates :type
+    validates :author_name
+    validates :author_group
+  end
+
   alias_attribute :sent_at, :created_at
 
   enumerize :status, in: %i[created completed failed], default: "created", scope: :shallow, predicates: true

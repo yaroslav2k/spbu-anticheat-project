@@ -1,0 +1,46 @@
+---
+Assignment:
+  index_assignments_on_course_id:
+    RedundantIndexChecker:
+      enabled: false
+  index_assignments_on_course_id_and_title:
+    UniqueIndexChecker:
+      enabled: false
+  lower(title)+course_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+  title:
+    CaseSensitiveUniqueValidationChecker:
+      enabled: false
+Course:
+  index_courses_on_title:
+    UniqueIndexChecker:
+      enabled: false
+  lower(title):
+    MissingUniqueIndexChecker:
+      enabled: false
+  title:
+    CaseSensitiveUniqueValidationChecker:
+      enabled: false
+  user:
+    ColumnPresenceChecker:
+      enabled: false
+Submission:
+  assignment:
+    ColumnPresenceChecker:
+      enabled: false
+  telegram_form:
+    MissingIndexChecker:
+      enabled: false
+User:
+  assignments:
+    ForeignKeyTypeChecker:
+      enabled: false
+    MissingIndexChecker:
+      enabled: false
+  email:
+    ColumnPresenceChecker:
+      enabled: false
+  index_users_on_reset_password_token:
+    UniqueIndexChecker:
+      enabled: false
