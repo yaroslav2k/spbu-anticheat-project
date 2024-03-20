@@ -5,7 +5,7 @@ spring:
 detector:
   s3:
     endpoint: "http://s3:9000"
-    bucket-name: "development"
+    bucket-name: "production"
 
 client:
   frontier:
