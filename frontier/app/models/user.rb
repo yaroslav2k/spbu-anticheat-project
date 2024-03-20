@@ -27,5 +27,5 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable
   validates :username, presence: true, uniqueness: true
 
-  has_many :assignments, dependent: :destroy
+  has_many :courses, dependent: :destroy
 end

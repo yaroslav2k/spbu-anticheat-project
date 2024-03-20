@@ -53,9 +53,10 @@ Layout/LineLength:
 
 Metrics/BlockLength:
   Exclude:
+    - app/admin/**/*.rb
+    - lib/tasks/**/*.{rake,rb}
     - spec/**/*_spec.rb
     - db/**/*.rb
-  Max: 40
 
 Metrics/MethodLength:
   Max: 30
