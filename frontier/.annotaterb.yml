@@ -35,22 +35,22 @@
 :with_column_comments: true
 :with_table_comments: true
 :active_admin: false
-:command: 
+:command: null
 :debug: false
 :hide_default_column_types: ''
 :hide_limit_column_types: ''
-:ignore_columns: 
-:ignore_routes: 
+:ignore_columns: null
+:ignore_routes: null
 :models: true
 :routes: false
 :skip_on_db_migrate: false
 :target_action: :do_annotations
-:wrapper: 
-:wrapper_close: 
-:wrapper_open: 
+:wrapper: null
+:wrapper_close: null
+:wrapper_open: null
 :additional_file_patterns: []
 :model_dir:
-- app/models
+  - app/models
 :require: []
 :root_dir:
-- ''
+  - ''
