@@ -96,6 +96,7 @@ GEM
     annotate (3.2.0)
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
+    annotaterb (4.6.0)
     arbre (1.7.0)
       activesupport (>= 3.0.0)
       ruby2_keywords (>= 0.0.2)
@@ -440,6 +441,7 @@ DEPENDENCIES
   active_admin_theme
   activeadmin (~> 3.2.0)
   annotate (~> 3)
+  annotaterb
   aws-sdk-s3 (~> 1)
   brakeman
   bundler-audit
