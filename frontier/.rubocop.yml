@@ -96,3 +96,11 @@ RSpec/NestedGroups:
 
 RSpec/IndexedLet:
   Enabled: false
+
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - spec/requests/api/**/*_spec.rb
+
+RSpec/VariableName:
+  AllowedPatterns:
+    - ^Authorization

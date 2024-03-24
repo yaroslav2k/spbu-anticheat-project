@@ -1,0 +1,43 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+  description: This is the first version of my API
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com
+paths:
+  "/api/courses":
+    get:
+      summary: List courses
+      tags:
+      - courses
+      responses:
+        '200':
+          description: Operation succeeed
+    post:
+      summary: Create new course
+      tags:
+      - courses
+      parameters: []
+      responses:
+        '201':
+          description: Course created
+        '422':
+          description: Invalid request payload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                group:
+                  type: string
+                semester:
+                  type: string
+                title:
+                  type: string
+        required: true

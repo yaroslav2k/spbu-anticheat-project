@@ -1,15 +1,23 @@
 # frozen_string_literal: true
 
 class API::ApplicationController < ApplicationController
-  before_action :authenticate
+  include ActionController::HttpAuthentication::Basic
+
+  before_action :authenticate_request
 
   skip_before_action :verify_authenticity_token
 
   private
 
-    def authenticate
-      authenticate_or_request_with_http_token do |token, _options|
-        ActiveSupport::SecurityUtils.secure_compare(token, Rails.application.credentials.api.fetch(:access_token))
+    attr_reader :current_user
+
+    def authenticate_request
+      @current_user = authenticate_with_http_basic do |username, password|
+        User.find_by(username:).then do |user|
+          user if user.valid_password?(password)
+        end
       end
+
+      head :unauthorized unless current_user
     end
 end

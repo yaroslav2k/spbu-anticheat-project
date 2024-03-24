@@ -3,6 +3,9 @@
 Rails.application.routes.draw do
   mount HealthMonitor::Engine, at: "/status"
 
+  mount Rswag::Api::Engine => "/api-docs"
+  mount Rswag::Ui::Engine => "/api-docs"
+
   devise_for :users, ActiveAdmin::Devise.config
 
   ActiveAdmin.routes(self)
@@ -11,6 +14,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resource :status, only: %i[show]
+    resources :courses, only: %i[create index]
     resources :submissions, only: %i[update]
   end
 
