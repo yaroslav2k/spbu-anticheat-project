@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-class API::ApplicationController < ApplicationController
-  include ActionController::HttpAuthentication::Basic
+class API::ApplicationController < ActionController::API
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
 
   before_action :authenticate_request
 
-  skip_before_action :verify_authenticity_token
+  rescue_from ActiveRecord::RecordNotFound do
+    head :not_found
+  end
 
   private
 

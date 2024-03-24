@@ -12,7 +12,7 @@ class API::CoursesController < API::ApplicationController
     )
 
     if service_result.success?
-      head :created
+      render status: :created, json: service_result.course
     else
       head :unprocessable_entity
     end

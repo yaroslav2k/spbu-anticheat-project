@@ -12,9 +12,12 @@ Rails.application.routes.draw do
 
   root to: "admin/dashboard#index"
 
-  namespace :api do
+  namespace :api, defaults: { format: "json" } do
     resource :status, only: %i[show]
+
     resources :courses, only: %i[create index]
+    resources :assignments, only: %i[index show]
+
     resources :submissions, only: %i[update]
   end
 

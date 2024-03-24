@@ -1,5 +1,3 @@
-version: "3.8"
-
 x-frontier-ror: &frontier-ror
   build: frontier
   env_file: .env

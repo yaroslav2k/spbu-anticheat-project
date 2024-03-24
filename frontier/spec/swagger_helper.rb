@@ -33,4 +33,21 @@ RSpec.configure do |config|
       }
     }
   }
+
+  config.after(:each, type: :request) do |example|
+    next unless response.content_type.include?("json")
+    next if response.parsed_body.blank?
+
+    example.metadata[:response][:content] = {
+      "application/json" => {
+        examples: {
+          example.metadata[:example_group][:description] => {
+            value: response.parsed_body
+          }
+        }
+      }
+    }
+  rescue JSON::ParserError
+    nil
+  end
 end

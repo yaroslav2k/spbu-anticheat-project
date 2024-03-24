@@ -16,19 +16,12 @@ RSpec.describe "API::Courses" do
       let!(:courses) { create_list(:course, 2, user:) }
       let(:Authorization) { "Basic #{Base64.strict_encode64("#{user.username}:#{password}")}" }
 
+      include_examples "API: authorization"
+
       response 200, "Operation succeeed" do
         run_test! do |response|
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to match_array(courses.as_json)
-        end
-      end
-
-      response 401, "Unauthorized" do
-        let(:Authorization) { "Basic #{Base64.strict_encode64("#{user.username}:#{password.succ}")}" }
-
-        run_test! do |response|
-          expect(response).to have_http_status(:unauthorized)
-          expect(response.body).to be_empty
         end
       end
     end
@@ -44,13 +37,19 @@ RSpec.describe "API::Courses" do
                      type: :object,
                      properties: {
                        group: { type: :string },
-                       semester: { type: :string },
-                       title: { type: :string }
+                       semester: { type: :string, enum: %i[spring fall] },
+                       title: { type: :string, mixLength: 3, maxLnegth: 40 }
                      }
                    },
         required: %i[group semester title]
 
       let(:Authorization) { "Basic #{Base64.strict_encode64("#{user.username}:#{password}")}" }
+
+      include_examples "API: authorization" do
+        let(:request_body) do
+          { group: "foobar", semester: "spring", title: "course-1" }
+        end
+      end
 
       response 201, "Course created" do
         let(:request_body) do
@@ -59,19 +58,7 @@ RSpec.describe "API::Courses" do
 
         run_test! do |response|
           expect(response).to have_http_status(:created)
-          expect(response.body).to be_empty
-        end
-      end
-
-      response 401, "Unauthorized" do
-        let(:request_body) do
-          { group: "foobar", semester: "spring", title: "course-1" }
-        end
-        let(:Authorization) { "Basic #{Base64.strict_encode64("#{user.username}:#{password.succ}")}" }
-
-        run_test! do |response|
-          expect(response).to have_http_status(:unauthorized)
-          expect(response.body).to be_empty
+          expect(response.parsed_body).to include("id" => kind_of(String))
         end
       end
 

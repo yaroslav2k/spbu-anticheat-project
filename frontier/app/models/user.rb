@@ -28,4 +28,5 @@ class User < ApplicationRecord
   validates :username, presence: true, uniqueness: true
 
   has_many :courses, dependent: :destroy
+  has_many :assignments, through: :courses
 end
