@@ -1,5 +1,3 @@
-import split_module
-import tokenizer
 import argparse
 import json
 import sys
@@ -7,6 +5,10 @@ import os.path
 
 from functools import reduce
 from pathlib import Path
+
+import split_module
+import tokenizer
+
 
 FILES_TO_PROCESS_GLOB = "*.py"
 
@@ -40,7 +42,8 @@ def filepaths_to_process(directory: str):
 def call_splitter(directory: str, identifier: str):
     return list(
         reduce(
-            lambda array, entry: array + split_module.split(entry, identifier),
+            lambda array, entry: array
+            + split_module.split(entry, directory, identifier),
             filepaths_to_process(directory),
             [],
         )
