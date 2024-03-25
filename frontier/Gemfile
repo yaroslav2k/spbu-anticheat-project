@@ -24,6 +24,8 @@ gem "pg", "~> 1.5"
 gem "puma", "~> 6.4"
 gem "rails", "~> 7.1.0"
 gem "redis-client"
+gem "rswag-api"
+gem "rswag-ui"
 gem "sassc"
 gem "service_actor", "~> 3.7"
 gem "sidekiq", "~> 7.2"
@@ -34,6 +36,7 @@ gem "with_advisory_lock"
 
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]
+  gem "rswag-specs"
   gem "rubocop"
   gem "rubocop-factory_bot", require: false
   gem "rubocop-performance", require: false

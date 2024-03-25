@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+GEM_NAMES_TO_IGNORE_DEFAULT=(arbre)
+GEM_NAMES_TO_IGNORE=${GEM_NAMES_TO_IGNORE-$(echo ${GEM_NAMES_TO_IGNORE_DEFAULT[@]} | tr ' ' '|')}
+
+bundle outdated $(bundle list --name-only | grep -vE $GEM_NAMES_TO_IGNORE) $@

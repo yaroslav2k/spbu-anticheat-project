@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class API::SubmissionsController < API::ApplicationController
-  before_action :authenticate, :ensure_submission_presence, :ensure_status_presence, only: %i[update]
+  before_action :authenticate_request, :ensure_submission_presence, :ensure_status_presence, only: %i[update]
 
   def create
     if Submission.create(submission_params)
@@ -21,7 +21,7 @@ class API::SubmissionsController < API::ApplicationController
 
   private
 
-    def authenticate
+    def authenticate_request
       authenticate_or_request_with_http_token do |token, _options|
         ActiveSupport::SecurityUtils.secure_compare(
           token, Rails.application.credentials.api.fetch(:access_token)
