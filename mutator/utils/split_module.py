@@ -35,6 +35,7 @@ def output(
 
 def split(
     filepath: str,
+    directory: str,
     revision: typing.Optional[str] = None,
 ):
     with open(filepath, "r") as source:
@@ -43,4 +44,11 @@ def split(
         visitor = fbv.FunctionBodyCollector()
         source_tree.visit(visitor)
 
-        return output(filepath, visitor.result, revision)
+        output_result = output(filepath, visitor.result, revision)
+
+        for entry in output_result:
+            entry["identifier"]["fileName"] = os.path.relpath(
+                entry["identifier"]["fileName"], directory
+            )
+
+        return output_result
