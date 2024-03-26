@@ -86,7 +86,6 @@ RSpec.describe Submission::ProcessJob do
 
       context "with happy path" do
         before do
-          allow(SecureRandom).to receive(:hex).and_return(identifier)
           allow(FileUtils).to receive(:mkdir_p) { |*arguments| arguments }
           allow(Aws::S3::Client).to receive(:new).and_return(s3_client_double)
           allow(File).to receive(:open).and_yield(file_double)
@@ -95,7 +94,7 @@ RSpec.describe Submission::ProcessJob do
         specify do
           perform(submission)
 
-          expect(FileUtils).to have_received(:mkdir_p).with("/app/git-repositories/#{identifier}")
+          expect(FileUtils).to have_received(:mkdir_p).with("/app/git-repositories/#{submission.id}")
             .ordered
             .once
 
