@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "docker"
-require "securerandom"
 
 class Submission::ProcessJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
@@ -133,5 +132,5 @@ class Submission::ProcessJob < ApplicationJob
       raise e
     end
 
-    def identifier = @identifier ||= SecureRandom.hex
+    def identifier = @identifier ||= submission.id
 end
