@@ -36,6 +36,7 @@ RSpec.describe Course do
   describe "associations" do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to have_many(:assignments).dependent(:destroy) }
+    it { is_expected.to have_many(:submissions) }
   end
 
   describe "scopes" do

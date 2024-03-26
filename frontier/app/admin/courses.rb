@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Course do
+  remove_filter :submissions
+
   controller do
     actions :all, except: %i[destroy]
 

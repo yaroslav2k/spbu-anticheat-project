@@ -29,6 +29,7 @@ class Course < ApplicationRecord
   belongs_to :user
 
   has_many :assignments, dependent: :destroy
+  has_many :submissions, through: :assignments
 
   scope :for, ->(user) { where(user:) }
   scope :active, -> { where(year: Date.current.year) }
