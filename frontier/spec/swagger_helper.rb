@@ -35,7 +35,7 @@ RSpec.configure do |config|
   }
 
   config.after(:each, type: :request) do |example|
-    next unless response.content_type.include?("json")
+    next unless response.content_type&.include?("json")
     next if response.parsed_body.blank?
 
     example.metadata[:response][:content] = {

@@ -44,6 +44,8 @@ services:
       start_period: 20s
     tty: true
     stdin_open: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   frontier-worker:
     <<: *frontier-ror
