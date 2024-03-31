@@ -32,26 +32,26 @@ paths:
               examples:
                 Operation succeeed:
                   value:
-                  - id: 60b87067-c5a3-4340-8a23-836f729983a0
-                    course_id: e0846c90-b418-4019-9a85-f96c6b25bfa0
-                    title: 1fiv95yuly
+                  - id: 8e6f4fcb-469b-4d9a-a9a5-5b09b9e4aa7a
+                    course_id: 2e375fb1-f250-4209-a3e8-1bba8e5e88b4
+                    title: vikce45123
                     options:
                       threshold: 0.8
                       ngram_size: 2
                     submissions_count: 
-                    created_at: '2024-03-25T01:51:18.457+03:00'
-                    updated_at: '2024-03-25T01:51:18.457+03:00'
+                    created_at: '2024-03-31T16:14:46.248+03:00'
+                    updated_at: '2024-03-31T16:14:46.248+03:00'
                     ngram_size: 2
                     threshold: 0.8
-                  - id: 2896f738-9d78-4d98-a635-9a2c21af81c8
-                    course_id: e0846c90-b418-4019-9a85-f96c6b25bfa0
-                    title: 66der3jliz
+                  - id: c1814701-63a0-4ffe-a1e8-c8237de14b13
+                    course_id: 2e375fb1-f250-4209-a3e8-1bba8e5e88b4
+                    title: h9kg9hb2i7
                     options:
                       threshold: 0.8
                       ngram_size: 2
                     submissions_count: 
-                    created_at: '2024-03-25T01:51:18.455+03:00'
-                    updated_at: '2024-03-25T01:51:18.455+03:00'
+                    created_at: '2024-03-31T16:14:46.245+03:00'
+                    updated_at: '2024-03-31T16:14:46.245+03:00'
                     ngram_size: 2
                     threshold: 0.8
   "/api/assignments/{id}":
@@ -78,15 +78,15 @@ paths:
               examples:
                 Operation succeeed:
                   value:
-                    id: 2252ded1-07d1-4051-a409-f8b9e3f0604e
-                    course_id: 362a4437-e96e-4c81-a725-cd2e3e9c2016
-                    title: ttwaa3unkv
+                    id: 65286fd4-b82f-49c5-b5e4-3752519f5908
+                    course_id: e0435321-74dd-46fc-a5e7-2c6f77c065bc
+                    title: 0onhhbfe0y
                     options:
                       threshold: 0.8
                       ngram_size: 2
                     submissions_count: 
-                    created_at: '2024-03-25T01:51:18.498+03:00'
-                    updated_at: '2024-03-25T01:51:18.498+03:00'
+                    created_at: '2024-03-31T16:14:46.312+03:00'
+                    updated_at: '2024-03-31T16:14:46.312+03:00'
                     ngram_size: 2
                     threshold: 0.8
         '404':
@@ -108,22 +108,22 @@ paths:
               examples:
                 Operation succeeed:
                   value:
-                  - id: cbf63c63-2a6d-496d-8b7b-eff327ca61f4
-                    user_id: 264e9a10-a2a6-4ce6-abe9-95d972adeb42
-                    title: 4u0a1z6eyq
-                    group: reiciendis
+                  - id: fe70b864-f01c-45c1-bac4-360b7964c583
+                    user_id: 6a84b3dc-2c90-4254-b40f-6baa2fa94403
+                    title: f4286evwl3
+                    group: quia
                     semester: spring
-                    year: 2009
-                    created_at: '2024-03-25T01:51:18.535+03:00'
-                    updated_at: '2024-03-25T01:51:18.535+03:00'
-                  - id: 3883b0e7-9de9-4787-8027-3ffc8a3fbccd
-                    user_id: 264e9a10-a2a6-4ce6-abe9-95d972adeb42
-                    title: sifji13g4r
-                    group: explicabo
+                    year: 2000
+                    created_at: '2024-03-31T16:14:46.355+03:00'
+                    updated_at: '2024-03-31T16:14:46.355+03:00'
+                  - id: d2276acb-6cbf-4ada-92c3-9bede67a85c4
+                    user_id: 6a84b3dc-2c90-4254-b40f-6baa2fa94403
+                    title: qtx50z0w4x
+                    group: qui
                     semester: fall
-                    year: 2001
-                    created_at: '2024-03-25T01:51:18.537+03:00'
-                    updated_at: '2024-03-25T01:51:18.537+03:00'
+                    year: 2000
+                    created_at: '2024-03-31T16:14:46.357+03:00'
+                    updated_at: '2024-03-31T16:14:46.357+03:00'
     post:
       summary: Create new course
       tags:
@@ -141,14 +141,14 @@ paths:
               examples:
                 Course created:
                   value:
-                    id: 844fb548-9985-4c2f-8c0b-0fe27be34d83
-                    user_id: ac630c9b-5963-489d-912d-b5053da62d9f
+                    id: b99f400f-c124-419b-9a6d-ee982bd28173
+                    user_id: aaf0eb31-5ac8-4a80-9cb6-68c8bfdc63f2
                     title: course-1
                     group: foobar
                     semester: spring
                     year: 2024
-                    created_at: '2024-03-25T01:51:18.559+03:00'
-                    updated_at: '2024-03-25T01:51:18.559+03:00'
+                    created_at: '2024-03-31T16:14:46.380+03:00'
+                    updated_at: '2024-03-31T16:14:46.380+03:00'
         '422':
           description: Invalid request payload
       requestBody:
@@ -169,3 +169,11 @@ paths:
                   mixLength: 3
                   maxLnegth: 40
         required: true
+  "/api/status":
+    get:
+      summary: Get current status
+      tags:
+      - statuses
+      responses:
+        '204':
+          description: Application healthy

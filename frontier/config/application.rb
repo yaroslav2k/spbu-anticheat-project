@@ -33,8 +33,10 @@ class Frontier
 
     config.i18n.default_locale = :ru
     config.i18n.fallbacks = %i[ru en]
-    config.i18n.raise_on_missing_translations = true
+    config.i18n.raise_on_missing_translations = false
 
     config.autoload_paths += %w[#{config.root}/validators]
   end
 end
+
+require_relative "gem_extensions"
