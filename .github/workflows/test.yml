@@ -53,3 +53,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           coverage_path: frontier/coverage/.last_run.json
+          minimum_suite_coverage: 80

@@ -37,6 +37,10 @@ class Frontier
 
     config.autoload_paths += %w[#{config.root}/validators]
   end
+
+  def self.config
+    Rails.application.config.x
+  end
 end
 
 require_relative "gem_extensions"

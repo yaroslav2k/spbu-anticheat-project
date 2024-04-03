@@ -9,7 +9,7 @@ class Storage
     "https://#{host}/storage/#{bucket}/#{key}" # FIXME
   end
 
-  PRIMARY = new(Rails.application.credentials.services.s3)
+  PRIMARY = new(Frontier.config.s3_config)
 
   private
 

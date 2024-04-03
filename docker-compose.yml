@@ -81,6 +81,7 @@ services:
   detector:
     build: detector
     container_name: clone-detector
+    env_file: .env
     networks:
       - backend
 
