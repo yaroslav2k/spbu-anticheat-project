@@ -24,7 +24,6 @@
 .env.sample
 
 # Ignore master key for decrypting credentials and more.
-/config/credentials/production.key
 /config/credentials/development.key
 
 # Ignore code coverage data.
