@@ -13,6 +13,8 @@ The instructions below were on tested on Ubuntu 22.04 with the following package
 
 Make sure you have docker installed, other versions are highly likely to work too.
 
+### Prepare docker images
+
 1. Clone this git repository:
 
 ```shell
@@ -28,10 +30,12 @@ cd spbu-anticheat-project && docker compose build --pull
 3. Although the system is built with intention of begin language-agnostic, currently each language you would like to process requires it own engine. To build the python engine, one should execute
 
 ```shell
-docker build -f mutator -t python-mutator:latest .
+docker build -t python-mutator:latest mutator
 ```
 
-4. Now you should configure credentials for each service.
+### Fill in credentials
+
+1. Now you should configure credentials for each service.
 
 Start with creating VCS-ignored dotenv files:
 
@@ -39,18 +43,57 @@ Start with creating VCS-ignored dotenv files:
 cp .{postgresql,s3,}.env.sample .{postgresql,s3,}.env
 ```
 
-(optional) change Minio root credentials in `.s3.env`
-(optional)
+Open `.env` and modify fill in the following variables:
 
-## Running
+   1) set `S3_ACCESS_KEY_ID` via `openssl rand -hex 8`;
+   2) set `S3_SECRET_ACCESS_KEY` via `openssl rand -hex 8`;
+   3) set `DETECTOR_ACCESS_TOKEN` via `openssl rand -hex 16`;
+   4) set `DETECTOR_WEBHOOK_ACCESS_TOKEN` via `openssl rand -hex 16`;
+   5) set `SECRET_KEY_BASE` via `openssl rand -hex 64`;
+   6) if your are going to use Telegram Bot integration, set `TELEGRAM_BOT_API_TOKEN` to the corresponding value.
 
-You can start the entire system by executing
+2. (optional) Change Minio root user credentials in `.s3.env`.
 
+3. (optional) Change PostgreSQL DSN options in `.postgresql.env`. Make sure it's aligned with `.env` `POSTGRES_*` variables.
+
+### Prepare SSL certificates
+
+Generate certificates by running
+
+```shell
+openssl req -newkey rsa:2048 -sha256 -nodes -x509 -days 365 \
+  -keyout ca.key \
+  -out ca.crt \
+  -subj "/C=RU/ST=Saint-Petersburg/L=Saint-Petersburg/O=Example Inc/CN=localhost" \
+  && mv ca.{key,crt} nginx/ssl
 ```
-docker-compose up --build -d
+
+
+### Runtime configuration
+
+1. Run `docker compose up -d`. Wait few seconds and make sure all is working as expected via `docker compose ps -a`.
+
+2. (hopefully I'l make this step at least semi-automatic)
+
+To configure Minio buckets, visit http://localhost:9001/login, login via username & password mentioned in `.s3.env` and create a bucket named `production`. Change it's visibility (aka "access policy" to `public`.
+
+Now open "access keys" -> "created access key" and fill in the form with the values from `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY`.
+
+
+3. If your are going to use Telegram Bot integration, you should have public IP address available. If you don't have one, you might use
+[ngrok](https://github.com/inconshreveable/ngrok), [CF tunnel](https://www.cloudflare.com/products/tunnel/) or any other similar tool.
+
+For example, if you're using `ngrok` simply run `ngrok http https://localhost:443`.
+
+### Make sure everything in working
+
+You'll need to created a user to log in. Run the following command:
+
+```shell
+docker compose exec frontier-web bundle exec rails db:seed
 ```
 
-Note that some additional steps to configure some services are quired.
+Visit https://localhost/admin and login via credentials mentioned in `frontier/db/seeds.rb`.
 
 [TODO]
 
