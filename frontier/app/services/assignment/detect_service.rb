@@ -10,6 +10,8 @@ class Assignment::DetectService < ApplicationService
   play :perform_api_request
 
   def call
+    Rails.logger.info("Started #{self.class.name}")
+
     super
   rescue StandardError => e
     self.exception = e
@@ -22,8 +24,6 @@ class Assignment::DetectService < ApplicationService
     end
 
     def api_client
-      @api_client ||= DetectorClient.new(
-        Rails.application.credentials.dig(:services, :detector)
-      )
+      @api_client ||= DetectorClient.new(Frontier.config.detector_config)
     end
 end

@@ -11,7 +11,7 @@ detector:
 client:
   frontier:
     url: "http://frontier:3000"
-    auth-token: "aeadecba3d48bcb21e64af85a8355a32"
+    auth-token: ${DETECTOR_WEBHOOK_ACCESS_TOKEN}
 
 logging:
   config: classpath:logback.xml

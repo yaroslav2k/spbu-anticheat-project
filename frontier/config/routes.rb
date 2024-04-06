@@ -27,5 +27,9 @@ Rails.application.routes.draw do
         post :notify, on: :collection
       end
     end
+
+    namespace :detector do
+      resources :submissions, only: %i[update]
+    end
   end
 end

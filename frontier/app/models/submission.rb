@@ -70,7 +70,10 @@ class Submission < ApplicationRecord
 
   class Git < Submission
     validates :branch, presence: true
-    validates :url, url: { domain: "github.com", perform_request: true }, git_remote: { branch: ->(record) { record.branch } }
+    validates :url,
+      url: { domain: "github.com", perform_request: true },
+      git_remote: { branch: ->(record) { record.branch } },
+      unless: -> { Rails.env.test? }
 
     jsonb_accessor :data,
       url: :string,

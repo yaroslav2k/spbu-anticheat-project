@@ -44,7 +44,7 @@ RSpec.describe Submission::ProcessJob do
           allow(Git).to receive(:clone).and_return(true)
           allow(Aws::S3::Client).to receive(:new).and_return(s3_client_double)
           allow(Assignment::DetectService).to receive(:call).and_return(
-            ServiceActor::Result.to_result(success?: false)
+            ServiceActor::Result.to_result(success: false, exception: nil)
           )
         end
 
@@ -89,6 +89,9 @@ RSpec.describe Submission::ProcessJob do
           allow(FileUtils).to receive(:mkdir_p) { |*arguments| arguments }
           allow(Aws::S3::Client).to receive(:new).and_return(s3_client_double)
           allow(File).to receive(:open).and_yield(file_double)
+          allow(Assignment::DetectService).to receive(:call).and_return(
+            ServiceActor::Result.to_result(success: true, exception: nil)
+          )
         end
 
         specify do

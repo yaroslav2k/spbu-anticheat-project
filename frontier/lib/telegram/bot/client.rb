@@ -10,7 +10,7 @@ class Telegram::Bot::Client
   headers "Content-Type" => "application/json"
 
   def self.default
-    new(Frontier.config.telegram_bot_config.to_h)
+    new(Frontier.config.telegram_bot_config)
   end
 
   def initialize(config)
