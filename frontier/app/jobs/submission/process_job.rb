@@ -51,9 +51,7 @@ class Submission::ProcessJob < ApplicationJob
           submission:
         )
 
-        if service_result.exception
-          raise service_result.exception
-        end
+        raise service_result.exception if service_result.exception
 
         container.tap(&:stop).tap(&:remove)
       end
