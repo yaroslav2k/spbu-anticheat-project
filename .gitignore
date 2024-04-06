@@ -9,6 +9,7 @@ nginx/ssl/ca.crt
 
 .env
 .postgresql.env
+.s3.env
 
 .ruby-lsp
 

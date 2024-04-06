@@ -3,11 +3,15 @@
 The project is intended to build reliable and extendable platform for automatic code clone detection. While the primary
 use-cases is considered to be student homework cheating detection, it can be used to automate clone detection of any programs.
 
-## Instalation
+## Installation
 
-Currently the only way to install the system locally is to clone its source code and build required docker images.
+### Prerequisites
 
-The instruction below is tested via Docker Engine (Community) 26.0.0 and Docker Compose plugin 2.25.0.
+The instructions below were on tested on Ubuntu 22.04 with the following packages installed:
+
+- Docker Engine (Community) 26.0.0 with compose plugin (2.25.0)
+
+Make sure you have docker installed, other versions are highly likely to work too.
 
 1. Clone this git repository:
 
@@ -26,6 +30,17 @@ cd spbu-anticheat-project && docker compose build --pull
 ```shell
 docker build -f mutator -t python-mutator:latest .
 ```
+
+4. Now you should configure credentials for each service.
+
+Start with creating VCS-ignored dotenv files:
+
+```shell
+cp .{postgresql,s3,}.env.sample .{postgresql,s3,}.env
+```
+
+(optional) change Minio root credentials in `.s3.env`
+(optional)
 
 ## Running
 
