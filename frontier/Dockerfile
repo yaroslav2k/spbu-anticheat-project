@@ -15,7 +15,7 @@ COPY . .
 
 ENV RAILS_ENV=production
 
-RUN SKIP_CONFIGS=1 bundle exec rails assets:precompile
+RUN SKIP_CONFIGS=1 SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
 
 EXPOSE 3000
 
