@@ -27,7 +27,7 @@ Make sure you have docker installed, other versions are highly likely to work to
    cd spbu-anticheat-project && docker compose build --pull
    ```
 
-3. Although the system is built with intention of begin language-agnostic, currently each language you would like to process requires it own engine. To build the python engine, one should execute
+3. Although the system is built with intention of begin language-agnostic, currently each language (ATM only python) requires it own engine. To build the python engine, one should execute
 
    ```shell
    docker build -t python-mutator:latest mutator
@@ -40,10 +40,12 @@ Now you should configure credentials for each service.
    Start with creating VCS-ignored dotenv files:
 
    ```shell
-   cp .{postgresql,s3,}.env.sample . {postgresql,s3,}.env
+   cp .env.sample .env
+   cp .postgresql.env.sample .postgresql.env
+   cp .s3.env.sample .s3.env
    ```
 
-   Open `.env` and modify fill in the following variables:
+   Open `.env` and fill in the following variables:
 
    1) set `S3_ACCESS_KEY_ID` via `openssl rand -hex 8`;
    2) set `S3_SECRET_ACCESS_KEY` via `openssl rand -hex 8`;
@@ -64,14 +66,15 @@ Generate certificates by running
 openssl req -newkey rsa:2048 -sha256 -nodes -x509 -days 365 \
   -keyout ca.key \
   -out ca.crt \
-  -subj "/C=RU/ST=Saint-Petersburg/L=Saint-Petersburg/O=Example Inc/CN=localhost" \
+  -subj "/C=RU/ST=Saint-Petersburg/L=Saint-Petersburg/O=Example Inc/CN=<IP-ADDRESS>" \
   && mv ca.{key,crt} nginx/ssl
 ```
 
+don't forget to replace `<IP-ADDRESS>` with your public IP address or `localhost`.
 
 ### Runtime configuration
 
-1. Run `docker compose up -d`. Wait few seconds and make sure all is working as expected via `docker compose ps -a`.
+1. Run `docker compose up -d`. Wait a few seconds and make sure all is working as expected via `docker compose ps -a`.
 
 2. (hopefully I'l make this step at least semi-automatic)
 
@@ -80,8 +83,19 @@ openssl req -newkey rsa:2048 -sha256 -nodes -x509 -days 365 \
    Now open "access keys" -> "created access key" and fill in the form with the values from `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY`.
 
 
-3. If your are going to use Telegram Bot integration, you should have public IP address available. If you don't have one, you might use
-[ngrok](https://github.com/inconshreveable/ngrok), [CF tunnel](https://www.cloudflare.com/products/tunnel/) or any other similar tool. For example, if you're using `ngrok` simply run `ngrok http https://localhost:443`.
+3. (optional) If your are going to use Telegram Bot integration, you should have public IP address available. If you don't have one, you might use
+[ngrok](https://github.com/inconshreveable/ngrok), [CF tunnel](https://www.cloudflare.com/products/tunnel/) or any other similar tool. For example, if you're using `ngrok` simply run `ngrok http https://localhost:443`. You should set webhook URL via
+
+   ```bash
+   docker compose exec frontier-web bundle exec rake telegram:bot:set_webhook[https://your-public-ip-address]
+   ```
+
+   NOTE: enlightened zsh users will have to escape `[` and `]`:
+
+
+   ```bash
+   docker compose exec frontier-web bundle exec rake telegram:bot:set_webhook\[https://your-public-ip-address\]
+   ```
 
 ### Make sure everything in working
 
