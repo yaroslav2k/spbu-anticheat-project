@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-return unless Rails.env.development?
-
 # Users
 
 user_1 = User.create_with(

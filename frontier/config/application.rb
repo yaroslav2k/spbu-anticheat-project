@@ -36,6 +36,12 @@ class Frontier
     config.i18n.raise_on_missing_translations = false
 
     config.autoload_paths += %w[#{config.root}/validators]
+
+    config.require_master_key = false
+  end
+
+  def self.config
+    Rails.application.config.x
   end
 end
 

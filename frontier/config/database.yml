@@ -1,8 +1,10 @@
+<% database_config = ENV.key?("SKIP_CONFIGS") ? OpenStruct.new : DatabaseConfig.new %>
+
 .default: &default
   adapter: postgresql
-  host: <%= ENV.fetch("POSTGRES_HOSTNAME", "localhost") %>
-  username: <%= ENV.fetch("POSTGRES_USERNAME", "postgres") %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
+  host: <%= database_config.hostname %>
+  username: <%= database_config.username %>
+  password: <%= database_config.password %>
   pool: 5
 
 development:

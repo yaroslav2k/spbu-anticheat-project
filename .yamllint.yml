@@ -2,6 +2,7 @@ extends: default
 
 ignore:
   - /frontier/swagger/v1/swagger.yaml
+  - /frontier/config/database.yml
 
 rules:
   line-length:

@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-Aws.config.update(Rails.application.credentials.services.s3)
+Aws.config.update(Frontier.config.s3_config.to_h)

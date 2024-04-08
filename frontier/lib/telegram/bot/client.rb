@@ -10,11 +10,11 @@ class Telegram::Bot::Client
   headers "Content-Type" => "application/json"
 
   def self.default
-    new(Rails.application.credentials.services.fetch(:telegram_bot))
+    new(Frontier.config.telegram_bot_config)
   end
 
   def initialize(config)
-    @api_token = config.fetch(:api_token)
+    @api_token = config.api_token
   end
 
   def send_message(chat_id:, text:)

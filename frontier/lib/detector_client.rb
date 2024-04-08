@@ -18,8 +18,7 @@ class DetectorClient
   headers "Content-Type" => "application/json"
 
   def initialize(config)
-    @access_token = config.fetch(:access_token)
-    @base_uri = config.fetch(:base_uri)
+    @config = config
   end
 
   def detect(assignment, submission)
@@ -27,10 +26,10 @@ class DetectorClient
 
     with_request_identifier do |request_identifier|
       self.class.post(
-        "#{base_uri}/detection/compare-repositories",
+        "#{config.base_uri}/detection/compare-repositories",
         body: request_body,
         headers: {
-          "Authorization" => authorization_value(access_token),
+          "Authorization" => authorization_value(config.access_token),
           REQUEST_IDENTIFIER_HEADER => request_identifier
         }
       )
@@ -39,7 +38,7 @@ class DetectorClient
 
   private
 
-    attr_reader :base_uri, :access_token
+    attr_reader :config
 
     def request_body(assignment, submission)
       {
@@ -47,7 +46,7 @@ class DetectorClient
         "assignment" => "#{assignment.storage_key}/submissions",
         "result_key" => assignment.report_storage_key
       }.tap do |hash|
-        hash["result_path"] = api_submission_path(submission.id) if submission
+        hash["result_path"] = gateway_detector_submission_path(submission.id) if submission
       end
     end
 

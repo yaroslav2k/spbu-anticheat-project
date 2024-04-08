@@ -6,7 +6,7 @@ HealthMonitor.configure do |config|
   config.path = :current
 
   config.redis.configure do |redis_config|
-    redis_config.url = Rails.application.credentials.services.redis.fetch(:url)
+    redis_config.url = Frontier.config.redis_config.url
   end
 
   config.sidekiq

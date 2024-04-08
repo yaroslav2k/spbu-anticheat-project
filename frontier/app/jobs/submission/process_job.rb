@@ -46,10 +46,12 @@ class Submission::ProcessJob < ApplicationJob
           content_type: "application/json"
         )
 
-        Assignment::DetectService.call(
+        service_result = Assignment::DetectService.call(
           assignment: submission.assignment,
           submission:
         )
+
+        raise service_result.exception if service_result.exception
 
         container.tap(&:stop).tap(&:remove)
       end
@@ -75,10 +77,12 @@ class Submission::ProcessJob < ApplicationJob
           content_type: "application/json"
         )
 
-        Assignment::DetectService.call(
+        service_result = Assignment::DetectService.call(
           assignment: submission.assignment,
           submission:
         )
+
+        raise service_result.exception if service_result.exception
 
         container.tap(&:stop).tap(&:remove)
       end

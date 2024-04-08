@@ -1,17 +1,9 @@
 # frozen_string_literal: true
 
-class API::SubmissionsController < API::ApplicationController
-  include ActionController::HttpAuthentication::Token
+class Gateway::Detector::SubmissionsController < Gateway::ApplicationController
+  skip_forgery_protection
 
   before_action :authenticate_request, :ensure_submission_presence, :ensure_status_presence, only: %i[update]
-
-  def create
-    if Submission.create(submission_params)
-      render status: :created
-    else
-      render status: :unprocessable_entity
-    end
-  end
 
   def update
     if submission.update(status:)
@@ -26,7 +18,7 @@ class API::SubmissionsController < API::ApplicationController
     def authenticate_request
       authenticate_or_request_with_http_token do |token, _options|
         ActiveSupport::SecurityUtils.secure_compare(
-          token, Rails.application.credentials.api.fetch(:access_token)
+          token, Frontier.config.detector_config.webhook_access_token
         )
       end
     end
@@ -52,8 +44,4 @@ class API::SubmissionsController < API::ApplicationController
     def id = params[:id]
 
     def status = params.dig(:submission, :status)
-
-    def submission_params
-      params.fetch(:submission).permit(:author, :assignment_id, :url, :branch)
-    end
 end

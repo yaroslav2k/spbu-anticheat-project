@@ -1,15 +1,17 @@
-spring:
-  config:
-    import: optional:secrets.yaml
-
 detector:
   s3:
     endpoint: "http://s3:9000"
     bucket-name: "production"
+    access-key: ${S3_ACCESS_KEY_ID}
+    secret-key: ${S3_SECRET_ACCESS_KEY}
+  http:
+    access-token-header-name: "Authorization"
+    access-token: ${DETECTOR_ACCESS_TOKEN}
 
 client:
   frontier:
     url: "http://frontier:3000"
+    auth-token: ${DETECTOR_WEBHOOK_ACCESS_TOKEN}
 
 logging:
   config: classpath:logback.xml

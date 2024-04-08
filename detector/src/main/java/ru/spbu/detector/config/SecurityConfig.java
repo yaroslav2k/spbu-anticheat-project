@@ -15,10 +15,10 @@ import ru.spbu.detector.controller.filter.ApiKeyAuthFilter;
 @EnableWebSecurity
 @Order(1)
 public class SecurityConfig {
-    @Value("${detector.http.auth-token-header-name}")
+    @Value("${detector.http.access-token-header-name}")
     private String principalRequestHeader;
 
-    @Value("${detector.http.auth-token}")
+    @Value("${detector.http.access-token}")
     private String principalRequestValue;
 
     @Bean

@@ -4,7 +4,7 @@ namespace :telegram do
   namespace :bot do
     desc "Set webhook URL for telegram bot"
     task :set_webhook, [:url] => :environment do |_, args|
-      api_token = Rails.application.credentials.services.telegram_bot.fetch(:api_token)
+      api_token = Frontier.config.telegram_bot_config.api_token
 
       response = HTTParty.post(
         "https://api.telegram.org/bot#{api_token}/setWebhook?url=#{args[:url]}/gateway/telegram/webhooks/notify"
