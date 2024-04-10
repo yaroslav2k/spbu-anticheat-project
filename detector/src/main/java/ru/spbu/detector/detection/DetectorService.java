@@ -65,6 +65,7 @@ public class DetectorService {
     }
 
     private void compareRepositories(SubmitRepositoryDto dto) throws JsonProcessingException {
+        List<CodeFragment> fragments = new LinkedList<>();
         var listReq = ListObjectsV2Request.builder()
                 .bucket(bucketName)
                 .prefix(dto.assignment())
@@ -72,7 +73,6 @@ public class DetectorService {
 
         var listRes = s3Client.listObjectsV2Paginator(listReq);
         var objectMapper = new ObjectMapper();
-        List<CodeFragment> fragments = new LinkedList<>();
         listRes.contents().stream()
                 .forEach(content -> {
                     var getObjectRequest = GetObjectRequest.builder()
@@ -81,8 +81,7 @@ public class DetectorService {
                             .build();
                     var resp = s3Client.getObject(getObjectRequest);
                     try {
-                        var tfragments = objectMapper.readValue(resp, new TypeReference<List<CodeFragment>>(){});
-                        fragments.addAll(tfragments);
+                        fragments.addAll(objectMapper.readValue(resp, new TypeReference<List<CodeFragment>>(){}));
                     } catch (IOException e) {
                         log.error(e.getMessage());
                     }

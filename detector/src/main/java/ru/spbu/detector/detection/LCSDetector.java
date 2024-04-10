@@ -23,6 +23,7 @@ class LCSDetector extends DetectionAlgorithm {
 
     LCSDetector(LCSDetectorParams params) {
         super(params);
+
         ngramGenerator = new NgramGenerator(params.getN());
     }
 
@@ -67,6 +68,11 @@ class LCSDetector extends DetectionAlgorithm {
         return groups;
     }
 
+    @Override
+    public String getName() {
+        return "LCS";
+    }
+
     private boolean isSimilar(CodeFragment b, CodeFragment candidate) {
         var lcsLength = (double) findLCSLength(b, candidate);
         var threshold = ((LCSDetectorParams) getParameters()).getThreshold();
@@ -82,7 +88,7 @@ class LCSDetector extends DetectionAlgorithm {
         var ngramsOne = ngramGenerator.getNgrams(fragmentOne);
         var ngramsTwo = ngramGenerator.getNgrams(fragmentTwo);
 
-        if (ngramsOne.size() == 0 || ngramsTwo.size() == 0) {
+        if (ngramsOne.isEmpty() || ngramsTwo.isEmpty()) {
             return 0;
         }
 

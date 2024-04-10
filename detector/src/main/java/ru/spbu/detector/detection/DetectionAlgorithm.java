@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * Абстрактный класс инкапсулирующий алгоритм кластеризации
  */
 abstract class DetectionAlgorithm {
+    private static final String ALGORITHM_NOT_SUPPORTED = "Algorithm {0} is not supported";
+
     private final DetectionAlgorithmParameters parameters;
-    private final static String ALGORITHM_NOT_SUPPORTED = "Алгоритм {0} не поддерживается";
 
     DetectionAlgorithm(DetectionAlgorithmParameters parameters) {
         this.parameters = parameters;
@@ -23,18 +25,17 @@ abstract class DetectionAlgorithm {
     public static DetectionAlgorithm of(AlgorithmDto algorithmDto) {
         var paramsMap = algorithmDto.params();
         var name = algorithmDto.name();
-        switch (name) {
-            case "LCS" -> {
-                var params = new LCSDetectorParams(paramsMap);
-                return new LCSDetector(params);
-            }
-            default -> throw new IllegalArgumentException(MessageFormat.format(ALGORITHM_NOT_SUPPORTED, name));
+
+        if (name.equals("LCS")) {
+            return new LCSDetector(new LCSDetectorParams(paramsMap));
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format(ALGORITHM_NOT_SUPPORTED, name));
         }
     }
 
     /**
-     * Получить baseline алгорит кластеризации
-     * @return baseline алгоритм
+     * Get baseline clusterization algorithm
+     * @return baseline algorithm
      */
     public static DetectionAlgorithm baseline() {
         Map<String, Object> paramsMap = Map.of("threshold", 0.45, "n", 2);
@@ -54,5 +55,9 @@ abstract class DetectionAlgorithm {
      */
     public DetectionAlgorithmParameters getParameters() {
         return parameters;
+    }
+
+    public String getName() {
+        throw new UnsupportedOperationException("Not implemented :-)");
     }
 }
