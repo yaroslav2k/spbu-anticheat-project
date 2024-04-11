@@ -1,4 +1,4 @@
-package ru.spbu.detector.mistral;
+package ru.spbu.detector.mistral.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,11 +38,6 @@ public class MistralClient {
     }
 
     public Mono<ChatCompletionResponse> createChatCompletion(@NonNull ChatCompletionRequest request) throws JsonProcessingException {
-
-        HttpHeaders header = new HttpHeaders();
-        header.add("Content-Type", "application/json");
-        header.add("Accept", "application/json");
-        header.add("Authorization", "Bearer " + getApiKey());
         String requestJson =objectMapper.writeValueAsString(request);
         String endpoint = "/chat/completions";
 
@@ -54,6 +49,7 @@ public class MistralClient {
         Mono<ChatCompletionResponse> responseMono = client.post().bodyValue(requestJson).exchangeToMono(_response -> {
             return _response.bodyToMono(ChatCompletionResponse.class);
         });
+
         return responseMono;
     }
 
