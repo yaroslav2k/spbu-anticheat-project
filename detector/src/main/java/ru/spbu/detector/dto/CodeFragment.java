@@ -7,7 +7,6 @@ import java.util.List;
 public class CodeFragment {
     private List<String> tokens;
     private FragmentIdentifierDto identifier;
-    private String submissionHash;
 
     public List<String> getTokens() {
         return tokens;

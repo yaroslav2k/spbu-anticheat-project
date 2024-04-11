@@ -7,7 +7,6 @@ public class LCSDetectorParams extends DetectionAlgorithmParameters {
     private final int n;
 
     public LCSDetectorParams(Map<String, Object> params) {
-        // TODO Что если Map не содержит таких полей? Куда доставлять ошибку
         n = (int) params.get("n");
         threshold = (double) params.get("threshold");
     }

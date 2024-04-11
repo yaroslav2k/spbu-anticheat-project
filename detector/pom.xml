@@ -117,6 +117,14 @@
         </dependency>
         <!-- s3 storage end -->
 
+        <!-- CLI -->
+        <dependency>
+          <groupId>info.picocli</groupId>
+          <artifactId>picocli</artifactId>
+          <version>4.7.5</version>
+        </dependency>
+        <!-- CLI end -->
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
