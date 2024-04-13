@@ -3,6 +3,8 @@ package ru.spbu.detector.mistral.client;
 import ru.spbu.detector.mistral.completion.ChatCompletionRequest;
 import ru.spbu.detector.mistral.completion.ChatCompletionResponse;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.lang.NonNull;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -26,9 +28,13 @@ public class MistralClient {
     private final ObjectMapper objectMapper;
 
     public MistralClient() {
-        this.apiKey = System.getenv(API_KEY_VAR) != null ? System.getenv(API_KEY_VAR) : DEFAULT_API_URL;
-        this.apiURL = System.getenv(API_URL_VAR);
+        this.apiKey = System.getenv(API_KEY_VAR);
+        this.apiURL = System.getenv(API_URL_VAR) != null ? System.getenv(API_URL_VAR) : DEFAULT_API_URL;
         this.objectMapper = buildObjectMapper();
+
+        if (this.apiKey == null) {
+          throw new RuntimeException(String.format("Missing `%s` variable", API_KEY_VAR));
+        }
     }
 
     public Mono<ChatCompletionResponse> createChatCompletion(@NonNull ChatCompletionRequest request) throws JsonProcessingException {
