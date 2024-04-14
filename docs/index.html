@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+      <title>BeFair</title>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="BeFair is a code clone detection SaaS platform">
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="stylesheet" href="css/kube.css" />
+      <link rel="stylesheet" href="css/font-awesome.css" />
+      <link rel="stylesheet" href="css/custom.css" />
+      <link href="http://fonts.googleapis.com/css?family=Playfair+Display+SC:700" rel="stylesheet" type="text/css">
+      <link href="http://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css">
+
+  </head>
+  <body>
+    <div class="main-nav">
+      <div class="container">
+        <header class="group top-nav">
+          <div class="navigation-toggle" data-tools="navigation-toggle" data-target="#navbar-1">
+          </div>
+            <nav id="navbar-1" class="navbar item-nav">
+              <ul>
+                  <li class="active"><a href="https://github.com/viralpraxis/spbu-anticheat-project">GitHub</a></li>
+                  <li class="active"><a href="https://github.com/viralpraxis/spbu-anticheat-project/blob/master/README.md">Docs</a></li>
+              </ul>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div class="intro section">
+      <div class="container">
+        <div class="units-row units-split wrap">
+          <p>
+            BeFair is a free, open-source tool and SaaS solution for automatic code clone detection in academic purposes.
+          </p>
+          <p>
+            It"s also available as a self-hosted service, see <a href="https://github.com/viralpraxis/spbu-anticheat-project/blob/master/README.md">our documentation</a> for installation details.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section second">
+      <div class="container">
+        <h1>Code clone detection</h1>
+        <p>
+
+        This problem has a long history of academic research. Although many tools have been proposed for identifying clones, no system has yet been developed that provides clone detection as a service.
+        </p>
+
+        <p>
+          The simplest clone code might look like this:
+        </p>
+        <pre style="display: flex;">
+          <code class="language-python" display="inline">
+            def foo(a, b):
+              a = a + 1
+              b = b + 1
+
+              return a * b
+          </code>
+
+          <code class="language-python" display="inline">
+            def foo(a, b):
+              return (a + 1) * (b + 1)
+          </code>
+        </pre>
+
+        <p>
+          Although in this case the situation is clear to the naked eye, in most cases it is necessary to use advanced algorithms.
+        </p>
+      </div>
+    </div>
+
+    <div class="work section third">
+      <div class="container">
+        <h1>Key features</h1>
+        <ul>
+          <li>Extensibility</li>
+          <li>RESTful HTTP API</li>
+          <li>Telegram integration</li>
+          <li>Easy-to-use dashboard</li>
+          <li>Reports export via JSON and XML</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
