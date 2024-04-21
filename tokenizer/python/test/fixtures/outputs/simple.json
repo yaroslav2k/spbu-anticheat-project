@@ -1,0 +1,1 @@
+[{"tokens": ["NAME", "FNINVOK", "(", "NAME", ")", ":", "return", "NAME", "*", "NAME"], "identifier": {"revision": "test", "fileName": ".", "functionName": "foo", "functionStart": 1, "functionEnd": 2}}]
