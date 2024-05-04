@@ -1,9 +1,12 @@
-import libcst as cst
 from typing import Optional
 
+import libcst as cst
 
-class FunctionInvocationCollector(cst.CSTVisitor):
-    class Result:
+from abstract_visitor import AbstractVisitor
+
+
+class FunctionInvocationCollector(AbstractVisitor):
+    class Result(AbstractVisitor.Result):
         def __init__(self) -> None:
             self.data = {}
 

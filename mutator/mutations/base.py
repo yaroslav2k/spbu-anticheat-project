@@ -1,3 +1,6 @@
+import libcst as cst
+
+
 class Base:
     def __init__(self, source_tree, randomizer):
         self.source_tree = source_tree
@@ -6,5 +9,5 @@ class Base:
     def call(self):
         raise NotImplementedError
 
-    def __visit(self, visitor: cst.CSTVisitor):
+    def _visit(self, visitor: cst.CSTVisitor):
         self.source_tree.visit(visitor)

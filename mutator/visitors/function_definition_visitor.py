@@ -1,5 +1,6 @@
+from typing import Tuple, List, Literal
+
 import libcst as cst
-from typing import Optional, Tuple
 
 
 class FunctionDefinitionCollector(cst.CSTVisitor):
@@ -7,8 +8,13 @@ class FunctionDefinitionCollector(cst.CSTVisitor):
         def __init__(self) -> None:
             self.data: dict[Tuple[str, str], cst.Parameters] = {}
 
-        def add(self, class_name: str, function_name: str, parameters: any):
-            self.data[(class_name, function_name)] = parameters
+        def add(
+            self,
+            class_path: List[str],
+            function_path: List[str],
+            parameters: cst.Parameters,
+        ):
+            self.data[(".".join(class_path), ".".join(function_path))] = parameters
 
     class ResultPrinter:
         def __init__(self, result) -> None:
@@ -18,21 +24,31 @@ class FunctionDefinitionCollector(cst.CSTVisitor):
             for (class_name, function_name), value in self.result.data.items():
                 print(class_name, function_name, value)
 
-    def visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
-        self.stack.append(node.name.value)
+    def __init__(self) -> None:
+        self.visited_classes_stack: List[str] = []
+        self.visited_functions_stack: List[str] = []
+
+        self.result: FunctionDefinitionCollector.Result = self.Result()
+
+    def visit_ClassDef(self, node: cst.ClassDef) -> Literal[True]:
+        self.visited_classes_stack.append(node.name.value)
+
+        return True
 
     def leave_ClassDef(self, node: cst.ClassDef) -> None:
-        self.stack.pop()
+        self.visited_classes_stack.pop()
 
-    def __init__(self) -> None:
-        self.stack = []
-        self.result = self.Result()
+    def visit_FunctionDef(self, node: cst.FunctionDef) -> Literal[False]:
+        self.visited_functions_stack.append(node.name.value)
 
-    def visit_FunctionDef(self, node: cst.FunctionDef) -> Optional[bool]:
-        if len(self.stack) > 0:
-            self.result.add(self.stack[-1], node.name.value, node.params)
-        else:
-            self.result.add("", node.name.value, node.params)
+        if len(node.params.params):
+            self.result.add(
+                class_path=self.visited_classes_stack,
+                function_path=self.visited_functions_stack,
+                parameters=node.params.params,
+            )
+
+        return False
 
     def leave_FunctionDef(self, node: cst.FunctionDef) -> None:
-        pass
+        self.visited_functions_stack.pop()
