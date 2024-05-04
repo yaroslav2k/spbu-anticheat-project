@@ -1,0 +1,1 @@
+[{"tokens": ["NAME", "FNINVOK", "(", "NAME", ")", ":", "COMMENT", "NAME", "=", "NAME", "+", "1", "\"\"\"another comment\"\"\"", "return", "NAME"], "identifier": {"revision": "test", "fileName": ".", "functionName": "succ", "functionStart": 1, "functionEnd": 5}}]
