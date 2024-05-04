@@ -21,7 +21,7 @@ def main():
         result = source_tree
         for mutation_spec in args.mutations:
             order = randomizer.randint(
-                mutation_spec.lowerbound, mutation_spec.upperbound
+                mutation_spec.lower_bound, mutation_spec.upper_bound
             )
             for _ in range(order):
                 result = _apply_mutation(mutation_spec.name, result, randomizer)
@@ -49,7 +49,7 @@ def _apply_mutation(name: str, source_tree, randomizer):
 
 def _parse_arguments():
     parser = argparse.ArgumentParser(
-        prog="mutator.py", description="Python CST-based Type-3 mutator"
+        prog="mutator.py", description="Python CST-based code mutation framework"
     )
     parser.add_argument("input")
     parser.add_argument("-o", "--output", action="store")
@@ -68,8 +68,8 @@ def _parse_arguments():
 @dataclass
 class MutationSpec:
     name: str
-    lowerbound: int = 1
-    upperbound: int = 1
+    lower_bound: int = 1
+    upper_bound: int = 1
 
 
 # ... mSDL

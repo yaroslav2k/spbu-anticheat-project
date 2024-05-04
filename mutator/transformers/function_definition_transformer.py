@@ -1,10 +1,11 @@
+from typing import Optional, List
+
 import libcst as cst
-from typing import Optional
 
 
 class FunctionDefinitionTransformer(cst.CSTTransformer):
     def __init__(self, result):
-        self.stack = []
+        self.stack: List[str] = []
         self.result = result
 
     def visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
