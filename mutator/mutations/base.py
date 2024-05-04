@@ -5,3 +5,6 @@ class Base:
 
     def call(self):
         raise NotImplementedError
+
+    def __visit(self, visitor: cst.CSTVisitor):
+        self.source_tree.visit(visitor)

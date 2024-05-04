@@ -5,10 +5,13 @@ import transformers.function_definition_transformer as fdt
 
 class mSDL(Base):
     def call(self):
-        visitor = fdv.FunctionDefinitionCollector()
-        self.source_tree.visit(visitor)
+        visitor: fdv.FunctionDefinitionCollector = fdv.FunctionDefinitionCollector()
+        self.__visit(visitor)
 
         result = visitor.result
+        if not result.data:
+            return self.source_tree
+
         self.__apply_transformation(result)
 
         transformer = fdt.FunctionDefinitionTransformer(result)
