@@ -96,10 +96,9 @@ Simply run `python -m unittest`.
 
 ## References
 
-The mutation operations taxonomy was heavely inspired by
+The mutation operations taxonomy was heavily inspired by
 
 ```
 Svajlenko, J. (2021). The Mutation and Injection Framework: Evaluating Clone Detection Tools with Mutation Analysis. In: C. Roy, ed., IEEE TRANSACTIONS ON SOFTWARE ENGINEERING. pp.1060–1087.
 
-‌
 ```
