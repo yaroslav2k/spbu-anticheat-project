@@ -1,4 +1,4 @@
-import libcst as cst
+import libcst
 
 from mutations.base import Base
 
@@ -8,7 +8,7 @@ import transformers.function_definition_transformer as fdt
 
 # FIXME: naming should be aligned with python's recommendations
 class mSDL(Base):
-    def call(self) -> cst.Module:
+    def call(self) -> libcst.Module:
         visitor: fdv.FunctionDefinitionCollector = fdv.FunctionDefinitionCollector()
         self._visit(visitor)
 

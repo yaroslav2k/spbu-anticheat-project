@@ -2,13 +2,30 @@ import argparse
 import sys
 import random
 import libcst as cst
+import enum
 
 from dataclasses import dataclass
 from contextlib import nullcontext
 
+from mutations.registry import Registry as MutationsRegistry
+from mutations.base import Base
 from mutations.mSDL import mSDL
 from mutations.mDL import mDL
 from mutations.mSIL import mSIL
+
+
+@dataclass
+class MutationSpec:
+    name: str
+    lower_bound: int = 1
+    upper_bound: int = 1
+
+
+class Distribution(enum.Enum):
+    UNIFORM = "uniform"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 def main():
@@ -30,20 +47,26 @@ def main():
     _output_result(result, args.output)
 
 
-def _apply_mutation(name: str, source_tree, randomizer):
+def _apply_mutation(name: str, source_tree: cst.Module, randomizer: random.Random):
     result = None
+
     match name:
-        case "mSDL":
-            mutator = mSDL(source_tree, randomizer)
+        case MutationsRegistry.M_SDL.value:
+            mutator: mSDL = mSDL(source_tree, randomizer)
             result = mutator.call()
-        case "mDL":
-            mutator = mDL(source_tree, randomizer)
+        case MutationsRegistry.M_DL.value:
+            mutator: mDL = mDL(source_tree, randomizer)
             result = mutator.call()
-        case "mSIL":
-            mutator = mSIL(source_tree, randomizer)
+        case MutationsRegistry.M_SIL.value:
+            mutator: mSIL = mSIL(source_tree, randomizer)
+            result = mutator.call()
+        case "any":
+            mutator: Base = randomizer.choice([mSDL, mDL, mSIL])(
+                source_tree, randomizer
+            )
             result = mutator.call()
         case _:
-            raise NotImplementedError
+            raise NotImplementedError(f"Unknown mutation operator name: `{name}`")
 
     return result
 
@@ -56,6 +79,14 @@ def _parse_arguments():
     parser.add_argument("-o", "--output", action="store")
     parser.add_argument("-m", "--mutations", action="store", required=True)
     parser.add_argument("-s", "--seed", action="store", type=int)
+    parser.add_argument(
+        "-d",
+        "--distribution",
+        action="store",
+        type=Distribution,
+        choices=list(Distribution),
+        default=Distribution.UNIFORM,
+    )
 
     args = parser.parse_args()
     args.mutations = _parse_mutations_argument(args.mutations)
@@ -65,18 +96,6 @@ def _parse_arguments():
     return args
 
 
-# FIXME: ATM we only support range of length 1.
-@dataclass
-class MutationSpec:
-    name: str
-    lower_bound: int = 1
-    upper_bound: int = 1
-
-
-# ... mSDL
-# ... mSDL:1
-# ... mSDL:1,mDL:2
-# ... mSDL,mDL:4
 def _parse_mutations_argument(raw_input: str):
     mutations = []
 
@@ -84,7 +103,11 @@ def _parse_mutations_argument(raw_input: str):
     for chunk in chunks:
         if ":" in chunk:
             name, order = chunk.split(":")
-            mutations.append(MutationSpec(name, int(order), int(order)))
+            if "-" in order:
+                lower_bound, upper_bound = order.split("-")
+                mutations.append(MutationSpec(name, int(lower_bound), int(upper_bound)))
+            else:
+                mutations.append(MutationSpec(name, int(order), int(order)))
         else:
             mutations.append(MutationSpec(chunk))
 

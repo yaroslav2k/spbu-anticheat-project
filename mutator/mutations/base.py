@@ -1,13 +1,14 @@
-import libcst as cst
+import libcst
+import random
 
 
 class Base:
-    def __init__(self, source_tree, randomizer):
-        self.source_tree = source_tree
-        self.randomizer = randomizer
+    def __init__(self, source_tree: libcst.Module, randomizer: random.Random):
+        self.source_tree: libcst.Module = source_tree
+        self.randomizer: random.Random = randomizer
 
     def call(self):
         raise NotImplementedError
 
-    def _visit(self, visitor: cst.CSTVisitor):
+    def _visit(self, visitor: libcst.CSTVisitor):
         self.source_tree.visit(visitor)
