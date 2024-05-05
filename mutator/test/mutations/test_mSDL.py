@@ -44,8 +44,6 @@ class TestmSDL(unittest.TestCase):
                 source_tree = cst.parse_module(source.read())
 
                 actual_output = mSDL(source_tree, randomizer).call().code
-                if "4" in case.filename:
-                    print(actual_output)
 
-                # with self.subTest(label=case.filename):
-                #     self.assertEqual(case.output, actual_output.strip())
+                with self.subTest(label=case.filename):
+                    self.assertEqual(case.output, actual_output.strip())

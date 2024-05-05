@@ -86,15 +86,6 @@ class HttpRequest:
             self.get_full_path(),
         )
 
-    @cached_property
-    def headers(self):
-        return HttpHeaders(self.META)
-
-    @cached_property
-    def accepted_types(self):
-        """Return a list of MediaType instances."""
-        return parse_accept_header(self.headers.get("Accept", "*/*"))
-
     def accepts(self, media_type):
         return any(
             accepted_type.match(media_type) for accepted_type in self.accepted_types
@@ -243,10 +234,6 @@ class HttpRequest:
                 location = urljoin(self._current_scheme_host + self.path, location)
         return iri_to_uri(location)
 
-    @cached_property
-    def _current_scheme_host(self):
-        return "{}://{}".format(self.scheme, self.get_host())
-
     def _get_scheme(self):
         """
         Hook for subclasses like WSGIRequest to implement. Return 'http' by
@@ -254,28 +241,8 @@ class HttpRequest:
         """
         return "http"
 
-    @property
-    def scheme(self):
-        if settings.SECURE_PROXY_SSL_HEADER:
-            try:
-                header, secure_value = settings.SECURE_PROXY_SSL_HEADER
-            except ValueError:
-                raise ImproperlyConfigured(
-                    "The SECURE_PROXY_SSL_HEADER setting must be a tuple containing "
-                    "two values."
-                )
-            header_value = self.META.get(header)
-            if header_value is not None:
-                header_value, *_ = header_value.split(",", 1)
-                return "https" if header_value.strip() == secure_value else "http"
-        return self._get_scheme()
-
     def is_secure(self):
         return self.scheme == "https"
-
-    @property
-    def encoding(self):
-        return self._encoding
 
     @encoding.setter
     def encoding(self, val):

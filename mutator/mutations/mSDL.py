@@ -1,31 +1,34 @@
+import libcst
+
 from mutations.base import Base
+
 import visitors.function_definition_visitor as fdv
 import transformers.function_definition_transformer as fdt
 
 
+# FIXME: naming should be aligned with python's recommendations
 class mSDL(Base):
-    def call(self):
+    def call(self) -> libcst.Module:
         visitor: fdv.FunctionDefinitionCollector = fdv.FunctionDefinitionCollector()
-        self.__visit(visitor)
+        self._visit(visitor)
 
         result = visitor.result
         if not result.data:
             return self.source_tree
 
-        self.__apply_transformation(result)
+        self.__select_parameter_for_removal(result)
 
         transformer = fdt.FunctionDefinitionTransformer(result)
         modified_tree = self.source_tree.visit(transformer)
 
         return modified_tree
 
-    def __apply_transformation(self, result) -> None:
-        function_spec, arguments = self.randomizer.choice(list(result.data.items()))
-        params = list(arguments.params)
-        if len(params) == 0:
+    def __select_parameter_for_removal(self, result) -> None:
+        path, parameters_tuple = self.randomizer.choice(list(result.data.items()))
+        if not parameters_tuple:
             return
 
-        params.pop(self.randomizer.randrange(len(params)))
-        if len(params) > 0:
-            params[-1] = params[-1].with_changes(comma=None)
-        result.data[function_spec] = arguments.with_changes(params=tuple(params))
+        parameters = list(parameters_tuple)
+        parameters.pop(self.randomizer.randrange(len(parameters)))
+
+        result.data[path] = tuple(parameters)

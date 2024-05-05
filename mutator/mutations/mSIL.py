@@ -1,13 +1,16 @@
 import string
+import random
+import pathlib
 
-from typing import Tuple
+from typing import Tuple, List, Optional
 from mutations.base import Base
 
 import visitors.function_definition_visitor as fdv
 import transformers.function_definition_transformer as fdt
-import libcst as cst
+import libcst
 
 
+# FIXME: naming should be aligned with python's recommendations
 class mSIL(Base):
     def call(self):
         visitor = fdv.FunctionDefinitionCollector()
@@ -16,7 +19,7 @@ class mSIL(Base):
         result = visitor.result
         self._add_parameter(result)
 
-        transformer = fdt.FunctionDefinitionTransformer(result)
+        transformer = fdt.FunctionDefinitionTransformer(result, mode="insert")
         modified_tree = self.source_tree.visit(transformer)
 
         return modified_tree
@@ -27,20 +30,25 @@ class mSIL(Base):
         typehint_prob: float = 0.5,
         value_prob: float = 0.3,
     ) -> None:
-        function_spec, parameters = self.randomizer.choice(list(result.data.items()))
-        params = list(parameters.params)
+        path, parameters_tuple = self.randomizer.choice(list(result.data.items()))
+        if not parameters_tuple:
+            return
 
-        name = self._generate_name()
-        new_param = cst.Param(cst.Name(name))
-        new_position = self.randomizer.randint(0, len(params))
+        parameters = list(parameters_tuple)
+
+        name = ParameterNameGenerator.generate_parameter_name(self.randomizer)
+        new_param = libcst.Param(libcst.Name(name))
+        new_position = self.randomizer.randint(0, len(parameters))
 
         typehint, default_value = TypehintGenerator.generate_typehint_and_default_value(
             self.randomizer
         )
 
-        if new_position > 0 and params[new_position - 1].default is not None:
+        if new_position > 0 and parameters[new_position - 1].default is not None:
             new_param = new_param.with_changes(default=default_value)
-        elif new_position < len(params) and params[new_position].default is None:
+        elif (
+            new_position < len(parameters) and parameters[new_position].default is None
+        ):
             new_param = new_param.with_changes(default=None)
         elif self.randomizer.random() < value_prob:
             new_param = new_param.with_changes(default=default_value)
@@ -48,27 +56,27 @@ class mSIL(Base):
         if self.randomizer.random() < typehint_prob:
             new_param = new_param.with_changes(annotation=typehint)
 
-        params.insert(new_position, new_param)
-        result.data[function_spec] = parameters.with_changes(params=tuple(params))
+        parameters.insert(new_position, new_param)
+        result.data[path] = tuple(parameters)
 
-    def _generate_name(self, min_len: int = 1, max_len: int = 10) -> str:
-        name_len = self.randomizer.randint(min_len, max_len)
-        first_letter = self.randomizer.choice(string.ascii_lowercase)
-        name_tail = "".join(
-            self.randomizer.choice(string.ascii_letters + string.digits + "_")
-            for i in range(name_len - 1)
-        )
-        return first_letter + name_tail
+    # def _generate_name(self, min_len: int = 1, max_len: int = 10) -> str:
+    #     name_len = self.randomizer.randint(min_len, max_len)
+    #     first_letter = self.randomizer.choice(string.ascii_lowercase)
+    #     name_tail = "".join(
+    #         self.randomizer.choice(string.ascii_letters + string.digits + "_")
+    #         for i in range(name_len - 1)
+    #     )
+    #     return first_letter + name_tail
 
 
 class TypehintGenerator:
     _basic_types = ["int", "float", "str"]
-    _compound_types = ["List", "Tuple"]  # todo add "Dict" and "Set"
+    _compound_types = ["List", "Tuple"]  # TODO: add "Dict" and "Set"
 
     @classmethod
     def generate_typehint_and_default_value(
         cls, randomizer
-    ) -> Tuple[cst.Annotation, cst.CSTNode]:
+    ) -> Tuple[libcst.Annotation, libcst.CSTNode]:
         typehint = randomizer.choice(cls._basic_types + cls._compound_types)
         if typehint in cls._basic_types:
             return cls._generate_basic_typehint_and_value(typehint, randomizer)
@@ -77,12 +85,12 @@ class TypehintGenerator:
     @classmethod
     def _generate_basic_typehint_and_value(
         cls, basic_type: str, randomizer
-    ) -> Tuple[cst.Annotation, cst.CSTNode]:
-        typehint = cst.Annotation(cst.Name(basic_type))
+    ) -> Tuple[libcst.Annotation, libcst.CSTNode]:
+        typehint = libcst.Annotation(libcst.Name(basic_type))
         match basic_type:
             case "int":
                 value = str(randomizer.randint(0, 1000000))
-                return typehint, cst.Integer(value)
+                return typehint, libcst.Integer(value)
             case "str":
                 allowed_symbols = (
                     string.ascii_letters
@@ -95,15 +103,15 @@ class TypehintGenerator:
                     + "".join(randomizer.choice(allowed_symbols) for i in range(length))
                     + '"'
                 )
-                return typehint, cst.SimpleString(value)
+                return typehint, libcst.SimpleString(value)
             case "float":
                 value = str(randomizer.random() * randomizer.randint(0, 1000))
-                return typehint, cst.Float(value)
+                return typehint, libcst.Float(value)
 
     @classmethod
     def _generate_compound_typehint_and_value(
         cls, compound_type: str, randomizer
-    ) -> Tuple[cst.Annotation, cst.CSTNode]:
+    ) -> Tuple[libcst.Annotation, libcst.CSTNode]:
         elements = []
         match compound_type:
             case "List":
@@ -113,14 +121,18 @@ class TypehintGenerator:
                     _, value = cls._generate_basic_typehint_and_value(
                         basic_type, randomizer
                     )
-                    elements.append(cst.Element(value))
-                typehint = cst.Annotation(
-                    cst.Subscript(
-                        cst.Name("List"),
-                        [cst.SubscriptElement(cst.Index(cst.Name(basic_type)))],
+                    elements.append(libcst.Element(value))
+                typehint = libcst.Annotation(
+                    libcst.Subscript(
+                        libcst.Name("List"),
+                        [
+                            libcst.SubscriptElement(
+                                libcst.Index(libcst.Name(basic_type))
+                            )
+                        ],
                     )
                 )
-                return typehint, cst.List(elements)
+                return typehint, libcst.List(elements)
             case "Tuple":
                 slice = []
                 length = randomizer.randint(1, 3)
@@ -129,9 +141,25 @@ class TypehintGenerator:
                     _, value = cls._generate_basic_typehint_and_value(
                         basic_type, randomizer
                     )
-                    elements.append(cst.Element(value))
-                    slice.append(cst.SubscriptElement(cst.Index(cst.Name(basic_type))))
+                    elements.append(libcst.Element(value))
+                    slice.append(
+                        libcst.SubscriptElement(libcst.Index(libcst.Name(basic_type)))
+                    )
 
-                return cst.Annotation(
-                    cst.Subscript(cst.Name("Tuple"), slice)
-                ), cst.Tuple(elements)
+                return libcst.Annotation(
+                    libcst.Subscript(libcst.Name("Tuple"), slice)
+                ), libcst.Tuple(elements)
+
+
+class ParameterNameGenerator:
+    __parameter_names: Optional[List[str]] = None
+
+    @classmethod
+    def generate_parameter_name(cls, randomizer: random.Random) -> str:
+        if cls.__parameter_names is None:
+            with open(
+                pathlib.Path(__file__).parent / "data" / "parameter-names-registry.txt"
+            ) as f:
+                cls.__parameter_names = f.read().split("\n")
+
+        return randomizer.choice(cls.__parameter_names)
