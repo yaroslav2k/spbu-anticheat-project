@@ -3,6 +3,27 @@
 The project is intended to build reliable and extendable platform for automatic code clone detection. While the primary
 use-cases is considered to be student homework cheating detection, it can be used to automate clone detection of any programs.
 
+## Project structure
+
+```
+.
+├── bin                    -- binary utilities
+├── detector               -- CCD service
+├── docker-compose.yml
+├── docs
+├── .env.sample            -- primary dotenv template
+├── frontier               -- HTTP gateway service
+├── LICENSE                -- MIT :)
+├── mutator                -- python automatic mutations injections framework
+├── nginx                  -- nginx configuration
+├── .postgresql.env.sample -- PostgreSQL dotenv template
+├── README.md              -- You are here
+├── .s3.env.sample         -- S3 dotenv template
+├── tokenizer              -- language-dependent tokenization implementations
+├── .tool-versions         -- consider using asdf
+└── .volumes               -- local docker volumes
+```
+
 ## Installation
 
 ### Prerequisites
@@ -107,9 +128,13 @@ docker compose exec frontier-web bundle exec rails db:seed
 
 Visit https://localhost/admin and login via credentials mentioned in `frontier/db/seeds.rb`.
 
+### (bonus) Mistral AI integration
+
+See this [README](detector/src/main/java/ru/spbu/detector/mistral/README.md) for details.
+
 ## API
 
-Currenly there are ways of interacting with the system: web UI and RESTful HTTP API.
+Currently there are ways of interacting with the system: web UI and RESTful HTTP API.
 
 ### HTTP API
 
