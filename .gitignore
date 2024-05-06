@@ -16,5 +16,4 @@ nginx/ssl/ca.crt
 .volumes/**
 !.volumes/.gitkeep
 
-bin/**
 !bin/.gitkeep

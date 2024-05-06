@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+docker compose -f ../docker-compose.yml up -d
+
+SCRIPT=<<~RUBY
+  SUBMISSIONS_COUNT = 2_000
+
+  initial_submission = Submission.find(1)
+  submissions = Array.new(SUBMISSIONS_COUNT) do
+    Submission.create!(submission.attributes.except(:id))
+  end
+  submission_ids = submissions.pluck(:id)
+
+  submissions.each { Submission::ProcessJob.perform_later(_1) }
+
+  loop do
+    if Submission.where(id: submission_ids, status: "completed").count == SUBMISSIONS_COUNT
+      system("date +%s")
+
+      exit(0)
+    end
+
+    sleep(250)
+  end
+RUBY
+
+docker compose exec frontier bundle exec rails runner -c '${SCRIPT}'
+docker compose down
