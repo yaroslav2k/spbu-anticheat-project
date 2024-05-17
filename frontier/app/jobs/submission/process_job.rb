@@ -4,7 +4,7 @@ require "docker"
 
 class Submission::ProcessJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
-  IMAGE_TAG = "python-mutator:latest"
+  IMAGE_TAG = "tokenizer-python:latest"
   DEFAULT_GIT_BRANCH_NAME = "main"
 
   DetectorServiceFailureError = Class.new(StandardError)
@@ -92,7 +92,7 @@ class Submission::ProcessJob < ApplicationJob
       "/app/git-repositories/#{identifier}/.manifest.json"
     end
 
-    def mutator_manifest_filepath(identifier)
+    def tokenizer_manifest_filepath(identifier)
       "/app/input/#{identifier}/.manifest.json"
     end
 
@@ -113,7 +113,7 @@ class Submission::ProcessJob < ApplicationJob
           "--identifier",
           submission_identifier,
           "--output",
-          mutator_manifest_filepath(identifier)
+          tokenizer_manifest_filepath(identifier)
         ]
       )
     end
