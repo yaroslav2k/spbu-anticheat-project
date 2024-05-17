@@ -4,7 +4,7 @@ require "docker"
 
 class Submission::ProcessJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
-  IMAGE_TAG = "tokenizer-python:latest"
+  IMAGE_TAG = "tokenizer-python:mainline"
   DEFAULT_GIT_BRANCH_NAME = "main"
 
   DetectorServiceFailureError = Class.new(StandardError)
