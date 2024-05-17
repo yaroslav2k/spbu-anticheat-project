@@ -19,12 +19,12 @@ def substitute_function_invocations(tokens):
 
 
 def filter_token(token: str) -> bool:
-    return token and len(token.strip()) > 0
+    return (token is not None) and len(token.strip()) > 0
 
 
 def transform_token(token_info: tokenize.TokenInfo) -> str:
     if token_info[0] == tokenize.COMMENT:
-      return "COMMENT"
+        return "COMMENT"
     if token_info[0] == tokenize.NAME:
         if token_info[1] == "return":
             return token_info[1]

@@ -109,17 +109,6 @@ files = [
 ]
 
 [[package]]
-name = "tokenizer"
-version = "3.4.3"
-description = "A tokenizer for Icelandic text"
-optional = false
-python-versions = "*"
-files = [
-    {file = "tokenizer-3.4.3-py2.py3-none-any.whl", hash = "sha256:d9a4065760d63b6e17a914e4ec209608487aa64b0d9726a54b4ab064acb6eae1"},
-    {file = "tokenizer-3.4.3.tar.gz", hash = "sha256:e88c662d0cba3d130f0696bf22316c176ff358beace0ee08542273fcfe3e95f8"},
-]
-
-[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -148,4 +137,4 @@ typing-extensions = ">=3.7.4"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "507fb64e3e58b1c416aa71019f2020cbed7fb0d73ae10f8098fd0aabe579c9f0"
+content-hash = "899a92dfa50b6b392590a8b661142e544d6bb55153dfcbb4f077dbd8432ce38b"
