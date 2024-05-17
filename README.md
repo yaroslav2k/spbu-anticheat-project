@@ -51,7 +51,7 @@ Make sure you have docker installed, other versions are highly likely to work to
 3. Although the system is built with intention of begin language-agnostic, currently each language (ATM only python) requires it own engine. To build the python engine, one should execute
 
    ```shell
-   docker build -t python-mutator:latest mutator
+   docker build --tag tokenizer-python:mainline tokenizer/python
    ```
 
 ### Fill in credentials

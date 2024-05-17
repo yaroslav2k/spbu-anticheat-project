@@ -8,12 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 libcst = "1.1.0"
-tokenizer = "^3.4.3"
 mypy-extensions = "1.0.0"
 PyYAML = "6.0"
 typing-inspect = "0.8.0"
 typing_extensions = "4.5.0"
-unittest = "3.12.3"
 
 [build-system]
 requires = ["poetry-core"]
