@@ -1,4 +1,3 @@
-import random
 import libcst
 
 from mutations.base import Base
@@ -15,7 +14,7 @@ class mDL(Base):
 
         nodes_for_deletion = {}
         if len(result.data.items()) > 0:
-            node_hash, node = random.choice(list(result.data.items()))
+            node_hash, node = self.randomizer.choice(list(result.data.items()))
             nodes_for_deletion[node_hash] = node
         else:
             return self.source_tree

@@ -12,6 +12,8 @@ from mutations.base import Base
 from mutations.mSDL import mSDL
 from mutations.mDL import mDL
 from mutations.mSIL import mSIL
+from mutations.mRLN import mRLN
+from mutations.mRLS import mRLS
 
 
 @dataclass
@@ -50,18 +52,26 @@ def main():
 def _apply_mutation(name: str, source_tree: cst.Module, randomizer: random.Random):
     result = None
 
+    mutator: Base
+
     match name:
         case MutationsRegistry.M_SDL.value:
-            mutator: mSDL = mSDL(source_tree, randomizer)
+            mutator = mSDL(source_tree, randomizer)
             result = mutator.call()
         case MutationsRegistry.M_DL.value:
-            mutator: mDL = mDL(source_tree, randomizer)
+            mutator = mDL(source_tree, randomizer)
             result = mutator.call()
         case MutationsRegistry.M_SIL.value:
-            mutator: mSIL = mSIL(source_tree, randomizer)
+            mutator = mSIL(source_tree, randomizer)
+            result = mutator.call()
+        case MutationsRegistry.M_RLN.value:
+            mutator = mRLN(source_tree, randomizer)
+            result = mutator.call()
+        case MutationsRegistry.M_RLS.value:
+            mutator = mRLS(source_tree, randomizer)
             result = mutator.call()
         case "any":
-            mutator: Base = randomizer.choice([mSDL, mDL, mSIL])(
+            mutator = randomizer.choice([mSDL, mDL, mSIL, mRLN, mRLS])(
                 source_tree, randomizer
             )
             result = mutator.call()
