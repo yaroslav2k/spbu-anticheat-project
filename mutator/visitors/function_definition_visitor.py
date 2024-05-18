@@ -41,12 +41,11 @@ class FunctionDefinitionCollector(cst.CSTVisitor):
     def visit_FunctionDef(self, node: cst.FunctionDef) -> Literal[False]:
         self.visited_functions_stack.append(node.name.value)
 
-        if len(node.params.params):
-            self.result.add(
-                class_path=self.visited_classes_stack,
-                function_path=self.visited_functions_stack,
-                parameters=node.params.params,
-            )
+        self.result.add(
+            class_path=self.visited_classes_stack,
+            function_path=self.visited_functions_stack,
+            parameters=node.params.params,
+        )
 
         return False
 
