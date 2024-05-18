@@ -31,10 +31,7 @@ class mSIL(Base):
         value_prob: float = 0.3,
     ) -> None:
         path, parameters_tuple = self.randomizer.choice(list(result.data.items()))
-        if not parameters_tuple:
-            return
-
-        parameters = list(parameters_tuple)
+        parameters: List = list(parameters_tuple or tuple())
 
         name = ParameterNameGenerator.generate_parameter_name(self.randomizer)
         new_param = libcst.Param(libcst.Name(name))
@@ -58,15 +55,6 @@ class mSIL(Base):
 
         parameters.insert(new_position, new_param)
         result.data[path] = tuple(parameters)
-
-    # def _generate_name(self, min_len: int = 1, max_len: int = 10) -> str:
-    #     name_len = self.randomizer.randint(min_len, max_len)
-    #     first_letter = self.randomizer.choice(string.ascii_lowercase)
-    #     name_tail = "".join(
-    #         self.randomizer.choice(string.ascii_letters + string.digits + "_")
-    #         for i in range(name_len - 1)
-    #     )
-    #     return first_letter + name_tail
 
 
 class TypehintGenerator:
@@ -107,6 +95,8 @@ class TypehintGenerator:
             case "float":
                 value = str(randomizer.random() * randomizer.randint(0, 1000))
                 return typehint, libcst.Float(value)
+            case _:
+                raise ValueError(basic_type)
 
     @classmethod
     def _generate_compound_typehint_and_value(
@@ -134,7 +124,7 @@ class TypehintGenerator:
                 )
                 return typehint, libcst.List(elements)
             case "Tuple":
-                slice = []
+                tuple_slice = []
                 length = randomizer.randint(1, 3)
                 for _ in range(length):
                     basic_type = randomizer.choice(cls._basic_types)
@@ -142,13 +132,15 @@ class TypehintGenerator:
                         basic_type, randomizer
                     )
                     elements.append(libcst.Element(value))
-                    slice.append(
+                    tuple_slice.append(
                         libcst.SubscriptElement(libcst.Index(libcst.Name(basic_type)))
                     )
 
                 return libcst.Annotation(
-                    libcst.Subscript(libcst.Name("Tuple"), slice)
+                    libcst.Subscript(libcst.Name("Tuple"), tuple_slice)
                 ), libcst.Tuple(elements)
+            case _:
+                raise ValueError(compound_type)
 
 
 class ParameterNameGenerator:
@@ -160,6 +152,6 @@ class ParameterNameGenerator:
             with open(
                 pathlib.Path(__file__).parent / "data" / "parameter-names-registry.txt"
             ) as f:
-                cls.__parameter_names = f.read().split("\n")
+                cls.__parameter_names = list(filter(len, f.read().split("\n")))
 
         return randomizer.choice(cls.__parameter_names)
