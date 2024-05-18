@@ -5,10 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +28,7 @@ import picocli.CommandLine.Parameters;
 @Command(name = "Detector", version = "Detector 1.0.0", mixinStandardHelpOptions = true)
 public class CLI implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(CLI.class);
-    private enum Algorithm { LCS, MISTRAL }
+    private enum Algorithm { LCS, MISTRAL, NICAD }
 
     @Option(names = { "-a", "--algorithm" }, description = "Algorithm to use (one of ${COMPLETION-CANDIDATES})")
     Algorithm algorithm = Algorithm.LCS;
@@ -52,6 +49,10 @@ public class CLI implements Runnable {
         case MISTRAL:
           processMistral();
           break;
+      case NICAD:
+          processNicad();
+          break;
+
       }
     }
 
@@ -97,6 +98,16 @@ public class CLI implements Runnable {
 
         System.exit(1);
       }
+    }
+
+    private void processNicad() {
+        Map<String, Object> paramsMap = Map.of("threshold", 0.45);
+        NICADDetector nicad = new NICADDetector(new NICADDetectorParams(paramsMap));
+        try {
+            nicad.findClustersFromFiles(sources[0], sources[1]);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Set<String> listSources(String directory) {
