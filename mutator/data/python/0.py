@@ -9,7 +9,9 @@ def func_a(a: int, b: int):
         c -= 1
         stat = "foo" + str(c)
 
-    while a < 100:
+    _f = 1 + 2j
+
+    while a < 100.0:
         a = math.pow(a, 2)
 
     return (c + a, stat)

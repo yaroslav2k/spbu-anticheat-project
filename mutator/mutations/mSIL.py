@@ -88,7 +88,7 @@ class TypehintGenerator:
                 length = randomizer.randint(0, 20)
                 value = (
                     '"'
-                    + "".join(randomizer.choice(allowed_symbols) for i in range(length))
+                    + "".join(randomizer.choice(allowed_symbols) for _ in range(length))
                     + '"'
                 )
                 return typehint, libcst.SimpleString(value)

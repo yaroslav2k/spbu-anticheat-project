@@ -2,7 +2,7 @@ from typing import Optional
 
 import libcst as cst
 
-from abstract_visitor import AbstractVisitor
+from visitors.abstract_visitor import AbstractVisitor
 
 
 class FunctionInvocationCollector(AbstractVisitor):
