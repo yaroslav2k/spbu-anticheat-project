@@ -88,6 +88,3 @@ actions:
     parameters:
       <<: *x-common-parameters
       mutations_specification: "any:19"
-
-  # - type: plot
-  #   parameters: {}
