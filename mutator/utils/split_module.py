@@ -1,9 +1,6 @@
-import argparse
 import os
 import sys
-import json
 import typing
-from pathlib import Path
 
 import libcst as cst
 

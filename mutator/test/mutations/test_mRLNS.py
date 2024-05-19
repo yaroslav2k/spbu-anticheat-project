@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from mutations.mRLS import mRLS
+from mutations.mRLS import mRLS  # noqa: E402
 
 
 class TestmRLS(unittest.TestCase):

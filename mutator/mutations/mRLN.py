@@ -29,7 +29,7 @@ class mRLN(Base):
         return modified_tree
 
     def __generate_random_number(self, node: libcst.CSTNode) -> int | float:
-        if type(node) == libcst.Integer:
+        if node is libcst.Integer:
             return self.__generate_random_integer()
         else:
             return self.__generate_random_float()
