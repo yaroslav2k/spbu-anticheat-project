@@ -1,8 +1,8 @@
 x-common-parameters: &x-common-parameters
   algorithm: nicad
-  iterations_count: 100
-  count: 10
-  mode: cross
+  iterations_count: 500
+  count: 20
+  mode: direct
   folder_path: original
   mutated_folder_path: mutated
 
@@ -11,80 +11,28 @@ actions:
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:0"
+      mutations_specification: "any:26"
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:1"
+      mutations_specification: "any:28"
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:2"
+      mutations_specification: "any:30"
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:3"
+      mutations_specification: "any:32"
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:4"
+      mutations_specification: "any:34"
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:5"
+      mutations_specification: "any:36"
   - type: benchmark
     parameters:
       <<: *x-common-parameters
-      mutations_specification: "any:6"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:7"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:8"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:9"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:10"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:11"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:12"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:13"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:14"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:15"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:16"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:17"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:18"
-  - type: benchmark
-    parameters:
-      <<: *x-common-parameters
-      mutations_specification: "any:19"
+      mutations_specification: "any:38"
