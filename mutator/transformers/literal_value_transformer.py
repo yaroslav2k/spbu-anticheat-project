@@ -14,7 +14,7 @@ class LiteralValueTransformer(libcst.CSTTransformer):
         self, original_node: libcst.Integer, updated_node: libcst.Integer
     ) -> libcst.Integer:
         modified_node = self.__try_update_node(original_node, updated_node)
-        if modified_node is not libcst.Integer:
+        if type(modified_node) is not libcst.Integer:
             raise RuntimeError(
                 "Unexpected returned value type, expected `libcst.Integer`"
             )
@@ -25,7 +25,7 @@ class LiteralValueTransformer(libcst.CSTTransformer):
         self, original_node: libcst.Float, updated_node: libcst.Float
     ) -> libcst.Float:
         modified_node = self.__try_update_node(original_node, updated_node)
-        if modified_node is not libcst.Float:
+        if type(modified_node) is not libcst.Float:
             raise RuntimeError(
                 "Unexpected returned value type, expected `libcst.Float`"
             )
@@ -36,7 +36,7 @@ class LiteralValueTransformer(libcst.CSTTransformer):
         self, original_node: libcst.SimpleString, updated_node: libcst.SimpleString
     ) -> libcst.SimpleString:
         modified_node = self.__try_update_node(original_node, updated_node)
-        if modified_node is not libcst.SimpleString:
+        if type(modified_node) is not libcst.SimpleString:
             raise RuntimeError(
                 "Unexpected returned value type, expected `libcst.SimpleString`"
             )
