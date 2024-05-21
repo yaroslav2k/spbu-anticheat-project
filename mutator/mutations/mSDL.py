@@ -30,7 +30,7 @@ class mSDL(Base):
         if not parameters_tuple:
             return
 
-        self.injection_trace.add(path[0], path[1], MutationsRegistry.M_SDL)
+        self.injection_trace.add(path.split("."), MutationsRegistry.M_SDL)
 
         parameters = list(parameters_tuple)
         parameters.pop(self.randomizer.randrange(len(parameters)))
