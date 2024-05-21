@@ -1,14 +1,12 @@
 import unittest
 import os
 import random
-import sys
 import libcst as cst
 
 from pathlib import Path
 from dataclasses import dataclass
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from mutations.injection_trace import InjectionTrace
 from mutations.mRLS import mRLS  # noqa: E402
 
 
@@ -45,7 +43,9 @@ class TestmRLS(unittest.TestCase):
                 actual_output = source_tree
 
                 for _ in range(2):
-                    actual_output = mRLS(actual_output, randomizer).call()
+                    actual_output = mRLS(
+                        actual_output, randomizer, InjectionTrace()
+                    ).call()
 
                 with self.subTest(label=case.filename):
                     self.assertEqual(case.output, actual_output.code.strip())

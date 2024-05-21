@@ -1,18 +1,20 @@
 from typing import Tuple, List, Literal
 
-import libcst as cst
+import libcst
+
+from visitors.abstract_visitor import AbstractVisitor
 
 
-class FunctionDefinitionCollector(cst.CSTVisitor):
-    class Result:
+class FunctionDefinitionCollector(AbstractVisitor):
+    class Result(AbstractVisitor.Result):
         def __init__(self) -> None:
-            self.data: dict[Tuple[str, str], cst.Parameters] = {}
+            self.data: dict[Tuple[str, str], libcst.Parameters] = {}
 
         def add(
             self,
             class_path: List[str],
             function_path: List[str],
-            parameters: cst.Parameters,
+            parameters: libcst.Parameters,
         ):
             self.data[(".".join(class_path), ".".join(function_path))] = parameters
 
@@ -30,15 +32,15 @@ class FunctionDefinitionCollector(cst.CSTVisitor):
 
         self.result: FunctionDefinitionCollector.Result = self.Result()
 
-    def visit_ClassDef(self, node: cst.ClassDef) -> Literal[True]:
+    def visit_ClassDef(self, node: libcst.ClassDef) -> Literal[True]:
         self.visited_classes_stack.append(node.name.value)
 
         return True
 
-    def leave_ClassDef(self, node: cst.ClassDef) -> None:
+    def leave_ClassDef(self, node: libcst.ClassDef) -> None:
         self.visited_classes_stack.pop()
 
-    def visit_FunctionDef(self, node: cst.FunctionDef) -> Literal[False]:
+    def visit_FunctionDef(self, node: libcst.FunctionDef) -> Literal[False]:
         self.visited_functions_stack.append(node.name.value)
 
         self.result.add(
@@ -49,5 +51,5 @@ class FunctionDefinitionCollector(cst.CSTVisitor):
 
         return False
 
-    def leave_FunctionDef(self, node: cst.FunctionDef) -> None:
+    def leave_FunctionDef(self, node: libcst.FunctionDef) -> None:
         self.visited_functions_stack.pop()

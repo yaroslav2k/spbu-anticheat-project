@@ -4,4 +4,4 @@ import libcst
 class AbstractVisitor(libcst.CSTVisitor):
     class Result:
         def __init__(self) -> None:
-            pass
+            raise NotImplementedError("This method should be overridden")

@@ -17,6 +17,7 @@ options:
   -o OUTPUT, --output OUTPUT
   -m MUTATIONS, --mutations MUTATIONS
   -s SEED, --seed SEED
+  -t INJECTION_TRACE, --injection-trace INJECTION_TRACE
   -d {uniform}, --distribution {uniform}
 ```
 
@@ -48,6 +49,10 @@ which is passed to a `random.Random` instance which is used to perform any pseud
 
 It's guaranteed that evaluation the same mutation specification on the same code (within specific CPython interpreter) will generate
 consistent result.
+
+## Injection trace
+
+It might be important to know exactly which mutations happened at which places. To save JSON report specify `-t/--injections-trace` filepath option.
 
 ## Example
 

@@ -1,12 +1,15 @@
 from dataclasses import dataclass
-import libcst as cst
 from typing import Optional, Tuple
 
+import libcst
 
-class FunctionBodyCollector(cst.CSTVisitor):
-    METADATA_DEPENDENCIES = (cst.metadata.PositionProvider,)
+from visitors.abstract_visitor import AbstractVisitor
 
-    class Result:
+
+class FunctionBodyCollector(AbstractVisitor):
+    METADATA_DEPENDENCIES = (libcst.metadata.PositionProvider,)
+
+    class Result(AbstractVisitor.Result):
         @dataclass
         class FunctionInfo:
             body: str
@@ -41,17 +44,17 @@ class FunctionBodyCollector(cst.CSTVisitor):
     def __init__(self) -> None:
         self.stack = []
         self.result = self.Result()
-        self.module = cst.parse_module("")
+        self.module = libcst.parse_module("")
 
-    def visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
+    def visit_ClassDef(self, node: libcst.ClassDef) -> Optional[bool]:
         self.stack.append(node.name.value)
 
-    def leave_ClassDef(self, node: cst.ClassDef) -> None:
+    def leave_ClassDef(self, node: libcst.ClassDef) -> None:
         self.stack.pop()
 
-    def visit_FunctionDef(self, node: cst.FunctionDef) -> Optional[bool]:
-        start_pos = self.get_metadata(cst.metadata.PositionProvider, node).start
-        end_pos = self.get_metadata(cst.metadata.PositionProvider, node).end
+    def visit_FunctionDef(self, node: libcst.FunctionDef) -> Optional[bool]:
+        start_pos = self.get_metadata(libcst.metadata.PositionProvider, node).start
+        end_pos = self.get_metadata(libcst.metadata.PositionProvider, node).end
         code = self._get_code_no_empty_leading_lines(node)
 
         class_name = ""
@@ -60,10 +63,10 @@ class FunctionBodyCollector(cst.CSTVisitor):
 
         self.result.add(class_name, node.name.value, code, start_pos.line, end_pos.line)
 
-    def leave_FunctionDef(self, node: cst.FunctionDef) -> None:
+    def leave_FunctionDef(self, node: libcst.FunctionDef) -> None:
         pass
 
-    def _get_code_no_empty_leading_lines(self, node: cst.FunctionDef) -> str:
+    def _get_code_no_empty_leading_lines(self, node: libcst.FunctionDef) -> str:
         code = self.module.code_for_node(node)
         empty_lines = 0
         for line in node.leading_lines:

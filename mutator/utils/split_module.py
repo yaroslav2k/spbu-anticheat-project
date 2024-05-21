@@ -2,7 +2,7 @@ import os
 import sys
 import typing
 
-import libcst as cst
+import libcst
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import visitors.function_body_visitor as fbv  # noqa: E402
@@ -37,7 +37,7 @@ def split(
 ):
     with open(filepath, "r") as source:
         data = source.read()
-        source_tree = cst.metadata.MetadataWrapper(cst.parse_module(data))
+        source_tree = libcst.metadata.MetadataWrapper(libcst.parse_module(data))
         visitor = fbv.FunctionBodyCollector()
         source_tree.visit(visitor)
 
