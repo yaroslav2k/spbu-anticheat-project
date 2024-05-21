@@ -1,7 +1,8 @@
-from typing import List, Union, Literal, no_type_check
+from typing import Union, Literal, no_type_check
 
 import libcst
 
+from type_definitions.function_path import FunctionPath
 from transformers.abstract_transformer import AbstractTransformer
 from visitors.abstract_visitor import AbstractVisitor
 
@@ -15,11 +16,10 @@ class FunctionDefinitionTransformer(AbstractTransformer):
         self.result = result
         self.mode = mode
 
-        self.visited_classes_stack: List[str] = []
-        self.visited_functions_stack: List[str] = []
+        self.current_function_path: FunctionPath = []
 
     def visit_ClassDef(self, node: libcst.ClassDef) -> Literal[True]:
-        self.visited_classes_stack.append(node.name.value)
+        self.current_function_path.append(node.name.value)
 
         return True
 
@@ -27,23 +27,19 @@ class FunctionDefinitionTransformer(AbstractTransformer):
     def leave_ClassDef(
         self, original_node: libcst.ClassDef, updated_node: libcst.ClassDef
     ) -> libcst.CSTNode:
-        self.visited_classes_stack.pop()
+        self.current_function_path.pop()
 
         return updated_node
 
     @no_type_check
     def visit_FunctionDef(self, node: libcst.FunctionDef) -> Literal[True]:
-        self.visited_functions_stack.append(node.name.value)
-
-        return True
+        return self.visit_ClassDef(node)
 
     @no_type_check
     def leave_FunctionDef(
         self, original_node: libcst.FunctionDef, updated_node: libcst.FunctionDef
     ) -> libcst.CSTNode:
-        self.visited_functions_stack.pop()
-
-        return updated_node
+        return self.leave_ClassDef(original_node, updated_node)
 
     @no_type_check
     def leave_Param(
@@ -77,8 +73,5 @@ class FunctionDefinitionTransformer(AbstractTransformer):
 
         return updated_node
 
-    def __current_path(self) -> tuple[str, str]:
-        return (
-            ".".join(self.visited_classes_stack),
-            ".".join(self.visited_functions_stack),
-        )
+    def __current_path(self) -> str:
+        return ".".join(self.current_function_path)

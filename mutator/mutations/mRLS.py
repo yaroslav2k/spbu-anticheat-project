@@ -1,5 +1,5 @@
 import pathlib
-from typing import Optional, List
+from typing import Optional
 
 import libcst
 
@@ -12,7 +12,7 @@ import transformers.literal_value_transformer as lvt
 class mRLS(Base):
     TARGET_TYPES: list[type] = [libcst.SimpleString]
 
-    __literal_values: Optional[List[str]] = None
+    __literal_values: Optional[list[str]] = None
 
     def call(self) -> libcst.Module:
         visitor = lvv.LiteralValuesCollector(self.TARGET_TYPES)
@@ -22,7 +22,9 @@ class mRLS(Base):
         if not len(result.data):
             return self.source_tree
 
-        node = self.randomizer.choice(result.data)
+        flattened_items = [list((k, x) for x in v) for k, v in result.data.items()][0]
+
+        path, node = self.randomizer.choice(flattened_items)
         result.changes[node] = self.__generate_random_simple_string_value()
 
         transformer = lvt.LiteralValueTransformer(

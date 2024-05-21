@@ -18,7 +18,9 @@ class mRLN(Base):
         if not len(result.data):
             return self.source_tree
 
-        node = self.randomizer.choice(result.data)
+        flattened_items = [list((k, x) for x in v) for k, v in result.data.items()][0]
+        path, node = self.randomizer.choice(flattened_items)
+
         result.changes[node] = self.__generate_random_number(node)
 
         transformer = lvt.LiteralValueTransformer(

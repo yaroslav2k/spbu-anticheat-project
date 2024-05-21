@@ -1,4 +1,4 @@
-from typing import Tuple, List, Optional
+from typing import Tuple, Optional
 import string
 import random
 import pathlib
@@ -33,9 +33,9 @@ class mSIL(Base):
         value_prob: float = 0.3,
     ) -> None:
         path, parameters_tuple = self.randomizer.choice(list(result.data.items()))
-        parameters: List = list(parameters_tuple or tuple())
+        parameters: list = list(parameters_tuple or tuple())
 
-        self.injection_trace.add(path[0], path[1], MutationsRegistry.M_SIL)
+        self.injection_trace.add(path.split("."), MutationsRegistry.M_SIL)
 
         name = ParameterNameGenerator.generate_parameter_name(self.randomizer)
         new_param = libcst.Param(libcst.Name(name))
@@ -148,7 +148,7 @@ class TypehintGenerator:
 
 
 class ParameterNameGenerator:
-    __parameter_names: Optional[List[str]] = None
+    __parameter_names: Optional[list[str]] = None
 
     @classmethod
     def generate_parameter_name(cls, randomizer: random.Random) -> str:
