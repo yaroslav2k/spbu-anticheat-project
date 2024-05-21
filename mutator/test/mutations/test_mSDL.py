@@ -1,17 +1,13 @@
 import unittest
 import os
 import random
-import sys
 import libcst as cst
 
 from pathlib import Path
 from dataclasses import dataclass
 
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
-
-from mutations.mSDL import mSDL  # noqa: E402
+from mutations.injection_trace import InjectionTrace
+from mutations.mSDL import mSDL
 
 
 class TestmSDL(unittest.TestCase):
@@ -44,7 +40,9 @@ class TestmSDL(unittest.TestCase):
             with open(f"test/fixtures/mSDL/inputs/{case.filename}", "r") as source:
                 source_tree = cst.parse_module(source.read())
 
-                actual_output = mSDL(source_tree, randomizer).call().code
+                actual_output = (
+                    mSDL(source_tree, randomizer, InjectionTrace()).call().code
+                )
 
                 with self.subTest(label=case.filename):
                     self.assertEqual(case.output, actual_output.strip())

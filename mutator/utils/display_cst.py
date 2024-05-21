@@ -1,5 +1,6 @@
 import argparse
-import libcst as cst
+
+import libcst
 
 
 def main():
@@ -12,7 +13,7 @@ def main():
 
     with open(args.input, "r") as source:
         data = source.read()
-        source_tree = cst.parse_module(data)
+        source_tree = libcst.parse_module(data)
         print(source_tree)
 
 

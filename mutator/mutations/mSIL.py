@@ -1,13 +1,15 @@
+from typing import Tuple, List, Optional
 import string
 import random
 import pathlib
 
-from typing import Tuple, List, Optional
+import libcst
+
 from mutations.base import Base
+from mutations.registry import Registry as MutationsRegistry
 
 import visitors.function_definition_visitor as fdv
 import transformers.function_definition_transformer as fdt
-import libcst
 
 
 # FIXME: naming should be aligned with python's recommendations
@@ -32,6 +34,8 @@ class mSIL(Base):
     ) -> None:
         path, parameters_tuple = self.randomizer.choice(list(result.data.items()))
         parameters: List = list(parameters_tuple or tuple())
+
+        self.injection_trace.add(path[0], path[1], MutationsRegistry.M_SIL)
 
         name = ParameterNameGenerator.generate_parameter_name(self.randomizer)
         new_param = libcst.Param(libcst.Name(name))

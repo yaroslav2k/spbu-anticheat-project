@@ -1,6 +1,7 @@
 import libcst
 
 from mutations.base import Base
+from mutations.registry import Registry as MutationsRegistry
 
 import visitors.function_definition_visitor as fdv
 import transformers.function_definition_transformer as fdt
@@ -25,8 +26,11 @@ class mSDL(Base):
 
     def __select_parameter_for_removal(self, result) -> None:
         path, parameters_tuple = self.randomizer.choice(list(result.data.items()))
+
         if not parameters_tuple:
             return
+
+        self.injection_trace.add(path[0], path[1], MutationsRegistry.M_SDL)
 
         parameters = list(parameters_tuple)
         parameters.pop(self.randomizer.randrange(len(parameters)))

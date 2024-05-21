@@ -1,9 +1,10 @@
 import libcst
 
+from transformers.abstract_transformer import AbstractTransformer
 from visitors.literal_values_visitor import LiteralValuesCollector
 
 
-class LiteralValueTransformer(libcst.CSTTransformer):
+class LiteralValueTransformer(AbstractTransformer):
     def __init__(
         self, result: LiteralValuesCollector.Result, target_types: list[type]
     ) -> None:

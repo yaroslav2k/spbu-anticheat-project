@@ -4,7 +4,7 @@ from visitors.abstract_visitor import AbstractVisitor
 
 
 class LiteralValuesCollector(AbstractVisitor):
-    class Result:
+    class Result(AbstractVisitor.Result):
         def __init__(self) -> None:
             self.data: list = []
             self.changes: dict = {}

@@ -2,8 +2,10 @@ from typing import Union
 
 import libcst
 
+from transformers.abstract_transformer import AbstractTransformer
 
-class SingleStatementLineInserter(libcst.CSTTransformer):
+
+class SingleStatementLineInserter(AbstractTransformer):
     def __init__(self, result: tuple):
         self.result = result
 

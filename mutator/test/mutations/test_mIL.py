@@ -1,15 +1,13 @@
 import unittest
 import os
 import random
-import sys
 import libcst as cst
 
 from pathlib import Path
 from dataclasses import dataclass
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from mutations.mIL import mIL  # noqa: E402
+from mutations.injection_trace import InjectionTrace
+from mutations.mIL import mIL
 
 
 class TestmIL(unittest.TestCase):
@@ -45,7 +43,9 @@ class TestmIL(unittest.TestCase):
                 actual_output = source_tree
 
                 for _ in range(2):
-                    actual_output = mIL(actual_output, randomizer).call()
+                    actual_output = mIL(
+                        actual_output, randomizer, InjectionTrace()
+                    ).call()
 
                 with self.subTest(label=case.filename):
                     self.assertEqual(case.output, actual_output.code.strip())
