@@ -1,7 +1,9 @@
 detector:
+  nicad:
+    executable-path: "/usr/local/bin/nicad"
   s3:
     endpoint: "http://s3:9000"
-    bucket-name: "production"
+    bucket-name: ${S3_BUCKET_NAME}
     access-key: ${S3_ACCESS_KEY_ID}
     secret-key: ${S3_SECRET_ACCESS_KEY}
   http:
