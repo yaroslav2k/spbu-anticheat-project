@@ -15,7 +15,6 @@ import ru.spbu.detector.dto.FragmentIdentifierDto;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +22,9 @@ import java.util.Set;
 public class NICADDetector extends DetectionAlgorithm {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private final String NICAD_PATH = "src/main/resources/Open-NiCad/";
+    private final String NICAD_EXECUTABLE_PATH = NICAD_PATH + "bin/nicad";
 
     private final String TESTS_PATH = "src/main/resources/Open-NiCad/tests/examples/clones/";
 
@@ -37,14 +38,14 @@ public class NICADDetector extends DetectionAlgorithm {
 
     @Override
     List<Set<FragmentIdentifierDto>> findClusters(List<CodeFragment> fragments, boolean skipFragmentsSameSubmission) {
-        cleanNicadclones();
+        cleanNicadArtifacts();
         for (int i = 0; i < fragments.size(); i++) {
             List<String> fragment = fragments.get(i).getTokens();
             try (FileWriter fileWriter = new FileWriter(  TESTS_PATH + i + ".py")) {
                 for (String string : fragment)
                     fileWriter.write(string);
             } catch (IOException e) {
-                log.error("Ошибка при записи в файл: " + e.getMessage());
+                log.error(String.format("Failed to write file: %s", e.getMessage()));
             }
         }
         runNicad();
@@ -61,7 +62,7 @@ public class NICADDetector extends DetectionAlgorithm {
     }
 
     public void findClustersFromFiles(String file1, String file2) {
-        cleanNicadclones();
+        cleanNicadArtifacts();
         Path source = Path.of(file1);
         Path dest = Path.of(TESTS_PATH + 1 + ".py");
         try {
@@ -82,9 +83,9 @@ public class NICADDetector extends DetectionAlgorithm {
 
     void runNicad() {
         try {
-            Runtime.getRuntime().exec(NICAD_PATH + "bin/nicad files py " + TESTS_PATH).waitFor();
+            Runtime.getRuntime().exec(new String[]{NICAD_EXECUTABLE_PATH, "files", "py", TESTS_PATH}).waitFor();
         } catch (IOException e) {
-            log.error("Ошибка при запуске NiCad: " + e.getMessage());
+            log.error(String.format("Failed to execute `NiCad`: %s", e.getMessage()));
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             e.printStackTrace();
@@ -98,13 +99,15 @@ public class NICADDetector extends DetectionAlgorithm {
                 if(f.isDirectory()) {
                     deleteFolder(f);
                 } else {
-                    f.delete();
+                    if (!f.delete()) {
+                      log.error("Failed to delete nicad artifact folder");
+                    }
                 }
             }
         }
     }
 
-    public void cleanNicadclones() {
+    public void cleanNicadArtifacts() {
         File folder = new File(TESTS_PATH);
         deleteFolder(folder);
         folder = new File(NICAD_CLONES);
@@ -120,21 +123,22 @@ public class NICADDetector extends DetectionAlgorithm {
             Document doc = dBuilder.parse(fXmlFile);
             doc.getDocumentElement().normalize();
 
-            NodeList CloneClasses = doc.getElementsByTagName("class");
-            for (int i = 0; i < CloneClasses.getLength(); i++) {
-                Node nNode = CloneClasses.item(i);
+            NodeList cloneClasses = doc.getElementsByTagName("class");
+            for (int i = 0; i < cloneClasses.getLength(); i++) {
+                Node nNode = cloneClasses.item(i);
 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
                     int similarity = Integer.parseInt(eElement.getAttribute("similarity"));
                     if (similarity < ((NICADDetectorParams) getParameters()).getThreshold())
                         continue;
-                    log.info("found clone:");
-                    log.info("Similarity: " + similarity);
-                    NodeList Sources = ((Element) nNode).getElementsByTagName("source");
+
+                    log.info(String.format("[NiCad] Found clone with similarity: %i", similarity));
+
+                    NodeList sources = ((Element) nNode).getElementsByTagName("source");
                     Set<Integer> g = new java.util.HashSet<>(List.of());
-                    for (int j = 0; j < Sources.getLength(); j++) {
-                        String filePath = ((Element) Sources.item(j)).getAttribute("file");
+                    for (int j = 0; j < sources.getLength(); j++) {
+                        String filePath = ((Element) sources.item(j)).getAttribute("file");
                         log.info(filePath);
                         int fileNum = Integer.parseInt(Path.of(filePath).getFileName().toString().replaceFirst("[.][^.]+$", ""));
                         g.add(fileNum);
