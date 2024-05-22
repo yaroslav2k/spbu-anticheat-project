@@ -23,7 +23,7 @@ import java.util.Set;
 public class NICADDetector extends DetectionAlgorithm {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final String NICAD_PATH = "src/main/resources/Open-NiCad/";
+    private final String NICAD_PATH = "src/main/resources/Open-NiCad/bin/";
 
     private final String TESTS_PATH = "src/main/resources/Open-NiCad/tests/examples/clones/";
 
@@ -82,7 +82,7 @@ public class NICADDetector extends DetectionAlgorithm {
 
     void runNicad() {
         try {
-            Runtime.getRuntime().exec(NICAD_PATH + "bin/nicad files py " + TESTS_PATH).waitFor();
+            Runtime.getRuntime().exec(NICAD_PATH + "nicad files py " + TESTS_PATH).waitFor();
         } catch (IOException e) {
             log.error("Ошибка при запуске NiCad: " + e.getMessage());
         } catch (InterruptedException e) {
