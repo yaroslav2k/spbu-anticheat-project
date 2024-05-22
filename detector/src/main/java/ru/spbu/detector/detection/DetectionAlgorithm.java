@@ -28,7 +28,10 @@ abstract class DetectionAlgorithm {
 
         if (name.equals("LCS")) {
             return new LCSDetector(new LCSDetectorParams(paramsMap));
-        } else {
+        } else if (name.equals("NICAD")) {
+            return new NICADDetector(new NICADDetectorParams(paramsMap));
+        }
+        else {
             throw new IllegalArgumentException(MessageFormat.format(ALGORITHM_NOT_SUPPORTED, name));
         }
     }
