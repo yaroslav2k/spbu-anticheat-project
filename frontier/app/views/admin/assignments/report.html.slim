@@ -2,15 +2,18 @@ table.index_table
   p = "This report was evalutated with options `#{assignment.options.inspect}`."
 
   tr
-    th.col[style="width: 33%;"] identifier
-    th.col[style="width: 33%;"] line_start
-    th.col[style="width: 33%;"] line_end
+    th.col[style="width: 25%;"] author name
+    th.col[style="width: 25%;"] identifier
+    th.col[style="width: 25%;"] line start
+    th.col[style="width: 25%;"] line end
 
 - assignment.report.each do |code_clone|
+  div = "Similarity: #{code_clone.similarity_label}"
   table.index_table
     - code_clone.code_fragments.each do |code_fragment|
       tr
-        td.col[style="width: 33%;"] = assignment.submission_field(code_fragment)
-        td.col[style="width: 33%;"] = code_fragment.line_start
-        td.col[style="width: 33%;"] = code_fragment.line_end
+        td.col[style="width: 25%;"] = code_fragment.author_name
+        td.col[style="width: 25%;"] = assignment.submission_field(code_fragment)
+        td.col[style="width: 25%;"] = code_fragment.line_start
+        td.col[style="width: 25%;"] = code_fragment.line_end
 

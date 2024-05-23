@@ -20,7 +20,7 @@ class Assignment::DetectService < ApplicationService
   private
 
     def perform_api_request
-      self.response = api_client.detect(assignment, submission)
+      self.response = api_client.detect_clones(assignment, submission)
     end
 
     def api_client

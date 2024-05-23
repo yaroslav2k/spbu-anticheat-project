@@ -20,6 +20,10 @@ class AssignmentDecorator < ApplicationDecorator
 
       super(similarity: similarity.to_d / 100, code_fragments:)
     end
+
+    def similarity_label
+      "#{similarity} / 1.0"
+    end
   end
 
   CodeFragment = Data.define(:identifier, :line_start, :line_end) do
@@ -56,6 +60,10 @@ class AssignmentDecorator < ApplicationDecorator
     end
     alias_method :load_submission, :submission
 
+    def author_name
+      submission&.author_name || "-"
+    end
+
     private
 
       attr_reader :upload_id
@@ -64,20 +72,23 @@ class AssignmentDecorator < ApplicationDecorator
   delegate_all
 
   memoize def report
-    parsed_report = JSON.parse(context[:raw_report], symbolize_names: true)
+    parsed_raw_report = JSON.parse(context[:raw_report], symbolize_names: true)
 
-    parsed_report.map do |serialized_code_clone|
-      CodeClone.new(
-        similarity: serialized_code_clone[:similarity],
-        code_fragments: serialized_code_clone.fetch(:code_fragments).map do |serialized_code_fragment|
-          CodeFragment.new(
-            identifier: serialized_code_fragment.fetch(:identifier),
-            line_start: serialized_code_fragment.fetch(:line_start),
-            line_end: serialized_code_fragment.fetch(:line_end)
-          )
-        end
-      )
-    end
+    parsed_report = parsed_raw_report
+      .map do |serialized_code_clone|
+        CodeClone.new(
+          similarity: serialized_code_clone[:similarity],
+          code_fragments: serialized_code_clone.fetch(:code_fragments).map do |serialized_code_fragment|
+            CodeFragment.new(
+              identifier: serialized_code_fragment.fetch(:identifier),
+              line_start: serialized_code_fragment.fetch(:line_start),
+              line_end: serialized_code_fragment.fetch(:line_end)
+            )
+          end
+        )
+      end
+
+    parsed_report.sort_by { |code_clone| -1 * code_clone.similarity }
   end
 
   def submission_field(code_fragment)
