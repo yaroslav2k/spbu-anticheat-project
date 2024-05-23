@@ -20,7 +20,7 @@ ActiveAdmin.register Assignment do
   member_action :trigger_processing, method: :post do
     assignment = Assignment.for(current_user).find(params[:id])
 
-    Assignment::DetectJob.perform_later(assignment, nil)
+    Assignment::DetectJob.perform_later(assignment, assignment.submissions.take)
 
     redirect_back_or_to root_path, notice: "Job was enqueued successfuly"
   end

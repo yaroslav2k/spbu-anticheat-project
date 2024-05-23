@@ -55,17 +55,6 @@ public class NICADDetector extends DetectionAlgorithm {
         runNicad(TESTS_PATH);
 
         throw new NotImplementedException();
-
-        // return deserializeFromXml("");
-        // List<Set<FragmentIdentifierDto>> result = new LinkedList<>();
-        // for (Set<Integer> sets : list) {
-        // Set<FragmentIdentifierDto> g = new java.util.HashSet<>(List.of());
-        // for (int i : sets) {
-        // g.add(fragments.get(i).getIdentifier());
-        // }
-        // result.add(g);
-        // }
-        // return result;
     }
 
     public Set<CodeCloneDto> findClustersFromDirectory(Path directoryPath) {
@@ -140,7 +129,9 @@ public class NICADDetector extends DetectionAlgorithm {
 
     Set<CodeCloneDto> deserializeFromXml(String basePath) {
         Set<CodeCloneDto> codeClones = new HashSet<>();
-        var threshold = ((NICADDetectorParams) getParameters()).getThreshold() * 100;
+        var parameters = ((NICADDetectorParams) getParameters());
+        var threshold = parameters.getThreshold() * 100;
+        var matchCloneClasses = parameters.matchCloneClasses();
 
         try {
             File fXmlFile = Paths.get(basePath, BLIND_CLONES).toFile();
@@ -150,7 +141,8 @@ public class NICADDetector extends DetectionAlgorithm {
             Document doc = dBuilder.parse(fXmlFile);
             doc.getDocumentElement().normalize();
 
-            NodeList serializedClones = doc.getElementsByTagName("clone");
+            String topLevelKey = matchCloneClasses ? "class" : "clone";
+            NodeList serializedClones = doc.getElementsByTagName(topLevelKey);
             for (int i = 0; i < serializedClones.getLength(); i++) {
                 if (serializedClones.item(i).getNodeType() != Node.ELEMENT_NODE) {
                     continue;
