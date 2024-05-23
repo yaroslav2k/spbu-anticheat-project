@@ -3,36 +3,62 @@
 class AssignmentDecorator < ApplicationDecorator
   include Memery
 
-  ITEM_ATTRIBUTES = %i[
-    revision
-    file_name
-    class_name
-    function_name
-    function_start
-    function_end
-  ].freeze
+  CodeClone = Data.define(:similarity, :code_fragments) do
+    def initialize(similarity:, code_fragments:)
+      unless similarity.is_a?(Numeric) && (0..100).cover?(similarity)
+        raise ArgumentError, <<~HEREDOC
+          Expected `similarity` to be a floating-point number within 0..1 range.
+        HEREDOC
+      end
 
-  Report = Struct.new(:clusters, keyword_init: true)
-  Cluster = Struct.new(:items, keyword_init: true)
-  Item = Struct.new(*ITEM_ATTRIBUTES, keyword_init: true) do
-    def initialize(...)
-      super(...)
+      unless code_fragments.is_a?(Array) && code_fragments.all? { _1.is_a?(CodeFragment) }
+        raise ArgumentError, <<~HEREDOC
+          Expected `code_fragments` to be an instance of array with
+          elements of type `CodeFragment`.
+        HEREDOC
+      end
 
-      %i[class_name function_name].each do |attribute|
-        public_send(:"#{attribute}=", handle_blank(public_send(attribute)))
+      super(similarity: similarity.to_d / 100, code_fragments:)
+    end
+  end
+
+  CodeFragment = Data.define(:identifier, :line_start, :line_end) do
+    def initialize(identifier:, line_start:, line_end:)
+      raise ArgumentError, "Expected `identifier` to be a string, got `#{identifier.inspect}`" unless identifier.is_a?(String)
+
+      unless line_start.is_a?(Integer) && line_start.positive?
+        raise ArgumentError, "Expected `line_start` to be a positive integer, got `#{line_start.inspect}`"
+      end
+
+      unless line_end.is_a?(Integer) && line_end.positive?
+        raise ArgumentError, "Expected `line_end` to be a positive integer, got `#{line_end.inspect}`"
+      end
+
+      @upload_id ||= identifier.split("/").last.gsub(/\..+\Z/, "")
+
+      load_submission
+
+      super(identifier:, line_start:, line_end:)
+    end
+
+    def upload
+      return @upload if defined?(@upload)
+
+      @upload = suppress(ActiveRecord::RecordNotFound) do
+        Upload.find(upload_id)
       end
     end
 
-    # def external_url
-    #   path = "tree/#{revision}/#{file_name}"
-    #   "#{repository_url}/#{path}?plain=#L#{function_start}-#L#{function_end}"
-    # end
+    def submission
+      return @submission if defined?(@submission)
+
+      @submission = upload.uploadable
+    end
+    alias_method :load_submission, :submission
 
     private
 
-      def handle_blank(value)
-        value.presence || "—"
-      end
+      attr_reader :upload_id
   end
 
   delegate_all
@@ -40,17 +66,28 @@ class AssignmentDecorator < ApplicationDecorator
   memoize def report
     parsed_report = JSON.parse(context[:raw_report], symbolize_names: true)
 
-    # metadata = parsed_report[:metadata]
-    clusters = parsed_report[:clusters]
-
-    clusters = clusters.map do |raw_cluster|
-      items = raw_cluster.map do |raw_item|
-        Item.new(raw_item.transform_keys(&:to_s).transform_keys(&:underscore))
-      end
-
-      Cluster.new(items:)
+    parsed_report.map do |serialized_code_clone|
+      CodeClone.new(
+        similarity: serialized_code_clone[:similarity],
+        code_fragments: serialized_code_clone.fetch(:code_fragments).map do |serialized_code_fragment|
+          CodeFragment.new(
+            identifier: serialized_code_fragment.fetch(:identifier),
+            line_start: serialized_code_fragment.fetch(:line_start),
+            line_end: serialized_code_fragment.fetch(:line_end)
+          )
+        end
+      )
     end
+  end
 
-    Report.new(clusters:)
+  def submission_field(code_fragment)
+    submission = code_fragment.submission
+    upload = code_fragment.upload
+
+    if submission
+      h.link_to "#{submission.id} (#{upload.filename})", h.admin_submission_url(submission)
+    else
+      "-"
+    end
   end
 end

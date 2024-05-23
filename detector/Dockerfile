@@ -11,8 +11,8 @@ ADD https://github.com/CordyJ/OpenTxl/releases/download/v11.3.1/opentxl-11.3.1-l
 
 WORKDIR /tmp
 
-RUN tar xvf /tmp/opentplus-62-linux64.tar.gz && cd /tmp/opentplus-62-linux64 && ./InstallTplus.sh && chmod +x /usr/local/bin/tpc
-RUN tar xvf /tmp/opentxl-11.3.1-linux64.tar.gz && cd /tmp/opentxl-11.3.1-linux64 && ./InstallTxl.sh && chmod +x /usr/local/bin/txl
+RUN tar xvf /tmp/opentplus-62-linux64.tar.gz && cd /tmp/opentplus-62-linux64 && ./InstallTplus.sh
+RUN tar xvf /tmp/opentxl-11.3.1-linux64.tar.gz && cd /tmp/opentxl-11.3.1-linux64 && ./InstallTxl.sh
 RUN git clone https://github.com/CordyJ/Open-NiCad.git && cd Open-NiCad && make && src/installer/InstallNicad.sh
 RUN rm -rf /tmp/opentplus-62-linux64 && rm -rf /tmp/opentxl-11.3.1-linux64
 

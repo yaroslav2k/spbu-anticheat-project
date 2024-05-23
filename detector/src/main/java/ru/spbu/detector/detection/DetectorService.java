@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -65,23 +64,22 @@ public class DetectorService {
         return algorithm.findClusters(codeFragmentsDto.getFragments(), false);
     }
 
-    public Set<CodeCloneDto> detectClones(CloneDetectionTaskDto dto) {
+    public void detectClones(CloneDetectionTaskDto dto) throws JsonProcessingException {
       try {
         downloadSourceFiles(dto.resources(), dto.revision());
       } catch (IOException e) {
         log.error(String.format("Unexpected IO-related exception %s", e.getMessage()));
 
-        return Set.of();
+        return;
       }
+
       var algorithm = DetectionAlgorithm.of(dto.algorithm());
 
       if (algorithm instanceof NICADDetector) {
-        var result = ((NICADDetector) algorithm).findClustersFromDirectory(Paths.get("/tmp", dto.revision()));
+        var codeClones = ((NICADDetector) algorithm).findClustersFromDirectory(Paths.get("/tmp", dto.revision()));
 
-        return result;
-      } else {
-        return Set.of();
-      }
+        uploadResult(dto, codeClones);
+    }
     }
 
     public void submitCompareRepositoriesTask(SubmitRepositoryDto dto) {
@@ -128,6 +126,20 @@ public class DetectorService {
             }
         }
       }
+    }
+
+    private void uploadResult(CloneDetectionTaskDto dto, Set<CodeCloneDto> codeCLones) throws JsonProcessingException {
+        var objectMapper = new ObjectMapper();
+        String report = objectMapper.writeValueAsString(codeCLones);
+
+        var objectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(dto.resultKey())
+                .build();
+
+
+        s3Client.putObject(objectRequest, RequestBody.fromString(report, StandardCharsets.UTF_8));
+        frontierClient.setSubmissionStatus(dto.resultPath(), SubmissionStatusDto.COMPLETED);
     }
 
     private void compareRepositories(SubmitRepositoryDto dto) throws JsonProcessingException {
