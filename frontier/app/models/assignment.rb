@@ -69,7 +69,13 @@ class Assignment < ApplicationRecord
   end
 
   def report_storage_key
-    "courses/#{course.id}/assignments/#{storage_identifier}/detector-report.json"
+    # "courses/#{course.id}/assignments/#{storage_identifier}/detector-report.json"
+
+    nicad_report_storage_key
+  end
+
+  def nicad_report_storage_key
+    "courses/#{course.id}/assignments/#{storage_identifier}/reports/nicad.json"
   end
 
   def report_url

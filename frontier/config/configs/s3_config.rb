@@ -6,13 +6,15 @@ class S3Config < ApplicationConfig
     :access_key_id,
     :secret_access_key,
     :region,
+    :bucket,
     force_path_style: true
 
   required \
     :endpoint,
     :access_key_id,
     :secret_access_key,
-    :region
+    :region,
+    :bucket
 
     coerce_types \
       force_path_style: :boolean

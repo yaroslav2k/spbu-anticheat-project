@@ -2,20 +2,18 @@ table.index_table
   p = "This report was evalutated with options `#{assignment.options.inspect}`."
 
   tr
-    th.col revision
-    th.col filename
-    th.col class_name
-    th.col function_name
+    th.col[style="width: 25%;"] author name
+    th.col[style="width: 25%;"] identifier
+    th.col[style="width: 25%;"] line start
+    th.col[style="width: 25%;"] line end
 
-  - assignment.report.clusters.each do |cluster|
-    - cluster.items.each do |item|
-      tr.odd
-        td.col = link_to item.revision, admin_submission_url(item.revision)
-        td.col = item.file_name
-        td.col = item.class_name
-        td.col = item.function_name
-    tr.even
-      td
-      td
-      td
-      td
+- assignment.report.each do |code_clone|
+  div = "Similarity: #{code_clone.similarity_label}"
+  table.index_table
+    - code_clone.code_fragments.each do |code_fragment|
+      tr
+        td.col[style="width: 25%;"] = code_fragment.author_name
+        td.col[style="width: 25%;"] = assignment.submission_field(code_fragment)
+        td.col[style="width: 25%;"] = code_fragment.line_start
+        td.col[style="width: 25%;"] = code_fragment.line_end
+

@@ -3,8 +3,6 @@ package ru.spbu.detector.mistral.client;
 import ru.spbu.detector.mistral.completion.ChatCompletionRequest;
 import ru.spbu.detector.mistral.completion.ChatCompletionResponse;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.lang.NonNull;
 import org.springframework.web.reactive.function.client.WebClient;
 

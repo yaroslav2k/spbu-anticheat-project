@@ -86,7 +86,7 @@ RSpec.describe Assignment do
 
     describe "#report_storage_key" do
       its(:report_storage_key) do
-        is_expected.to eq("courses/#{assignment.course_id}/assignments/#{assignment.id}/detector-report.json")
+        is_expected.to eq("courses/#{assignment.course_id}/assignments/#{assignment.id}/reports/nicad.json")
       end
     end
 
@@ -95,7 +95,7 @@ RSpec.describe Assignment do
 
       its(:report_url) do
         is_expected.to eq(
-          "https://127.0.0.1/storage/test/courses/#{course.id}/assignments/#{assignment.id}/detector-report.json"
+          "https://127.0.0.1/storage/test/courses/#{course.id}/assignments/#{assignment.id}/reports/nicad.json"
         )
       end
     end

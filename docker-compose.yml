@@ -81,6 +81,8 @@ services:
   detector:
     build: detector
     container_name: clone-detector
+    ports:
+      - "8080:8080"
     env_file: .env
     networks:
       - backend

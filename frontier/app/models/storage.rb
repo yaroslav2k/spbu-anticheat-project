@@ -6,8 +6,10 @@ class Storage
   end
 
   def public_url(key)
-    "https://#{host}/storage/#{bucket}/#{key}" # FIXME
+    "https://#{host}/storage/#{bucket}/#{key}"
   end
+
+  delegate :bucket, to: :config
 
   PRIMARY = new(Frontier.config.s3_config)
 
@@ -15,10 +17,6 @@ class Storage
 
     def host
       Rails.application.config.x.ip_address
-    end
-
-    def bucket
-      Rails.env
     end
 
     attr_reader :config

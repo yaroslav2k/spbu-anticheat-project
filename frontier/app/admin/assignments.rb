@@ -12,7 +12,7 @@ ActiveAdmin.register Assignment do
   member_action :report, method: :get do
     s3_client = Aws::S3::Client.new
 
-    object = s3_client.get_object(bucket: Rails.env.to_sym, key: resource.report_storage_key)
+    object = s3_client.get_object(bucket: Storage::PRIMARY.bucket, key: resource.nicad_report_storage_key)
 
     render locals: { assignment: resource.decorate(context: { raw_report: object.body.read }) }
   end
@@ -20,9 +20,9 @@ ActiveAdmin.register Assignment do
   member_action :trigger_processing, method: :post do
     assignment = Assignment.for(current_user).find(params[:id])
 
-    Assignment::DetectJob.perform_later(assignment, nil)
+    Assignment::DetectJob.perform_later(assignment, assignment.submissions.take)
 
-    redirect_back_or_to root_path, notice: "Job was enqueued successfuly"
+    redirect_back_or_to root_path, notice: "Job was enqueued successfuly. Please note that processing may take a few minutes."
   end
 
   permit_params :title, :course_id, :ngram_size, :threshold

@@ -4,13 +4,20 @@ import java.util.Map;
 
 public class NICADDetectorParams extends DetectionAlgorithmParameters{
     private final double threshold;
+    private final boolean matchCloneClasses;
 
     public double getThreshold() {
-        return threshold;
+        return this.threshold;
+    }
+
+    public boolean matchCloneClasses() {
+        return this.matchCloneClasses;
     }
 
     public NICADDetectorParams(Map<String, Object> params) {
         super();
-        threshold = (double) params.get("threshold");
+
+        this.threshold = (double) params.get("threshold");
+        this.matchCloneClasses = (boolean) params.getOrDefault("matchCloneClasses", true);
     }
 }
