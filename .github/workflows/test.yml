@@ -45,6 +45,7 @@ jobs:
           POSTGRES_DATABASE: frontier_ci
           POSTGRES_USERNAME: frontier_ci_user
           POSTGRES_PASSWORD: postgres
+          S3_BUCKET: test
           PGPORT: ${{ job.services.postgres.ports[5432] }}
           RAILS_ENV: test
         run: bundle exec rspec
