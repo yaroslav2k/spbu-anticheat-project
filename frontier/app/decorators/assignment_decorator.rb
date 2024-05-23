@@ -20,9 +20,9 @@ class AssignmentDecorator < ApplicationDecorator
 
       grouped_code_fragments = code_fragments.group_by(&:author_name)
       grouped_code_fragments.each_value do |student_code_fragments|
-        if student_code_fragments.size > 1 && grouped_code_fragments.keys > 1
+        if student_code_fragments.size > 1 && grouped_code_fragments.keys.size > 1
           (0...student_code_fragments.size - 1).each { code_fragments.delete(code_fragments[_1]) }
-        elsif student_code_fragments > 1 && grouped_code_fragments == 1
+        elsif student_code_fragments.size > 1 && grouped_code_fragments.keys.size == 1
           code_fragments = []
         end
       end
