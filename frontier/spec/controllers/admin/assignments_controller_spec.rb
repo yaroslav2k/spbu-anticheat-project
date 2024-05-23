@@ -24,19 +24,27 @@ RSpec.describe Admin::AssignmentsController do
     let(:course) { create(:course, user:) }
     let!(:assignment) { create(:assignment, course:) }
 
+    let!(:upload_1) { create(:upload) }
+    let!(:upload_2) { create(:upload) }
+
     let(:manifest) do
-      {
-        clusters: [
-          [
-            revision: "revision",
-            file_name: "file_name",
-            class_name: "class_name",
-            function_name: "function_name",
-            function_start: "function_start",
-            function_end: "function_end"
-          ]
-        ]
-      }
+      [
+        {
+          code_fragments: [
+            {
+              identifier: "nicadclones/data/data/#{upload_1.id}.py",
+              line_start: 1,
+              line_end: 95
+            },
+            {
+              identifier: "nicadclones/data/data/#{upload_1.id}.py",
+              line_start: 1,
+              line_end: 102
+            }
+          ],
+          similarity: 72
+        }
+      ]
     end
 
     let(:response_double) { double("response", body: StringIO.new(manifest.to_json)) } # rubocop:disable RSpec/VerifiedDoubles
