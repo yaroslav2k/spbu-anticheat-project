@@ -37,6 +37,7 @@ jobs:
           POSTGRES_DATABASE: frontier_ci
           POSTGRES_USERNAME: frontier_ci_user
           POSTGRES_PASSWORD: postgres
+          S3_BUCKET: test
         run: bundle install && bundle exec rails db:create db:migrate
       - name: Run tests
         working-directory: frontier
