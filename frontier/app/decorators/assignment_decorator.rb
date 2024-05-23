@@ -97,7 +97,9 @@ class AssignmentDecorator < ApplicationDecorator
         )
       end
 
-    parsed_report.sort_by { |code_clone| -1 * code_clone.similarity }
+    parsed_report
+      .select { |code_clone| code_clone.code_fragments.size.positive? }
+      .sort_by { |code_clone| -1 * code_clone.similarity }
   end
 
   def submission_field(code_fragment)
