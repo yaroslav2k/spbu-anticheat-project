@@ -34,6 +34,8 @@ public class NICADDetector extends DetectionAlgorithm {
     private static final String NICAD_CLONES = "nicadclones/data/";
     private static final String BLIND_CLONES = NICAD_CLONES
             + "data_files-blind-clones/data_files-blind-clones-0.30.xml";
+    private static final String BLIND_CLONES_CLASSES = NICAD_CLONES
+           + "data_files-blind-clones/data_files-blind-clones-0.30-classes.xml";
 
     public NICADDetector(DetectionAlgorithmParameters parameters) {
         super(parameters);
@@ -107,7 +109,7 @@ public class NICADDetector extends DetectionAlgorithm {
 
     void deleteFolder(File folder) {
         File[] files = folder.listFiles();
-        if (files != null) { // some JVMs return null for empty dirs
+        if (files != null) { // some JVMs return `null` for empty directories
             for (File f : files) {
                 if (f.isDirectory()) {
                     deleteFolder(f);
@@ -133,8 +135,10 @@ public class NICADDetector extends DetectionAlgorithm {
         var threshold = parameters.getThreshold() * 100;
         var matchCloneClasses = parameters.matchCloneClasses();
 
+        String xmlFilename = matchCloneClasses ? BLIND_CLONES_CLASSES : BLIND_CLONES;
+
         try {
-            File fXmlFile = Paths.get(basePath, BLIND_CLONES).toFile();
+            File fXmlFile = Paths.get(basePath, xmlFilename).toFile();
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

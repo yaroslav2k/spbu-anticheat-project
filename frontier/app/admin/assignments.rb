@@ -22,7 +22,7 @@ ActiveAdmin.register Assignment do
 
     Assignment::DetectJob.perform_later(assignment, assignment.submissions.take)
 
-    redirect_back_or_to root_path, notice: "Job was enqueued successfuly"
+    redirect_back_or_to root_path, notice: "Job was enqueued successfuly. Please note that processing may take a few minutes."
   end
 
   permit_params :title, :course_id, :ngram_size, :threshold
