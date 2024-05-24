@@ -12,30 +12,8 @@ RSpec.describe Submission::ProcessJob do
       stub_const("GitRemoteValidator::HTTP_REQUEST_EVALUATOR", evaluator_double)
     end
 
-    shared_context "with mocked docker client" do
-      let(:container_double) { instance_double(Docker::Container) }
-
-      before do
-        allow(Docker::Container).to receive(:create).and_return(container_double)
-        allow(container_double).to receive_messages(
-          start: container_double, attach: container_double, stop: container_double, remove: container_double
-        )
-      end
-    end
-
-    shared_context "with mocked `File.read` method" do
-      let(:manifest_data) { { foo: :bar }.to_json }
-
-      before do
-        allow(File).to receive(:read).and_return(manifest_data)
-      end
-    end
-
     context "with submission of `git` kind" do
       let(:submission) { create(:submission_git) }
-
-      include_context "with mocked docker client"
-      include_context "with mocked `File.read` method"
 
       context "with happy path" do
         let(:s3_client_double) { instance_double(Aws::S3::Client, put_object: true) }
@@ -54,21 +32,6 @@ RSpec.describe Submission::ProcessJob do
           expect(Git).to have_received(:clone).with(
             submission.url, an_instance_of(String), an_instance_of(Hash)
           ).ordered.once
-
-          expect(Docker::Container).to have_received(:create).with(
-            an_instance_of(Hash)
-          ).ordered.once
-
-          expect(File).to have_received(:read).with(
-            an_instance_of(String)
-          ).ordered.once
-
-          expect(s3_client_double).to have_received(:put_object).with(
-            body: manifest_data,
-            bucket: "test",
-            content_type: "application/json",
-            key: an_instance_of(String)
-          ).ordered.once
         end
       end
     end
@@ -80,9 +43,6 @@ RSpec.describe Submission::ProcessJob do
 
       let(:file_double) { instance_double(File) }
       let(:s3_client_double) { instance_double(Aws::S3::Client, get_object: true, put_object: true) }
-
-      include_context "with mocked docker client"
-      include_context "with mocked `File.read` method"
 
       context "with happy path" do
         before do
@@ -105,17 +65,6 @@ RSpec.describe Submission::ProcessJob do
             bucket: "test",
             key: an_instance_of(String)
           ).ordered.once
-
-          expect(Docker::Container).to have_received(:create).with(
-            an_instance_of(Hash)
-          ).ordered.once
-
-          expect(s3_client_double).to have_received(:put_object).with(
-            body: manifest_data,
-            bucket: "test",
-            content_type: "application/json",
-            key: an_instance_of(String)
-          )
         end
       end
     end

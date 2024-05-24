@@ -51,7 +51,7 @@ class AssignmentDecorator < ApplicationDecorator
 
       load_submission
 
-      super(identifier:, line_start:, line_end:)
+      super
     end
 
     def upload

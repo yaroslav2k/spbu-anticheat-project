@@ -24,6 +24,6 @@ class Assignment::DetectService < ApplicationService
     end
 
     def api_client
-      @api_client ||= DetectorClient.new(Frontier.config.detector_config)
+      @api_client ||= Detector::Client.new(Frontier.config.detector_config)
     end
 end

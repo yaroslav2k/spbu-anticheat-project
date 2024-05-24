@@ -63,8 +63,6 @@ RSpec.describe Assignment do
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_length_of(:title).is_at_least(4).is_at_most(80) }
     it { is_expected.to validate_uniqueness_of(:title).case_insensitive.scoped_to(:course_id) }
-    it { is_expected.to validate_numericality_of(:ngram_size).only_integer.is_greater_than_or_equal_to(2) }
-    it { is_expected.to validate_numericality_of(:threshold).is_in(0..1) }
   end
 
   describe "instance methods" do

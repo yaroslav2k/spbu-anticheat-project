@@ -147,6 +147,14 @@
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
 
+        <!-- Docker -->
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
+            <version>3.3.6</version>
+        </dependency>
+        <!-- Docker -->
+
     </dependencies>
 
 

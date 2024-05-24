@@ -25,7 +25,7 @@ ActiveAdmin.register Assignment do
     redirect_back_or_to root_path, notice: "Job was enqueued successfuly. Please note that processing may take a few minutes."
   end
 
-  permit_params :title, :course_id, :ngram_size, :threshold
+  permit_params :title, :course_id, :algorithm, *DetectionMethod::ALL.map(&:name)
 
   index do
     selectable_column
@@ -68,8 +68,27 @@ ActiveAdmin.register Assignment do
 
       tab :"Algorithm options" do
         f.inputs do
-          f.input :ngram_size
-          f.input :threshold
+          f.input :algorithm,
+            as: :select,
+            collection: DetectionMethod::ALL.map(&:name).map { [_1, _1] },
+            wrapper_html: { class: "algorithm-selection" },
+            include_blank: false
+
+          DetectionMethod::ALL.each do |detection_method|
+            f.inputs class: "inputs algorithm-selection-group", data: { algorithm: detection_method.name },
+              for: detection_method.name do |ff|
+              detection_method.parameters.each do |parameter|
+                ActiveAdmin::ViewsHelper.algorithm_parameter_input(
+                  ff,
+                  parameter,
+                  input_html: {
+                    value: f.object.public_send(detection_method.name.to_s)[parameter[:name]],
+                    data: { not: detection_method.name, then: :hide, target: ".algorithm-selection" }
+                  }
+                )
+              end
+            end
+          end
         end
       end
     end

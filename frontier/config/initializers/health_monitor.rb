@@ -10,6 +10,4 @@ HealthMonitor.configure do |config|
   end
 
   config.sidekiq
-
-  config.add_custom_provider(HealthMonitor::Providers::Docker)
 end

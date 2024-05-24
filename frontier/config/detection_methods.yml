@@ -1,0 +1,50 @@
+x-languages:
+  c:      &language-c      c
+  csharp: &language-csharp csharp
+  python: &language-python python
+  java:   &language-java   java
+  php:    &language-php    php
+  ruby:   &language-ruby   ruby
+  wsdl:   &language-wsdl   wsdl
+  atl:    &language-atl    atl
+
+x-parameters:
+  threshold: &parameter-threshold
+    name: threshold
+    type: number
+    minimum: 0.0
+    maximum: 1.0
+    default: 0.8
+    step: 0.01
+
+detection-methods:
+  - &nicad
+    name: nicad
+    parameters:
+      - *parameter-threshold
+      - name: granularity
+        type: string
+        default: "functions"
+        values: ["functions", "file"]
+    supported-languages:
+      - *language-c
+      - *language-csharp
+      - *language-python
+      - *language-java
+      - *language-php
+      - *language-ruby
+      - *language-wsdl
+      - *language-atl
+  - name: lcs_baseline
+    parameters:
+      - *parameter-threshold
+      - name: ngram_size
+        type: number
+        minimum: 1
+        step: 1
+        default: 3
+
+    supported-languages:
+      - *language-python
+
+detection-method-default: *nicad

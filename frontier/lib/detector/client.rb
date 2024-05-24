@@ -1,24 +1,10 @@
 # frozen_string_literal: true
 
-class DetectorClient
+class Detector::Client
   REQUEST_IDENTIFIER_HEADER = "Request-ID"
   private_constant :REQUEST_IDENTIFIER_HEADER
 
   include Rails.application.routes.url_helpers
-
-  Algorithm = Data.define(:name, :threshold, :n) do
-    def initialize(name:, threshold:, n: nil) # rubocop:disable Naming/MethodParameterName
-      super(name:, threshold:, n:)
-    end
-
-    def to_h
-      {
-        "name" => name,
-        params: { "threshold" => threshold, "n" => n }.compact_blank
-      }
-    end
-    alias_method :to_hash, :to_h
-  end
 
   include HTTParty
 
@@ -62,12 +48,12 @@ class DetectorClient
 
     attr_reader :config
 
-    def nicad_request_body(assignment, submission)
+    def build_request_body(assignment, submission)
       target_submissions = assignment.submissions.files_group
       target_uploads = Upload.where(uploadable_type: Submission.to_s, uploadable_id: target_submissions.ids).map(&:storage_key)
 
       {
-        "algorithm" => algorithm(assignment).to_h,
+        "algorithm" => algorithm(assignment),
         "result_key" => assignment.nicad_report_storage_key,
         "resources" => target_uploads,
         "revision" => assignment.id
@@ -76,27 +62,21 @@ class DetectorClient
       end
     end
 
-    def request_body(assignment, submission)
-      {
-        "algorithm" => algorithm(assignment).to_h,
-        "assignment" => "#{assignment.storage_key}/submissions",
-        "result_key" => assignment.report_storage_key
-      }.tap do |hash|
-        hash["result_path"] = gateway_detector_submission_path(submission.id) if submission
-      end
-    end
-
     def algorithm(assignment)
-      Algorithm.new(
-        name: "NICAD",
-        threshold: assignment.threshold
-      )
-
-      # @algorithm ||= Algorithm.new(
-      #   name: "LCS",
-      #   n: assignment.ngram_size,
-      #   threshold: assignment.threshold
-      # )
+      if assignment.algorithm.to_sym == :nicad
+        {
+          name: "nicad",
+          params: {
+            threshold: assignment.nicad.threshold
+          }
+        }
+      elsif assignment.algorithm.to_sym == "lcs_baseline"
+        {
+          name: "lcs_baseline",
+          n: assignment.lcs_baseline.ngram_size,
+          threshold: assignment.lcs_baseline.threshold
+        }
+      end
     end
 
     def authorization_value(access_token) = "Bearer #{access_token}"

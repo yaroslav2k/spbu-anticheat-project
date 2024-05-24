@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-require "docker"
-
 class Submission::ProcessJob < ApplicationJob
   TARGET_PATH = "/app/git-repositories"
-  IMAGE_TAG = "tokenizer-python:mainline"
   DEFAULT_GIT_BRANCH_NAME = "main"
 
   DetectorServiceFailureError = Class.new(StandardError)
 
   private_constant :TARGET_PATH
-  private_constant :IMAGE_TAG
   private_constant :DEFAULT_GIT_BRANCH_NAME
 
   sidekiq_options retry: false
@@ -37,23 +33,12 @@ class Submission::ProcessJob < ApplicationJob
       handle_failure do
         clone_git_repository(submission.url, submission.branch)
 
-        container = create_container([submission.url, submission.branch].join(":")).start.tap(&:attach)
-
-        s3_client.put_object(
-          body: File.read(manifest_filepath(identifier)),
-          bucket: Rails.env,
-          key: "/#{submission.storage_key}",
-          content_type: "application/json"
-        )
-
         service_result = Assignment::DetectService.call(
           assignment: submission.assignment,
           submission:
         )
 
         raise service_result.exception if service_result.exception
-
-        container.tap(&:stop).tap(&:remove)
       end
     end
 
@@ -68,8 +53,6 @@ class Submission::ProcessJob < ApplicationJob
           end
         end
 
-        container = create_container(submission.id).start.tap(&:attach)
-
         s3_client.put_object(
           body: File.read(manifest_filepath(identifier)),
           bucket: Rails.env,
@@ -83,8 +66,6 @@ class Submission::ProcessJob < ApplicationJob
         )
 
         raise service_result.exception if service_result.exception
-
-        container.tap(&:stop).tap(&:remove)
       end
     end
 
@@ -102,20 +83,6 @@ class Submission::ProcessJob < ApplicationJob
       end
 
       Git.clone(repository_url, "#{TARGET_PATH}/#{identifier}", **options)
-    end
-
-    memoize def create_container(submission_identifier)
-      Docker::Container.create(
-        "Image" => IMAGE_TAG,
-        "HostConfig" => { "Binds" => ["spbu-anticheat-project_git-repositories:/app/input"] },
-        "Cmd" => [
-          "/app/input/#{identifier}",
-          "--identifier",
-          submission_identifier,
-          "--output",
-          tokenizer_manifest_filepath(identifier)
-        ]
-      )
     end
 
     def s3_client = @s3_client ||= Aws::S3::Client.new
