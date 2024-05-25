@@ -27,6 +27,7 @@ ActiveAdmin.register Submission do
     column :sent_at
 
     column :plagiarism do
+      s3_client = Aws::S3::Client.new
       raw_report =
         s3_client
           .get_object(bucket: Storage::PRIMARY.bucket, key: resource.assignment.nicad_report_storage_key)
