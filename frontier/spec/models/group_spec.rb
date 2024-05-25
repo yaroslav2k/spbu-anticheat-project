@@ -27,6 +27,6 @@ RSpec.describe Group do
   end
 
   describe "validations" do
-    it { is_expected.to validate_uniqueness_of(:title) }
+    it { is_expected.to validate_uniqueness_of(:title).case_insensitive }
   end
 end
