@@ -23,11 +23,6 @@ class AssignmentDecoratorLegacy < ApplicationDecorator
       end
     end
 
-    # def external_url
-    #   path = "tree/#{revision}/#{file_name}"
-    #   "#{repository_url}/#{path}?plain=#L#{function_start}-#L#{function_end}"
-    # end
-
     private
 
       def handle_blank(value)

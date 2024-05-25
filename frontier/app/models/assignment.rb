@@ -67,8 +67,6 @@ class Assignment < ApplicationRecord
   end
 
   def report_storage_key
-    # "courses/#{course.id}/assignments/#{storage_identifier}/detector-report.json"
-
     nicad_report_storage_key
   end
 

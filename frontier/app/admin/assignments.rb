@@ -12,9 +12,13 @@ ActiveAdmin.register Assignment do
   member_action :report, method: :get do
     s3_client = Aws::S3::Client.new
 
-    object = s3_client.get_object(bucket: Storage::PRIMARY.bucket, key: resource.nicad_report_storage_key)
+    raw_report =
+      s3_client
+        .get_object(bucket: Storage::PRIMARY.bucket, key: resource.nicad_report_storage_key)
+        .body
+        .read
 
-    render locals: { assignment: resource.decorate(context: { raw_report: object.body.read }) }
+    render locals: { assignment: resource.decorate(context: { raw_report: }) }
   end
 
   member_action :trigger_processing, method: :post do

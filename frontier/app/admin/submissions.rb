@@ -26,6 +26,33 @@ ActiveAdmin.register Submission do
 
     column :sent_at
 
+    column :plagiarism do |resource|
+      s3_client = Aws::S3::Client.new
+      raw_report =
+        begin
+          s3_client
+            .get_object(bucket: Storage::PRIMARY.bucket, key: resource.assignment.nicad_report_storage_key)
+            .body
+            .read
+        rescue Aws::S3::Errors::ServiceError => e
+          Rails.logger.error(e)
+
+          nil
+        end
+
+      if raw_report.blank?
+        "—"
+      else
+        decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
+
+        if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
+          link_to "+", report_admin_assignment_url(resource.assignment)
+        else
+          "—"
+        end
+      end
+    end
+
     actions
   end
 
