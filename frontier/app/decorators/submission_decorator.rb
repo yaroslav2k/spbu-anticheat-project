@@ -5,7 +5,7 @@ class SubmissionDecorator < ApplicationDecorator
 
   delegate_all
 
-  delegate :algorithm, :report, to: :report_builder
+  delegate :report, to: :report_builder
 
   memoize def plagiarism_by_author_detected?(author_name)
     report.any? do |code_clone|
@@ -13,6 +13,10 @@ class SubmissionDecorator < ApplicationDecorator
          author_name.downcase == code_fragment.author_name.downcase
       end
     end
+  end
+
+  def algorithm
+    report_builder.algorithm || object.nicad
   end
 
   private
