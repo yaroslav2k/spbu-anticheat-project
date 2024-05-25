@@ -37,19 +37,19 @@ ActiveAdmin.register Submission do
         rescue Aws::S3::Errors::ServiceError => e
           Rails.logger.error(e)
 
-          ""
+          "—"
         end
 
-      return "--" if raw_report.blank?
-
-      Rails.logger.info(raw_report)
-
-      decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
-
-      if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
-        link_to "+", report_admin_assignment_url(resource.assignment)
+      if raw_report.blank?
+        "—"
       else
-        "--"
+        decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
+
+        if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
+          link_to "+", report_admin_assignment_url(resource.assignment)
+        else
+          "—"
+        end
       end
     end
 
