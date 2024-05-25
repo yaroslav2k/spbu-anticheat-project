@@ -67,7 +67,7 @@ class Gateway::Telegram::WebhooksController < Gateway::Telegram::ApplicationCont
         end
         { assignments: }
       elsif event == :telegram_chat_group_provided
-        courses = Course.active.where(group: telegram_chat.reload.group).pluck(:title).join("\n")
+        courses = Course.active.where(group: { title: telegram_chat.reload.group }).pluck(:title).join("\n")
         i18n_key = :courses_not_found if courses.blank?
 
         { courses: }

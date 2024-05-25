@@ -63,7 +63,7 @@ class TelegramChat < ApplicationRecord
   private
 
     def validate_group_validity
-      return if Course.exists?(group:)
+      return if Group.exists?(title: group)
 
       errors.add(:group, :does_not_exist)
     end

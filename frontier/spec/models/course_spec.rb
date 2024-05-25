@@ -5,7 +5,6 @@
 # Table name: courses
 #
 #  id         :uuid             not null, primary key
-#  group      :citext           not null
 #  semester   :string           not null
 #  title      :citext           not null
 #  year       :integer          not null
@@ -54,35 +53,10 @@ RSpec.describe Course do
   describe "validations" do
     subject(:course) { create(:course) }
 
-    it { is_expected.to validate_presence_of(:group) }
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_uniqueness_of(:title).scoped_to(:year, :semester).case_insensitive }
     it { is_expected.to validate_length_of(:title).is_at_least(3).is_at_most(40) }
     it { is_expected.to validate_inclusion_of(:semester).in_array(%w[spring fall]) }
     it { is_expected.to validate_numericality_of(:year).only_integer }
-  end
-
-  describe "instance methods" do
-    subject(:course) { create(:course) }
-
-    before { create(:assignment, course:) }
-
-    def perform(course) = course.prolongeable_copy
-
-    specify do
-      result = perform(course)
-
-      expect(result).to be_a_new_record
-      expect(result.user).to eq(course.user)
-      expect(result).to have_attributes(
-        id: nil,
-        year: Time.zone.now.year,
-        semester: Utilities::DateTime.current_semester.to_s,
-        user: be_present,
-        assignments: be_none
-      )
-      expect(result.attributes.except("id", "updated_at", "created_at", "semester", "year"))
-        .to eq(course.attributes.except("id", "updated_at", "created_at", "semester", "year"))
-    end
   end
 end

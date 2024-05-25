@@ -33,7 +33,7 @@ FactoryBot.define do
     end
 
     trait :with_group do
-      group { Course.pluck(:group).sample }
+      group { Group.all.sample }
     end
 
     trait :with_status_name_provided do
