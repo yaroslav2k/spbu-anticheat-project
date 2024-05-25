@@ -8,7 +8,6 @@ class SubmissionDecorator < ApplicationDecorator
   delegate :algorithm, :report, to: :report_builder
 
   memoize def plagiarism_by_author_detected?(author_name)
-    Rails.logger.info(report)
     report.any? do |code_clone|
       code_clone.code_fragments.any? do |code_fragment|
          author_name.downcase == code_fragment.author_name.downcase

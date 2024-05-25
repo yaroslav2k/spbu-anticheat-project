@@ -34,7 +34,7 @@ ActiveAdmin.register Submission do
           .body
           .read
 
-      Rails.logger.info(raw_report)
+      return "--" if raw_report.blank?
 
       decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
 
