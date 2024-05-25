@@ -81,7 +81,6 @@ class AssignmentDecorator < ApplicationDecorator
   delegate_all
 
   memoize def report
-    Rails.logger.info(parsed_raw_report)
     parsed_report = parsed_raw_report[:result]
       .map do |serialized_code_clone|
         CodeClone.new(
@@ -113,6 +112,14 @@ class AssignmentDecorator < ApplicationDecorator
       h.link_to "#{submission.id} (#{upload.filename})", h.admin_submission_url(submission)
     else
       "-"
+    end
+  end
+
+  def plagiarism_by_author_detected?(author_name)
+    report.any? do |code_clone|
+      code_clone.code_fragments.any? do |code_fragment|
+         author_name.downcase == code_fragment.author_name.downcase
+      end
     end
   end
 end

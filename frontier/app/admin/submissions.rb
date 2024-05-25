@@ -26,6 +26,22 @@ ActiveAdmin.register Submission do
 
     column :sent_at
 
+    column :plagiarism do
+      raw_report =
+        s3_client
+          .get_object(bucket: Storage::PRIMARY.bucket, key: resource.assignment.nicad_report_storage_key)
+          .body
+          .read
+
+      decorated_object = AssignmentDecorator.decorate(context: { raw_report: })
+
+      if decorated_object.plagiarism_by_author_detected?(resource.author_name)
+        link_to "+", report_admin_assignment_url(resource.assignment)
+      else
+        "--"
+      end
+    end
+
     actions
   end
 

@@ -52,6 +52,7 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
+  config.cache_store = :redis_cache_store, { url: RedisConfig.new.url }
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
