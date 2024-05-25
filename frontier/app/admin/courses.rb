@@ -11,22 +11,12 @@ ActiveAdmin.register Course do
     end
   end
 
-  member_action :prolongate, method: :post do
-    course = Course.for(current_user).find(params[:id])
-
-    new_course = course.prolongeable_copy.tap(&:save!)
-
-    redirect_back_or_to root_path, notice: "Created new course (#{new_course.semester} #{new_course.year})"
-  rescue ActiveRecord::RecordInvalid => e
-    redirect_back_or_to root_path, alert: e.record.errors.full_messages.join("; ")
-  end
-
-  permit_params :title, :year, :semester, :group
+  permit_params :title, :year, :semester
 
   before_build do |record|
     record.user = current_user
     record.year ||= Date.current.year
-    record.semester ||= "fall" # FIXME
+    record.semester ||= Utilities::DateTime.current_semester.to_s
   end
 
   index do
@@ -36,13 +26,12 @@ ActiveAdmin.register Course do
     column :year
     column :semester
     column :title
-    column :group
-
-    column :actions do |course|
-      link_to("prolongate", prolongate_admin_course_path(course), method: :post)
-    end
 
     actions
+
+    column :actions do |_course|
+      link_to("groups", admin_groups_url, method: :get)
+    end
   end
 
   form do |f|
@@ -52,7 +41,6 @@ ActiveAdmin.register Course do
       input :title
       input :year
       input :semester
-      input :group
     end
 
     f.actions

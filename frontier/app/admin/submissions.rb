@@ -3,7 +3,12 @@
 ActiveAdmin.register Submission do
   controller do
     def scoped_collection
-      resource_class.for(current_user)
+      resources = resource_class.for(current_user)
+
+      resources = resources.where(author_name: params[:author_name]) if params[:author_name].present?
+      resources = resources.where(author_group: params[:author_group]) if params[:author_group].present?
+
+      resources
     end
   end
 

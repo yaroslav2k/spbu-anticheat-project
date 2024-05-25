@@ -11,7 +11,7 @@ class API::Course::Create < ApplicationService
   private
 
     def create_course
-      self.course = user.courses.build(attributes)
+      self.course = user.courses.build(attributes.except(:group))
 
       fail! error: "Unable to save record", record: course unless course.save
     end
