@@ -37,7 +37,7 @@ ActiveAdmin.register Submission do
         rescue Aws::S3::Errors::ServiceError => e
           Rails.logger.error(e)
 
-          "—"
+          nil
         end
 
       if raw_report.blank?
