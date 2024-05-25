@@ -36,6 +36,8 @@ ActiveAdmin.register Submission do
 
       return "--" if raw_report.blank?
 
+      Rails.logger.info(raw_report)
+
       decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
 
       if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
