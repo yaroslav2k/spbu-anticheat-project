@@ -29,10 +29,16 @@ ActiveAdmin.register Submission do
     column :plagiarism do |resource|
       s3_client = Aws::S3::Client.new
       raw_report =
-        s3_client
-          .get_object(bucket: Storage::PRIMARY.bucket, key: resource.assignment.nicad_report_storage_key)
-          .body
-          .read
+        begin
+          s3_client
+            .get_object(bucket: Storage::PRIMARY.bucket, key: resource.assignment.nicad_report_storage_key)
+            .body
+            .read
+        rescue Aws::S3::Errors::ServiceError => e
+          Rails.logger.error(e)
+
+          ""
+        end
 
       return "--" if raw_report.blank?
 
