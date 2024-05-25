@@ -34,9 +34,9 @@ ActiveAdmin.register Submission do
           .body
           .read
 
-      decorated_object = AssignmentDecorator.decorate(context: { raw_report: })
+      decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
 
-      if decorated_object.plagiarism_by_author_detected?(resource.author_name)
+      if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
         link_to "+", report_admin_assignment_url(resource.assignment)
       else
         "--"
