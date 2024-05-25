@@ -5,7 +5,7 @@
 # Table name: groups
 #
 #  id         :uuid             not null, primary key
-#  title      :string           not null
+#  title      :citext           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  course_id  :uuid             not null

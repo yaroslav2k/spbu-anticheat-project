@@ -5,29 +5,27 @@ class CreateGroups < ActiveRecord::Migration[7.1]
     create_table :groups, id: :uuid do |t|
       t.references :course, index: true, foreign_key: true, type: :uuid, null: false
 
-      t.string :title, null: false, index: { unique: true }
+      t.citext :title, null: false, index: { unique: true }
 
       t.timestamps
     end
 
-    reversible do |direction|
-      direction.up do
-        Course.find_each do |course|
-          Group.create!(title: course.group, course:)
-        end
-      end
+    Course.find_each do |course|
+      Group.create!(title: course.group, course:)
     end
 
     remove_column :courses, :group, :citext
   end
 
   def down
-    drop_table :groups
+    add_column :courses, :group, :citext
 
-    t.citext :group, null: true
-
-    Group.each do |group|
+    Group.find_each do |group|
       group.course.update!(group: group.title)
     end
+
+    drop_table :groups
+
+    change_column_null :courses, :group, false
   end
 end
