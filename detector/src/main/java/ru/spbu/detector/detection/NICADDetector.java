@@ -139,6 +139,7 @@ public class NICADDetector extends DetectionAlgorithm {
 
         try {
             File fXmlFile = Paths.get(basePath, xmlFilename).toFile();
+            log.debug(String.format("Reading report file %s", fXmlFile.getAbsolutePath()));
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -147,6 +148,7 @@ public class NICADDetector extends DetectionAlgorithm {
 
             String topLevelKey = matchCloneClasses ? "class" : "clone";
             NodeList serializedClones = doc.getElementsByTagName(topLevelKey);
+
             for (int i = 0; i < serializedClones.getLength(); i++) {
                 if (serializedClones.item(i).getNodeType() != Node.ELEMENT_NODE) {
                     continue;

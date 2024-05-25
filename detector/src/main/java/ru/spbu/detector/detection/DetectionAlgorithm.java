@@ -26,9 +26,9 @@ abstract class DetectionAlgorithm {
         var paramsMap = algorithmDto.params();
         var name = algorithmDto.name();
 
-        if (name.equals("LCS")) {
+        if (name.equals("lcs_baseline")) {
             return new LCSDetector(new LCSDetectorParams(paramsMap));
-        } else if (name.equals("NICAD")) {
+        } else if (name.equals("nicad")) {
             return new NICADDetector(new NICADDetectorParams(paramsMap));
         }
         else {

@@ -18,4 +18,12 @@ class S3Config < ApplicationConfig
 
     coerce_types \
       force_path_style: :boolean
+
+  def bucket=(value)
+    if Rails.env.test?
+      super(Rails.env)
+    else
+      super
+    end
+  end
 end

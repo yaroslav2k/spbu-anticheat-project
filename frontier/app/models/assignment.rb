@@ -33,22 +33,20 @@ class Assignment < ApplicationRecord
 
   validates :title, presence: true, length: { in: TITLE_MIN_LENGTH..TITLE_MAX_LENGTH }
   validates :title, uniqueness: { case_sensitive: false, scope: %i[course_id] }
-  validates :ngram_size, numericality: { only_integer: true, greater_than_or_equal_to: 2 }
-  validates :threshold, numericality: { in: (0..1) }
 
   scope :for, ->(user) { joins(:course).where(course: { user: }) }
   scope :active, -> { joins(:course).where(course: { year: Date.current.year }) }
 
   default_scope { order(created_at: :desc) }
 
-  jsonb_accessor :options,
-    ngram_size: [:integer, { default: 2 }],
-    threshold: [:float, { default: 0.8 }]
+  ALGORITHM_OPTIONS = DetectionMethod::ALL.to_h { [_1.name, %i[jsonb]] }.freeze
 
-  after_initialize do
-    self.ngram_size ||= 2
-    self.threshold ||= 0.8
-  end
+  jsonb_accessor :options,
+    nicad: [:jsonb],
+    algorithm: [:string, { default: "nicad" }],
+    **Assignment::ALGORITHM_OPTIONS
+
+  after_initialize :initialize_algorithm_parameters
 
   def self.ransackable_attributes(*)
     %w[course_id created_at id id_value options submissions_count title updated_at]
@@ -84,5 +82,18 @@ class Assignment < ApplicationRecord
 
   def storage_identifier
     id
+  end
+
+  private
+
+  def initialize_algorithm_parameters
+    self.algorithm = DetectionMethod::DEFAULT.name
+
+    DetectionMethod::ALL.each do |detection_method|
+      public_send(
+        :"#{detection_method.name}=",
+        detection_method.parameters.to_h { [_1[:name], _1[:default]] }
+      )
+    end
   end
 end

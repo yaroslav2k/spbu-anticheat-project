@@ -16,7 +16,7 @@ class AssignmentDecoratorLegacy < ApplicationDecorator
   Cluster = Struct.new(:items, keyword_init: true)
   Item = Struct.new(*ITEM_ATTRIBUTES, keyword_init: true) do
     def initialize(...)
-      super(...)
+      super
 
       %i[class_name function_name].each do |attribute|
         public_send(:"#{attribute}=", handle_blank(public_send(attribute)))

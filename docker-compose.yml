@@ -54,7 +54,6 @@ services:
     command: ["bundle exec sidekiq"]
     volumes:
       - git-repositories:/app/git-repositories
-      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - redis
       - detector
@@ -81,9 +80,9 @@ services:
   detector:
     build: detector
     container_name: clone-detector
-    ports:
-      - "8080:8080"
     env_file: .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - backend
 

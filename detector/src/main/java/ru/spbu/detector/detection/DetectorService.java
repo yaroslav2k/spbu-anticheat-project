@@ -40,6 +40,7 @@ import ru.spbu.detector.dto.CodeFragmentsDto;
 import ru.spbu.detector.dto.FragmentIdentifierDto;
 import ru.spbu.detector.dto.SubmissionStatusDto;
 import ru.spbu.detector.dto.SubmitRepositoryDto;
+import ru.spbu.detector.dto.CloneDetectionResultDto;
 import ru.spbu.detector.dto.CloneDetectionTaskDto;
 
 
@@ -79,7 +80,7 @@ public class DetectorService {
         var codeClones = ((NICADDetector) algorithm).findClustersFromDirectory(Paths.get("/tmp", dto.revision()));
 
         uploadResult(dto, codeClones);
-    }
+      }
     }
 
     public void submitCompareRepositoriesTask(SubmitRepositoryDto dto) {
@@ -128,15 +129,16 @@ public class DetectorService {
       }
     }
 
-    private void uploadResult(CloneDetectionTaskDto dto, Set<CodeCloneDto> codeCLones) throws JsonProcessingException {
+    private void uploadResult(CloneDetectionTaskDto dto, Set<CodeCloneDto> codeClones) throws JsonProcessingException {
         var objectMapper = new ObjectMapper();
-        String report = objectMapper.writeValueAsString(codeCLones);
+        String report = objectMapper.writeValueAsString(
+            new CloneDetectionResultDto(dto.algorithm(), codeClones)
+        );
 
         var objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(dto.resultKey())
                 .build();
-
 
         s3Client.putObject(objectRequest, RequestBody.fromString(report, StandardCharsets.UTF_8));
         frontierClient.setSubmissionStatus(dto.resultPath(), SubmissionStatusDto.COMPLETED);

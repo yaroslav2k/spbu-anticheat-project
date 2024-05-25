@@ -28,23 +28,26 @@ RSpec.describe Admin::AssignmentsController do
     let!(:upload_2) { create(:upload) }
 
     let(:manifest) do
-      [
-        {
-          code_fragments: [
-            {
-              identifier: "nicadclones/data/data/#{upload_1.id}.py",
-              line_start: 1,
-              line_end: 95
-            },
-            {
-              identifier: "nicadclones/data/data/#{upload_1.id}.py",
-              line_start: 1,
-              line_end: 102
-            }
-          ],
-          similarity: 72
-        }
-      ]
+      {
+        result: [
+          {
+            code_fragments: [
+              {
+                identifier: "nicadclones/data/data/#{upload_1.id}.py",
+                line_start: 1,
+                line_end: 95
+              },
+              {
+                identifier: "nicadclones/data/data/#{upload_1.id}.py",
+                line_start: 1,
+                line_end: 102
+              }
+            ],
+            similarity: 72
+          }
+        ],
+        algorithm: { name: "nicad" }
+      }
     end
 
     let(:response_double) { double("response", body: StringIO.new(manifest.to_json)) } # rubocop:disable RSpec/VerifiedDoubles

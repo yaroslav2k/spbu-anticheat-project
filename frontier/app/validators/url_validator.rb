@@ -2,7 +2,7 @@
 
 class URLValidator < ActiveModel::EachValidator
   def initialize(options = {})
-    super(options)
+    super
 
     @domain = options[:domain]
   end

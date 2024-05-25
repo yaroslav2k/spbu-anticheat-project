@@ -4,7 +4,7 @@ class GitRemoteValidator < ActiveModel::EachValidator
   HTTP_REQUEST_EVALUATOR = ->(uri) { HTTParty.head(uri) }
 
   def initialize(options = {})
-    super(options)
+    super
 
     @branch = options[:branch].presence
   end

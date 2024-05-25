@@ -14,6 +14,8 @@ class Assignment::DetectService < ApplicationService
 
     super
   rescue StandardError => e
+    Rails.logger.info(e)
+
     self.exception = e
   end
 
@@ -24,6 +26,6 @@ class Assignment::DetectService < ApplicationService
     end
 
     def api_client
-      @api_client ||= DetectorClient.new(Frontier.config.detector_config)
+      @api_client ||= Detector::Client.new(Frontier.config.detector_config)
     end
 end

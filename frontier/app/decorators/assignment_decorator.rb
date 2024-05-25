@@ -51,7 +51,7 @@ class AssignmentDecorator < ApplicationDecorator
 
       load_submission
 
-      super(identifier:, line_start:, line_end:)
+      super
     end
 
     def upload
@@ -81,9 +81,8 @@ class AssignmentDecorator < ApplicationDecorator
   delegate_all
 
   memoize def report
-    parsed_raw_report = JSON.parse(context[:raw_report], symbolize_names: true)
-
-    parsed_report = parsed_raw_report
+    Rails.logger.info(parsed_raw_report)
+    parsed_report = parsed_raw_report[:result]
       .map do |serialized_code_clone|
         CodeClone.new(
           similarity: serialized_code_clone[:similarity],
@@ -101,6 +100,10 @@ class AssignmentDecorator < ApplicationDecorator
       .select { |code_clone| code_clone.code_fragments.size.positive? }
       .sort_by { |code_clone| -1 * code_clone.similarity }
   end
+
+  memoize def algorithm = parsed_raw_report[:algorithm]
+
+  memoize def parsed_raw_report = JSON.parse(context[:raw_report], symbolize_names: true)
 
   def submission_field(code_fragment)
     submission = code_fragment.submission
