@@ -18,6 +18,6 @@ class SubmissionDecorator < ApplicationDecorator
   private
 
     def report_builder
-      @report_builder | ReportBuilder.build(context[:raw_report])
+      @report_builder ||= ReportBuilder.build(context[:raw_report])
     end
 end
