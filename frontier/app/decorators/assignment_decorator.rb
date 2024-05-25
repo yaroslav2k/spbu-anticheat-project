@@ -17,7 +17,7 @@ class AssignmentDecorator < ApplicationDecorator
   delegate :report, to: :report_builder
 
   def algorithm
-    report_builder.algorithm || object.assignment.nicad
+    report_builder.algorithm || object.nicad
   end
 
   private
