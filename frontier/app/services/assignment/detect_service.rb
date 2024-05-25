@@ -14,6 +14,8 @@ class Assignment::DetectService < ApplicationService
 
     super
   rescue StandardError => e
+    Rails.logger.info(e)
+
     self.exception = e
   end
 

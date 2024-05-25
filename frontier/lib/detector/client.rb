@@ -15,7 +15,7 @@ class Detector::Client
   end
 
   def detect(assignment, submission)
-    request_body = request_body(assignment, submission).to_json
+    request_body = build_request_body(assignment, submission).to_json
 
     with_request_identifier do |request_identifier|
       self.class.post(
@@ -30,7 +30,7 @@ class Detector::Client
   end
 
   def detect_clones(assignment, submission)
-    request_body = nicad_request_body(assignment, submission).to_json
+    request_body = build_request_body(assignment, submission).to_json
 
     with_request_identifier do |request_identifier|
       self.class.post(
@@ -67,14 +67,14 @@ class Detector::Client
         {
           name: "nicad",
           params: {
-            threshold: assignment.nicad.threshold
+            threshold: assignment.nicad["threshold"]
           }
         }
       elsif assignment.algorithm.to_sym == "lcs_baseline"
         {
           name: "lcs_baseline",
-          n: assignment.lcs_baseline.ngram_size,
-          threshold: assignment.lcs_baseline.threshold
+          n: assignment.lcs_baseline["ngram_size"],
+          threshold: assignment.lcs_baseline["threshold"]
         }
       end
     end
