@@ -14,7 +14,7 @@ x-parameters:
     type: number
     minimum: 0.0
     maximum: 1.0
-    default: 0.8
+    default: 0.7
     step: 0.01
 
 detection-methods:

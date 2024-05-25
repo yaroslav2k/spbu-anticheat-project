@@ -81,6 +81,7 @@ class AssignmentDecorator < ApplicationDecorator
   delegate_all
 
   memoize def report
+    Rails.logger.info(parsed_raw_report)
     parsed_report = parsed_raw_report[:result]
       .map do |serialized_code_clone|
         CodeClone.new(
