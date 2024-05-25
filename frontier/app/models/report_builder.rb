@@ -8,14 +8,12 @@ class ReportBuilder
   end
 
   def initialize(raw_report)
-    Rails.logger.info(raw_report)
     @parsed_raw_report = JSON.parse(raw_report, symbolize_names: true)
   end
 
   memoize def algorithm = parsed_raw_report[:algorithm]
 
   memoize def report
-    Rails.logger.info(parsed_raw_report)
     parsed_report = parsed_raw_report[:result]
       .map do |serialized_code_clone|
         CodeClone.new(
