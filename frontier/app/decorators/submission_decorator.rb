@@ -16,7 +16,7 @@ class SubmissionDecorator < ApplicationDecorator
   end
 
   def algorithm
-    report_builder.algorithm || object.nicad
+    report_builder.algorithm || object.assignment.nicad
   end
 
   private
