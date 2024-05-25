@@ -34,17 +34,13 @@ ActiveAdmin.register Submission do
           .body
           .read
 
+      Rails.logger.info(raw_report)
+
       decorated_resource = SubmissionDecorator.decorate(resource, context: { raw_report: })
 
-      begin
-        if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
-          link_to "+", report_admin_assignment_url(resource.assignment)
-        else
-          "--"
-        end
-      rescue StandardError => e
-        Rails.logger.error(e)
-
+      if decorated_resource.plagiarism_by_author_detected?(resource.author_name)
+        link_to "+", report_admin_assignment_url(resource.assignment)
+      else
         "--"
       end
     end
