@@ -26,7 +26,7 @@ ActiveAdmin.register Submission do
 
     column :sent_at
 
-    column :plagiarism do
+    column :plagiarism do |resource|
       s3_client = Aws::S3::Client.new
       raw_report =
         s3_client
