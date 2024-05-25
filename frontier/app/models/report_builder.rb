@@ -11,10 +11,16 @@ class ReportBuilder
     @parsed_raw_report = JSON.parse(raw_report, symbolize_names: true)
   end
 
-  memoize def algorithm = parsed_raw_report[:algorithm]
+  memoize def algorithm = parsed_raw_report.try(:[], :algorithm)
 
   memoize def report
-    parsed_report = parsed_raw_report[:result]
+    parsed_report = if parsed_raw_report.try(:[], :result)
+      parsed_raw_report.fetch(:result)
+    else
+      parsed_raw_report
+    end
+
+    parsed_report = parsed_report
       .map do |serialized_code_clone|
         CodeClone.new(
           similarity: serialized_code_clone[:similarity],
