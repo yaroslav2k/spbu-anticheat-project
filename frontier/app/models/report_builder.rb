@@ -11,7 +11,9 @@ class ReportBuilder
     @parsed_raw_report = JSON.parse(raw_report, symbolize_names: true)
   end
 
-  memoize def algorithm = parsed_raw_report.try(:[], :algorithm)
+  memoize def algorithm
+    parsed_raw_report[:algorithm] if parsed_raw_report.is_a?(Hash)
+  end
 
   memoize def report
     parsed_report = if parsed_raw_report.is_a?(Hash)
