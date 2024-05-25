@@ -14,7 +14,7 @@ class ReportBuilder
   memoize def algorithm = parsed_raw_report.try(:[], :algorithm)
 
   memoize def report
-    parsed_report = if parsed_raw_report.try(:[], :result)
+    parsed_report = if parsed_raw_report.is_a?(Hash)
       parsed_raw_report.fetch(:result)
     else
       parsed_raw_report
