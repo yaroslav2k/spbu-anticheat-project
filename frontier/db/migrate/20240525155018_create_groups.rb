@@ -11,7 +11,9 @@ class CreateGroups < ActiveRecord::Migration[7.1]
     end
 
     Course.find_each do |course|
-      Group.create!(title: course.group, course:)
+      Group
+        .create_with(course:)
+        .find_or_create_by!(title: course.group)
     end
 
     remove_column :courses, :group, :citext

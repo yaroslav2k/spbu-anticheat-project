@@ -25,13 +25,15 @@ ApplicationRecord.transaction do
 
   # Groups
 
-  Group.create(
-    course: course_1,
+  Group.create_with(
+    course: course_1
+  ).find_or_create_by!(
     title: "mkn-1"
   )
 
-  Group.create(
-    course: course_2,
+  Group.create_with(
+    course: course_2
+  ).find_or_create_by!(
     title: "mkn-2"
   )
 
