@@ -1,19 +1,12 @@
 .vscode
 .idea
-!tmp/.gitkeep
-tmp
 
-nginx/ssl/ca.pem
-nginx/ssl/ca.key
-nginx/ssl/ca.crt
+/nginx/certificates/**
 
 .env
 .postgresql.env
 .s3.env
 
-.ruby-lsp
-
 .volumes/**
-!.volumes/.gitkeep
 
-!bin/.gitkeep
+!/**/.gitkeep

@@ -39,13 +39,13 @@ Make sure you have docker installed, other versions are highly likely to work to
 1. Clone this git repository:
 
    ```shell
-   git clone https://github.com/viralpraxis/spbu-anticheat-project.git
+   git clone https://github.com/studyfair/studyfair.git
    ```
 
 2. Enter the repository and build docker images:
 
    ```shell
-   cd spbu-anticheat-project && docker compose build --pull
+   cd studyfair && docker compose build --pull
    ```
 
 3. Although the system is built with intention of begin language-agnostic, currently each language (ATM only python) requires it own engine. To build the python engine, one should execute
