@@ -87,11 +87,11 @@ Generate certificates by running
 openssl req -newkey rsa:2048 -sha256 -nodes -x509 -days 365 \
   -keyout ca.key \
   -out ca.crt \
-  -subj "/C=RU/ST=Saint-Petersburg/L=Saint-Petersburg/O=Example Inc/CN=<IP-ADDRESS>" \
-  && mv ca.{key,crt} nginx/ssl
+  -subj "/C=RU/ST=Saint-Petersburg/L=Saint-Petersburg/O=Example Inc/CN=<HOSTNAME>" \
+  && mv ca.{key,crt} nginx/certificates
 ```
 
-don't forget to replace `<IP-ADDRESS>` with your public IP address or `localhost`.
+don't forget to replace `<HOSTNAME>` with your domain name, IP address or `localhost`.
 
 ### Runtime configuration
 
