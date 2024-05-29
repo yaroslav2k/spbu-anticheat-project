@@ -5,6 +5,12 @@ jobs:
   test-frontier:
     name: test-frontier
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - 3.3.1
+          - head
     services:
       postgres:
         image: postgres:13
@@ -28,7 +34,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3.0"
+          ruby-version: ${{ matrix.ruby }}
       - name: Setup test database
         working-directory: frontier
         env:
