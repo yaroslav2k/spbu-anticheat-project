@@ -39,6 +39,11 @@ header .btn {
   text-decoration: none;
 }
 
+header .icon {
+  padding: 0.5rem 1rem;
+  vertical-align: bottom;
+}
+
 section {
   padding: 2rem 0;
 }
