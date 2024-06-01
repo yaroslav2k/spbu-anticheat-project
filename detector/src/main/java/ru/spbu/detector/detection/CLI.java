@@ -28,7 +28,7 @@ import picocli.CommandLine.Parameters;
 @Command(name = "Detector", version = "Detector 1.0.0", mixinStandardHelpOptions = true)
 public class CLI implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(CLI.class);
-    private enum Algorithm { LCS, MISTRAL, NICAD }
+    private enum Algorithm { LCS, MISTRAL, NICAD, NIL }
 
     @Option(names = { "-a", "--algorithm" }, description = "Algorithm to use (one of ${COMPLETION-CANDIDATES})")
     Algorithm algorithm = Algorithm.LCS;
@@ -51,6 +51,9 @@ public class CLI implements Runnable {
           break;
       case NICAD:
           processNicad();
+          break;
+      case NIL:
+          processNIL();
           break;
 
       }
@@ -109,7 +112,15 @@ public class CLI implements Runnable {
             throw new RuntimeException(e);
         }
     }
-
+    private void processNIL() {
+        Map<String, Object> paramsMap = Map.of("threshold", 0.45);
+        NILDetector nicad = new NILDetector(new NILDetectorParams(paramsMap));
+        try {
+            nicad.findClustersFromFiles(sources[0], sources[1]);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     private Set<String> listSources(String directory) {
         return Stream.of(new File(directory).listFiles())
             .filter(file -> !file.isDirectory())
