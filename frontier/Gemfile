@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 gem "aasm", "~> 5.5.0"
-gem "activeadmin", "~> 3.2.0"
+gem "activeadmin", "~> 3.2.2"
 gem "active_admin_theme"
 gem "annotate", "~> 3"
 gem "anyway_config"
