@@ -14,6 +14,7 @@ WORKDIR /tmp
 RUN tar xvf /tmp/opentplus-62-linux64.tar.gz && cd /tmp/opentplus-62-linux64 && ./InstallTplus.sh
 RUN tar xvf /tmp/opentxl-11.3.1-linux64.tar.gz && cd /tmp/opentxl-11.3.1-linux64 && ./InstallTxl.sh
 RUN git clone https://github.com/CordyJ/Open-NiCad.git && cd Open-NiCad && make && src/installer/InstallNicad.sh
+RUN git clone https://github.com/kusumotolab/NIL && cd NIL && ./gradlew ShadowJar && cp ./build/libs/NIL-all.jar ./NIL-all.jar && rm -rf !("NIL-all.jar") .
 RUN rm -rf /tmp/opentplus-62-linux64 && rm -rf /tmp/opentxl-11.3.1-linux64
 
 WORKDIR /workspace/app
