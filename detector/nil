@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -jar /lib/nil/NIL-all.jar -l $1 -s $2 -p 1 -v $3 -o $4

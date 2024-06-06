@@ -75,7 +75,7 @@ public class NILDetector extends DetectionAlgorithm {
     void runNIL() {
         try {
             var parameters = ((NILDetectorParams) getParameters());
-            var processBuilder = new ProcessBuilder("java", "-jar", NIL_JAR_PATH, "-l", "python", "-s",  TESTS_PATH, "-p", "1", "-v",  Long.toString(Math.round(parameters.getThreshold() * 100)), "-o", RESULT_FILE);
+            var processBuilder = new ProcessBuilder("nil", NIL_JAR_PATH, "python",  TESTS_PATH, Long.toString(Math.round(parameters.getThreshold() * 100)), RESULT_FILE);
             log.info(System.getProperty("user.dir"));
             Process process = processBuilder.start();
             process.waitFor();

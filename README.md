@@ -28,7 +28,7 @@ use-cases is considered to be student homework cheating detection, it can be use
 
 ### Prerequisites
 
-The instructions below were on tested on Ubuntu 22.04 with the following packages installed:
+The instructions below were tested on Ubuntu 22.04 with the following packages installed:
 
 - Docker Engine (Community) 26.0.0 with compose plugin (2.25.0)
 
@@ -48,7 +48,7 @@ Make sure you have docker installed, other versions are highly likely to work to
    cd studyfair && docker compose build --pull
    ```
 
-3. Although the system is built with intention of begin language-agnostic, currently each language (ATM only python) requires it own engine. To build the python engine, one should execute
+3. Although the system is built with intention of begin language-agnostic, currently each language (ATM only python) requires its own engine. To build the python engine, one should execute
 
    ```shell
    docker build --tag tokenizer-python:mainline tokenizer/python
@@ -95,7 +95,7 @@ don't forget to replace `<HOSTNAME>` with your domain name, IP address or `local
 
 ### Runtime configuration
 
-1. Run `docker compose up -d`. Wait a few seconds and make sure all is working as expected via `docker compose ps -a`.
+1. Run `docker compose up -d`. Wait few seconds and make sure all is working as expected via `docker compose ps -a`.
 
 2. (hopefully I'l make this step at least semi-automatic)
 
@@ -120,7 +120,7 @@ don't forget to replace `<HOSTNAME>` with your domain name, IP address or `local
 
 ### Make sure everything in working
 
-You'll need to created a user to log in. Run the following command:
+You'll need to create a user to log in. Run the following command:
 
 ```shell
 docker compose exec frontier-web bundle exec rails db:seed
@@ -134,7 +134,7 @@ See this [README](detector/src/main/java/ru/spbu/detector/mistral/README.md) for
 
 ## API
 
-Currently there are ways of interacting with the system: web UI and RESTful HTTP API.
+Currently there are 2 ways of interacting with the system: web UI and RESTful HTTP API.
 
 ### HTTP API
 
