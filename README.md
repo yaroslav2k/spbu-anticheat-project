@@ -134,8 +134,4 @@ See this [README](detector/src/main/java/ru/spbu/detector/mistral/README.md) for
 
 ## API
 
-Currently there are 2 ways of interacting with the system: web UI and RESTful HTTP API.
-
-### HTTP API
-
-[TODO]
+Instead of relying on WEB UI one might choose to use RESTful HTTP API. Its OpenAPI specification is available at `frontier` service documentation and is auto-generated on server startup at `/api-docs` endpoint.
