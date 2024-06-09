@@ -118,7 +118,7 @@ don't forget to replace `<HOSTNAME>` with your domain name, IP address or `local
    docker compose exec frontier-web bundle exec rake telegram:bot:set_webhook\[https://your-public-ip-address\]
    ```
 
-### Make sure everything in working
+### Make sure everything is working
 
 You'll need to create a user to log in. Run the following command:
 
