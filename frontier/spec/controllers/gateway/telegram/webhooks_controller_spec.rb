@@ -233,7 +233,7 @@ describe Gateway::Telegram::WebhooksController do
       end
     end
 
-    context "with telegram form on `assignment_provided` stage", skip: :FIXME do
+    context "with telegram form on `assignment_provided` stage" do
       let!(:telegram_form) do
         create(
           :telegram_form,
@@ -244,8 +244,11 @@ describe Gateway::Telegram::WebhooksController do
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }
+      let!(:group) { create(:group, course:) }
       let(:assignment) { create(:assignment) }
-      let(:telegram_chat) { create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param) }
+      let(:telegram_chat) do
+        create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param, group: group.title)
+      end
 
       let(:message_text_param) { nil }
       let(:message_document_param) do
@@ -295,7 +298,7 @@ describe Gateway::Telegram::WebhooksController do
       end
     end
 
-    context "with `/preview` command", skip: :FIXME do
+    context "with `/preview` command" do
       let!(:telegram_form) do
         create(
           :telegram_form,
@@ -307,9 +310,12 @@ describe Gateway::Telegram::WebhooksController do
         )
       end
       let(:course) { create(:course, title: "advanced-haskell") }
+      let(:group) { create(:group, course:) }
       let(:assignment) { create(:assignment, title: "assignment-1") }
       let(:submission) { create(:submission_files_group, assignment:) }
-      let(:telegram_chat) { create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param) }
+      let(:telegram_chat) do
+        create(:telegram_chat, :with_status_group_provided, external_identifier: chat_id_param, group: group.title)
+      end
 
       let(:message_text_param) { "/preview" }
 
