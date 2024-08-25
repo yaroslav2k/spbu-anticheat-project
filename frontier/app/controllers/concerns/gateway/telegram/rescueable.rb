@@ -5,7 +5,7 @@ module Gateway::Telegram::Rescueable
 
   included do
     rescue_from StandardError do |exception|
-      Rails.logger.error(Array.wrap(exception.message) + exception.backtrace).join($RS)
+      Rails.logger.error((Array.wrap(exception.message) + exception.backtrace).join($RS))
 
       reply_with(event_response(:failed_to_save_record, {}))
 
