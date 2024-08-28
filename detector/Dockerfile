@@ -29,7 +29,7 @@ COPY src src
 COPY NIL/nil /bin/nil
 
 
-RUN --mount=type=cache,target=/root/.m2 ./mvnw install -DskipTests
+RUN    --mount=type=cache,target=/root/.m2 apt-get update && apt-get install dos2unix && dos2unix mvnw && ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 ENTRYPOINT ["java", "-jar", "/workspace/app/target/detector-0.0.1-SNAPSHOT.jar"]
