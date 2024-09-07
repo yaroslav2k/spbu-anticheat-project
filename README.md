@@ -16,10 +16,9 @@ use-cases is considered to be student homework cheating detection, it can be use
 ├── LICENSE                -- MIT :)
 ├── mutator                -- python automatic mutations injections framework
 ├── nginx                  -- nginx configuration
-├── desctop                -- desctop nw.js launcher configuration
+├── desktop                -- desctop nw.js launcher configuration
 ├── deploy_local.bat       -- bat file for local deploy
 ├── studyfair              -- shortcut for local launcher
-├── desctop                  -- desctop nw.js launcher configuration
 ├── .postgresql.env.sample -- PostgreSQL dotenv template
 ├── README.md              -- You are here
 ├── .s3.env.sample         -- S3 dotenv template
