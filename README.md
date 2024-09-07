@@ -16,6 +16,10 @@ use-cases is considered to be student homework cheating detection, it can be use
 ├── LICENSE                -- MIT :)
 ├── mutator                -- python automatic mutations injections framework
 ├── nginx                  -- nginx configuration
+├── desctop                -- desctop nw.js launcher configuration
+├── deploy_local.bat       -- bat file for local deploy
+├── studyfair              -- shortcut for local launcher
+├── desctop                  -- desctop nw.js launcher configuration
 ├── .postgresql.env.sample -- PostgreSQL dotenv template
 ├── README.md              -- You are here
 ├── .s3.env.sample         -- S3 dotenv template
@@ -23,6 +27,30 @@ use-cases is considered to be student homework cheating detection, it can be use
 ├── .tool-versions         -- consider using asdf
 └── .volumes               -- local docker volumes
 ```
+
+## Installation of desktop version
+
+### Prerequisites
+
+The instructions below were tested on Windows 11 with the following packages installed:
+
+- Docker Engine (Community) 26.0.0 with compose plugin (2.25.0)
+
+Make sure you have docker installed, other versions are highly likely to work too.
+
+### Prepare docker images
+
+1. Clone this git repository:
+
+   ```shell
+   git clone https://github.com/studyfair/studyfair.git
+   ```
+
+2. start docker server and run build_local.bat
+
+### Runtime configuration
+
+Run our app from shortcut "studyfair" in directory
 
 ## Installation
 
