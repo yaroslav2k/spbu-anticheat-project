@@ -48,8 +48,9 @@ Make sure you have docker installed, other versions are highly likely to work to
 2. start docker server and run build_local.bat
 
 ### Runtime configuration
+1.The whole time app is running docker server should be running
 
-Run our app from shortcut "studyfair" in directory
+2. Run our app from shortcut "studyfair" in directory
 
 ## Installation
 
