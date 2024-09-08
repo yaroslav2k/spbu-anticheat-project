@@ -39,17 +39,16 @@ Make sure you have docker installed, other versions are highly likely to work to
 
 ### Prepare docker images
 
-1. Clone this git repository:
-
+1. You can install distributed version from Google drive https://drive.google.com/drive/folders/1Nbtd-TLIoiETMInp8kANeN57HwJLhvvh?usp=sharing  
+3. Or you can install dev version from git repository:
    ```shell
    git clone https://github.com/studyfair/studyfair.git
    ```
+4. start docker server and run build_local.bat
 
-2. start docker server and run build_local.bat
-
-### If you don`t have desktop/dist folder
+#### If you installed dev version
 1. install npm
-2. run 
+2. download node modules and build it  
    ```shell
    npm ci
    npm run prod
