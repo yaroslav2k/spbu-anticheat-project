@@ -1,7 +1,13 @@
+var gui = require("nw.gui");
+
+gui.App.on('open', function (argString) {
+    nw.Window.open('https://localhost/admin', {}, (win) => {win.maximize()});
+});
+
+
 let requestAction = action => {
     if (action === 'openLoading') {
         nw.Window.open('https://localhost/admin', {}, (win) => {win.maximize()});
-        mainWindow.show(true); 
     } else if (action === 'exitApp') {
         const windows = nw.Window.getAll((windows) => {
                 windows.forEach(window => {
