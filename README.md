@@ -47,10 +47,18 @@ Make sure you have docker installed, other versions are highly likely to work to
 
 2. start docker server and run build_local.bat
 
+### If you don`t have desktop/dist folder
+1. install npm
+2. run 
+   ```shell
+   npm ci
+   npm run prod
+   ```
+
 ### Runtime configuration
 1.The whole time app is running docker server should be running
 
-2. Run our app from shortcut "studyfair" in directory
+2.Run our app from shortcut "studyfair" in directory
 
 ## Installation
 
