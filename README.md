@@ -57,7 +57,6 @@ Make sure you have docker installed, other versions are highly likely to work to
 
 ### Runtime configuration
 1.The whole time app is running docker server should be running
-
 2. Run our app from shortcut "studyfair" in directory
 
 ## Installation
