@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Loading...</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f0f0f0;
+                font-size: 24px;
+            }
+        </style>
+    </head>
+    <body>
+        <div>Loading...</div>
+        <script type="module">
+            window.onload = function() {
+                require('../scripts/start.js').then(() => {
+                    console.log("finished loading");
+                    nw.Window.get().hide();
+                    nw.Window.open('https://localhost/admin', {}, function(win) {win.maximize()});
+                });
+            };
+        </script>
+    </body>
+</html>

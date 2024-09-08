@@ -5,4 +5,3 @@ copy .\local_deployment\ca.crt .\nginx\certificates\ca.crt
 copy .\local_deployment\ca.key .\nginx\certificates\ca.key
 
 docker compose build --pull
-cmd /k

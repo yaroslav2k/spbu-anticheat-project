@@ -1,0 +1,17 @@
+{
+  "name": "studyfair",
+  "version": "1.0.0",
+  "main": "views/loading.html",
+  "chromium-args": "--allow-file-access-from-files",
+  "scripts": {
+    "run": ""
+  },
+  "bg-script" : "scripts/background.js",
+  "window": {
+    "title" : "studyfair",
+    "icon": "images/logo_64.png"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
