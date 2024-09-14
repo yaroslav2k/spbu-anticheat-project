@@ -3,9 +3,9 @@
 
 /nginx/certificates/**
 
-.env
-.postgresql.env
-.s3.env
+./.env
+./.postgresql.env
+./.s3.env
 
 .volumes/**
 
